@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema id="XSDSchemaTest" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <!-- definition of simple elements -->
+  <xs:element name="ID" type="xs:integer"/>
+  <xs:element name="Name" type="xs:string"/>
+  <xs:element name="width" type="xs:integer"/>
+  <xs:element name="height" type="xs:integer"/>
+  <xs:element name="posX" type="xs:integer"/>
+  <xs:element name="posY" type="xs:integer"/>
+  <xs:element name="speed">
+    <xs:simpleType>
+      <xs:restriction base="xs:integer">
+        <xs:minInclusive value="1"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:element name="twoWayOrientation">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="Left"/>
+        <xs:enumeration value="Right"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="orientation">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="Left"/>
+        <xs:enumeration value="Right"/>
+        <xs:enumeration value="Up"/>
+        <xs:enumeration value="Down"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+
+
+  <xs:element name="firstState">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="wait"/>
+        <xs:enumeration value="goRight"/>
+        <xs:enumeration value="goUp"/>
+        <xs:enumeration value="goDown"/>
+        <xs:enumeration value="wait"/>
+        <xs:enumeration value="pursuit"/>
+        <xs:enumeration value="guardRow"/>
+        <xs:enumeration value="guardColumn"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+
+  <!-- definition of complex elements -->
+
+    <xs:element name="Dimensions">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element ref="width"/>
+          <xs:element ref="height"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:element>
+
+    <!-- Predefined game objects -->
+      <!-- Field for the box -->
+      <xs:element name="Aim" type="positionComplex" />
+      <xs:complexType name="positionComplex">
+        <xs:sequence>
+          <xs:element ref="posX"/>
+          <xs:element ref="posY"/>
+        </xs:sequence>
+      </xs:complexType>
+
+      <xs:element name="Box" type="positionComplex" />
+      <xs:element name="FakeBox" type="positionComplex" />
+      <xs:element name="Wall" type="positionComplex" />
+
+      <!-- Sokoban -->
+      <xs:element name="Sokoban">
+        <xs:complexType>
+          <xs:complexContent>
+            <xs:extension base="positionComplex">
+              <xs:sequence>
+                <xs:element ref="twoWayOrientation"/>
+              </xs:sequence>
+            </xs:extension>
+          </xs:complexContent>
+        </xs:complexType>
+      </xs:element>
+
+      <!-- Predefined monster -->
+      <xs:element name="Monster">
+        <xs:complexType>
+          <xs:complexContent>
+            <xs:extension base="positionComplex">
+              <xs:sequence>
+                <xs:element ref="orientation"/>
+                <xs:element ref="firstState"/>
+                <xs:element ref="speed"/>
+              </xs:sequence>
+            </xs:extension>
+          </xs:complexContent>
+        </xs:complexType>
+      </xs:element>
+
+  <!-- One game round-->
+  <!-- TODO: add support for custom game objects -->
+  <xs:element name="Round">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="ID"/>
+        <xs:element ref="Name"/>
+        <xs:element ref="Dimensions"/>
+        <xs:element ref="Aim" minOccurs="1" maxOccurs="unbounded" />
+        <xs:element ref="Box" minOccurs="1" maxOccurs="unbounded" />
+        <xs:element ref="Wall" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="FakeBox" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="Monster" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="Sokoban" minOccurs="1" maxOccurs="1" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Initial position of game object -->
+  <xs:element name="initialPosition">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="objectID" type="xs:integer"/>
+        <xs:element name="PosX" type="xs:integer"/>
+        <xs:element name="PosY" type="xs:integer"/>
+        <xs:element name="Time" type="xs:string"/>
+        <xs:element name="MovementDirection" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="event">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="objectID" type="xs:integer"/>
+        <xs:element name="PosX" type="xs:integer"/>
+        <xs:element name="PosY" type="xs:integer"/>
+        <xs:element name="Time" type="xs:string"/>
+        <xs:element name="MovementDirection" type="xs:string"/>
+        <xs:element name="ImportantEvent" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="isLastFrameDeath" type="xs:string"/>
+  
+  <!-- recorded log of the round -->
+  <!-- todo: remove -->
+  <xs:element name="Record">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="event" minOccurs="1" maxOccurs="unbounded" />        
+        <xs:element ref="isLastFrameDeath" minOccurs="1" maxOccurs="1" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Root -->
+  <xs:element name="SokobanQuest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+        <xs:element ref="Round" minOccurs="1" maxOccurs="unbounded" />
+        <!-- todo remove -->
+        <xs:element ref="Record" minOccurs="0" maxOccurs="1" />
+        <xs:element name="NextQuest" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

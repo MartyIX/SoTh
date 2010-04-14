@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6DAB3F1F-6D91-4086-A2DF-ACD54307E5BC}</ProjectGuid>
+    <OutputType>library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Sokoban.GameDocs</RootNamespace>
+    <AssemblyName>GameDocs</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AvalonDock, Version=1.2.2691.0, Culture=neutral, PublicKeyToken=85a1e0ada7ec13e4, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="View\GameDeskControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\GameDocs.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Model\class.Quest.cs" />
+    <Compile Include="Model\Delegates.cs" />
+    <Compile Include="Model\EnumsAndDelegates.cs" />
+    <Compile Include="Model\GameRepository.InterfaceImpl.cs" />
+    <Compile Include="Model\PriorityQueue.cs" />
+    <Compile Include="View\GameDeskControl.xaml.cs">
+      <DependentUpon>GameDeskControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\GameDocs.xaml.cs">
+      <DependentUpon>GameDocs.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Calendar.cs" />
+    <Compile Include="Model\class.Coordinate.cs" />
+    <Compile Include="View\class.GameDocsProperties.cs" />
+    <Compile Include="Model\class.IsPermitted.cs" />
+    <Compile Include="Model\class.SimpleQuest.cs" />
+    <Compile Include="Model\class.Sokoban.cs" />
+    <Compile Include="Model\Event.cs" />
+    <Compile Include="Model\Game.cs" />
+    <Compile Include="Model\GameObject.cs" />
+    <Compile Include="Model\GameObject.Draw.cs" />
+    <Compile Include="Model\GameObject.UI.cs" />
+    <Compile Include="Model\GameRepository.cs" />
+    <Compile Include="Model\GameRepository.LoadRound.cs" />
+    <Compile Include="Model\GameRepository.Moves.cs" />
+    <Compile Include="Model\GameRepository.ProcessEvent.cs" />
+    <Compile Include="Model\GameRepository.TimerMethod.cs" />
+    <Compile Include="Model\IGame.cs" />
+    <Compile Include="Model\IGameRepository.cs" />
+    <Compile Include="Model\IQuest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Resources\QuestSchema.xsd" />
+    <None Include="Resources\QuestsSchema.xsd" />
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Lib\Lib.csproj">
+      <Project>{F44E4759-3B19-4E1B-BA4D-6E4F64086190}</Project>
+      <Name>Lib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Sokoban\sokobanMovement_1.png" />
+    <Resource Include="Resources\Sokoban\sokobanMovement_2.png" />
+    <Resource Include="Resources\Sokoban\sokobanMovement_3.png" />
+    <Resource Include="Resources\Sokoban\sokobanMovement_4.png" />
+    <Resource Include="Resources\Sokoban\sokobanMovement_5.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\StaticObj\obj_B.png" />
+    <Resource Include="Resources\StaticObj\obj_F.png" />
+    <Resource Include="Resources\StaticObj\obj_M.png" />
+    <Resource Include="Resources\StaticObj\obj_S.png" />
+    <Resource Include="Resources\StaticObj\obj_W.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\StaticObj\obj_A.png" />
+    <Resource Include="Resources\StaticObj\obj_A_tmave.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

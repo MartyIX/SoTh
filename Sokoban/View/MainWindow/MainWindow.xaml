@@ -1,0 +1,70 @@
+﻿<Window x:Class="Sokoban.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:ad="clr-namespace:AvalonDock;assembly=AvalonDock"
+    xmlns:local="clr-namespace:Sokoban"    
+    xmlns:view="clr-namespace:Sokoban.View;assembly=GameDocs"    
+    xmlns:model="clr-namespace:Sokoban.Model"
+    xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
+    Title="Sokoban" Height="526" Width="1041" Loaded="Window_Loaded">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Themes/DefaultSkin.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Top" Grid.Row="0" LastChildFill="False" HorizontalAlignment="Stretch" Width="Auto"
+               Background="#FFF2F2F2">
+
+            <Menu x:Name="tbToolBar" DockPanel.Dock="Left" Background="{x:Null}">
+                <MenuItem Header="_Game">
+                    <MenuItem Header="_New Game" Click="NewGame_Click">
+                    </MenuItem>
+                    <MenuItem Header="_Multiplayer" Click="Button_Click">
+                    </MenuItem>
+                    <MenuItem Header="_Multiplayer" Click="Button_Click">
+                    </MenuItem>
+                    <MenuItem Header="E_xit">
+                        <!--<MenuItem.Icon>
+                            <Image Source="../Resources/user_icon.gif" Style="{StaticResource menuItemIconStyle}" />
+                        </MenuItem.Icon>-->
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="_Tools">
+                    <MenuItem Header="_Console">
+                    </MenuItem>
+                </MenuItem>                
+            </Menu>
+            <Menu DockPanel.Dock="Right" Background="{x:Null}">
+                <MenuItem Header="{Binding Source={x:Static model:ProfileRepository.Instance}, Path=Username}" Name="miUser" HorizontalAlignment="Right">
+                    <MenuItem.Icon>
+                        <Image Source="../Resources/user_icon.gif" Style="{StaticResource menuItemIconStyle}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </Menu>
+        </DockPanel>
+
+        <ad:DockingManager x:Name="dockingManager">
+        <ad:ResizingPanel Orientation="Vertical">
+                <ad:ResizingPanel Orientation="Horizontal">
+                    <view:GameDocs x:Name="gameManager" view:GameManagerProperties.DockingManager="{Binding ElementName=dockingManager}" diag:PresentationTraceSources.TraceLevel="High" />
+                    <ad:DocumentPaneResizingPanel Name="Splitter1"></ad:DocumentPaneResizingPanel>
+                    <ad:DocumentPane x:Name="documentsHost">
+                    <ad:DocumentContent Title="Available games">
+                        <RichTextBox/>
+                    </ad:DocumentContent >
+                </ad:DocumentPane>                
+            </ad:ResizingPanel>   
+            <ad:DocumentPaneResizingPanel Name="Splitter2"></ad:DocumentPaneResizingPanel>
+            <ad:DockablePane>
+                <ad:DockableContent Title="Console">
+                    <RichTextBox />
+                </ad:DockableContent>
+            </ad:DockablePane>
+        </ad:ResizingPanel>
+    </ad:DockingManager>
+        <ToolBar Height="25.553" Name="toolBar1" Width="199.98" />
+    </DockPanel>
+</Window>

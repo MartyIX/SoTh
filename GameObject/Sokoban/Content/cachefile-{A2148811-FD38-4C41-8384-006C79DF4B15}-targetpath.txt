@@ -1,0 +1,19 @@
+Content\Images\obj_A.xnb
+Content\Images\obj_A_tmave.xnb
+Content\Images\obj_B.xnb
+Content\Images\obj_C.xnb
+Content\Images\obj_F.xnb
+Content\Images\obj_M.xnb
+Content\Images\obj_S.xnb
+Content\Images\obj_W.xnb
+Content\Images\SokobanDeathAnimation\SokobanDeathDDS.xnb
+Content\Images\Scene_EndOfRound.xnb
+Content\Images\SokobanMovement\SokobanMovementDDS.xnb
+Content\Arial.xnb
+Content\Sounds\SokobanSounds.xgs
+Content\Sounds\Wave Bank.xwb
+Content\Sounds\Sound Bank.xsb
+Content\Images\SokobanDeathAnimation\SokobanDeath.xml
+Content\Images\SokobanMovement\SokobanMovement.xml
+Content\Arial.spritefont
+Content\Sounds\SokobanSounds.xap

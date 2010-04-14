@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<SokobanQuest xmlns="" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.martinvseticka.eu http://www.martinvseticka.eu/skola/programovani_v_CSharp/sokoban.xsd">
+  <Name>DebugQuest</Name>
+  <Round>
+    <ID>1</ID>
+    <Name>Easy start</Name>
+    <Dimensions>
+      <width>8</width>
+      <height>9</height>
+    </Dimensions>
+    <Aim>
+      <posX>4</posX>
+      <posY>3</posY>
+    </Aim>
+    <Aim>
+      <posX>4</posX>
+      <posY>4</posY>
+    </Aim>
+    <Box>
+      <posX>4</posX>
+      <posY>3</posY>    
+    </Box>
+    <Box>
+      <posX>4</posX>
+      <posY>4</posY>    
+    </Box>
+    <Monster>
+       <posX>1</posX>
+       <posY>1</posY>
+       <orientation>Left</orientation>
+       <firstState>guardRow</firstState>
+       <speed>2</speed>           
+    </Monster>
+    <Sokoban>
+       <posX>2</posX>
+       <posY>7</posY>
+       <twoWayOrientation>Left</twoWayOrientation>                   
+    </Sokoban>
+  </Round>
+  <Round>
+    <ID>2</ID>
+    <Name>It's gettin harder</Name>
+    <Dimensions>
+      <width>8</width>
+      <height>9</height>
+    </Dimensions>
+    <Aim>
+      <posX>4</posX>
+      <posY>3</posY>
+    </Aim>
+    <Aim>
+      <posX>4</posX>
+      <posY>4</posY>
+    </Aim>
+    <Box>
+      <posX>4</posX>
+      <posY>3</posY>    
+    </Box>
+    <Box>
+      <posX>4</posX>
+      <posY>4</posY>    
+    </Box>
+    <Monster>
+       <posX>1</posX>
+       <posY>1</posY>
+       <orientation>Left</orientation>
+       <firstState>guardRow</firstState>
+      <speed>2</speed>           
+    </Monster>
+    <Sokoban>
+       <posX>2</posX>
+       <posY>7</posY>
+       <twoWayOrientation>Left</twoWayOrientation>            
+    </Sokoban>
+  </Round>  
+  
+</SokobanQuest>
