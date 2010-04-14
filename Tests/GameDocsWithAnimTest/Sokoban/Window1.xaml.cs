@@ -21,8 +21,6 @@ using Sokoban.Lib;
 
 namespace Sokoban
 {
-    using Debugger = Sokoban.Lib.Debugger;
-
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>
@@ -36,7 +34,7 @@ namespace Sokoban
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Debugger.Start(DebuggerMode.File);
+            DebuggerIX.Start(DebuggerMode.File);
             //string result = Sokoban.Properties.Resources.TestQuest;
             string result = Sokoban.Properties.Resources.SokobanQuest;
             gameManager.Add(result);          
@@ -58,7 +56,7 @@ namespace Sokoban
         {
             if (e.Key == Key.T && (Keyboard.Modifiers & ModifierKeys.Control) > 0)
             {
-                Debugger.WriteLine("[DebugMark]", "--------------------");
+                DebuggerIX.WriteLine("[DebugMark]", "--------------------");
             }
             else
             {
@@ -68,7 +66,7 @@ namespace Sokoban
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Debugger.Close();
+            DebuggerIX.Close();
         }
     }
 }

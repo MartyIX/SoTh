@@ -34,7 +34,6 @@ using System.Diagnostics;
 namespace Sokoban.Model
 {
     using Sokoban = Sokoban.Model.GameDesk.Sokoban;
-    using Debugger = Sokoban.Lib.Debugger;
 
     public partial class GameRepository : IBaseRepository
     {
@@ -49,7 +48,7 @@ namespace Sokoban.Model
         /// <param name="ev"></param>
         public void MoveRequest(EventType ev)
         {
-            Debugger.WriteLine("[GR-MoveRequest]", ">>> MoveRequest <<<", "Time = " + time.ToString());
+            DebuggerIX.WriteLine("[GR-MoveRequest]", ">>> MoveRequest <<<", "Time = " + time.ToString());
 
             lock (pSokoban)
             {
@@ -57,7 +56,7 @@ namespace Sokoban.Model
 
                 if (pSokoban.TimeMovementEnds <= time)
                 {
-                    Debugger.WriteLine("[GR-MoveRequest]", "Time is: " + time.ToString() 
+                    DebuggerIX.WriteLine("[GR-MoveRequest]", "Time is: " + time.ToString() 
                         + "; phase = " + game.CurrentPhase.ToString() 
                         + "; Movement is not in progress.");
 
@@ -71,7 +70,7 @@ namespace Sokoban.Model
                 } 
                 else if (this.kbGetCount() < MAX_EVENTS_IN_KB)
                 {
-                    Debugger.WriteLine("[GR-MoveRequest]", "MakePlan for move in time: " + (pSokoban.TimeMovementEnds).ToString());
+                    DebuggerIX.WriteLine("[GR-MoveRequest]", "MakePlan for move in time: " + (pSokoban.TimeMovementEnds).ToString());
                     MakePlan("SokKeyBuf", pSokoban.TimeMovementEnds, (GameObject)pSokoban, pSokoban.heldKeyEvent);
                 }
             }

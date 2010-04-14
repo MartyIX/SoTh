@@ -21,7 +21,7 @@ namespace Sokoban.Lib.Xml
 
             if (!xmlSchemaValidator.IsValidXml && showErrors)
             {
-                Debugger.WriteLine("[XmlLib]", "[Error in XML]: " 
+                DebuggerIX.WriteLine("[XmlLib]", "[Error in XML]: " 
                     + xmlSchemaValidator.ValidationError 
                     + "\n\n[Parsed XML]: " + validatedXml);
             }

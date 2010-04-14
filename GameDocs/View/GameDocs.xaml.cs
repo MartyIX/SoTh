@@ -18,7 +18,7 @@ using System.ComponentModel;
 using System.Collections.ObjectModel;
 using Sokoban.Model.GameDesk;
 using Sokoban.View.GameDocsComponents;
-using Debugger = Sokoban.Lib.Debugger;
+using Sokoban.Lib;
 
 namespace Sokoban.View
 {
@@ -156,7 +156,7 @@ namespace Sokoban.View
 
         public void KeyIsDown(object sender, KeyEventArgs e)
         {
-            Debugger.WriteLine("[Keyboard]", "KeyIsDown; isKeyDown = " + isKeyDown.ToString());
+            DebuggerIX.WriteLine("[Keyboard]", "KeyIsDown; isKeyDown = " + isKeyDown.ToString());
 
             if (isKeyDown == false)
             {

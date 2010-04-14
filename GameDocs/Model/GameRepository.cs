@@ -12,7 +12,6 @@ using Sokoban.Lib;
 namespace Sokoban.Model
 {
     using Sokoban = Sokoban.Model.GameDesk.Sokoban;
-    using Debugger = Sokoban.Lib.Debugger;
     using System.Windows;
     using Sokoban.Lib.Events;      
 
@@ -117,7 +116,7 @@ namespace Sokoban.Model
 
             if (who.Description == "S")
             {
-                Debugger.WriteLine("[GR-MakePlan-AddedEv]", debug, ev.Value.ToString());
+                DebuggerIX.WriteLine("[GR-MakePlan-AddedEv]", debug, ev.Value.ToString());
             }
         }
 

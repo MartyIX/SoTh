@@ -192,7 +192,7 @@ namespace Sokoban.Model
                     {
                         if (bedna != null)
                         {
-                            Debugger.WriteLine("[BoxMovePrepare]", " Obj: " + ev.who.Description
+                            DebuggerIX.WriteLine("[BoxMovePrepare]", " Obj: " + ev.who.Description
                                 + "; Raised from EventID: " + ev.EventID.ToString());
                             PrepareMovement(ev.when, bedna, ev); // move box
                             PrepareMovement(ev.when,ev.who, ev); // move Sokoban
@@ -203,7 +203,7 @@ namespace Sokoban.Model
                         {
                             if (ev.who == pSokoban) AddStep();
 
-                            Debugger.WriteLine("[PrepareMovement]", "Obj: " + ev.who.Description
+                            DebuggerIX.WriteLine("[PrepareMovement]", "Obj: " + ev.who.Description
                                 + "; Raised from EventID: " + ev.EventID.ToString());
                             PrepareMovement(ev.when, ev.who, ev);
                         }
@@ -237,7 +237,7 @@ namespace Sokoban.Model
                         && pSokoban.TimeMovementEnds <= time)
                     {
                         EventType newEvent = pSokoban.heldKeyEvent;
-                        Debugger.WriteLine("SokRepMvmt", "Raised from EventID = " + ev.EventID.ToString());
+                        DebuggerIX.WriteLine("SokRepMvmt", "Raised from EventID = " + ev.EventID.ToString());
                         MakeImmediatePlan("SokRepMvmt", ev.who, newEvent);
                     }
 

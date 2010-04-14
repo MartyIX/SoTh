@@ -37,7 +37,7 @@ namespace Sokoban.View
 
         static void OnDockingManagerChanged(DependencyObject target, DependencyPropertyChangedEventArgs e)
         {
-            Debugger.WriteLine("[DockingManger]", "DockingManager just changed: " + e.NewValue);
+            DebuggerIX.WriteLine("[DockingManger]", "DockingManager just changed: " + e.NewValue);
         }
     }
 }

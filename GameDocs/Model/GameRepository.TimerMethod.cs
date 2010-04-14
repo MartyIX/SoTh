@@ -87,11 +87,11 @@ namespace Sokoban.Model
 
                 if (calendar.CountOfEvents > 0)
                 {
-                    Debugger.WriteLine("[PreProcessAllEvents]", "=== Time: " + time.ToString() + " ===");
+                    DebuggerIX.WriteLine("[PreProcessAllEvents]", "=== Time: " + time.ToString() + " ===");
                 }
                 else
                 {
-                    Debugger.WriteLine("[PreProcessAllEvents]", "=== Time: " + time.ToString() + " === | Empty calendar");
+                    DebuggerIX.WriteLine("[PreProcessAllEvents]", "=== Time: " + time.ToString() + " === | Empty calendar");
                 }
 
                 while ((ud = calendar.First(time)) != null)
@@ -105,7 +105,7 @@ namespace Sokoban.Model
 
                     if (ud.Value.who == pSokoban)
                     {
-                        Debugger.WriteLine("[GR-ProcessAllEvents]", ud.ToString());
+                        DebuggerIX.WriteLine("[GR-ProcessAllEvents]", ud.ToString());
                     }
                 }
 

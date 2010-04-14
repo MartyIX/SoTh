@@ -10,7 +10,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows;
 using Sokoban.Lib;
-using Debugger = Sokoban.Lib.Debugger;
 
 namespace Sokoban.Model.GameDesk
 {   
@@ -42,7 +41,7 @@ namespace Sokoban.Model.GameDesk
 
                 if (Description == "S")
                 {
-                    Debugger.WriteLine("[Draw]", "NotInProgress",
+                    DebuggerIX.WriteLine("[Draw]", "NotInProgress",
                           "[x,y] = " + x.ToString("0.00")
                         + ", " + y.ToString("0.00")
                         + "; pos = " + posX.ToString() + "x" + posY.ToString() 
@@ -61,7 +60,7 @@ namespace Sokoban.Model.GameDesk
 
                 if (Description == "S")
                 {
-                    Debugger.WriteLine("[Draw]", "InProgress",
+                    DebuggerIX.WriteLine("[Draw]", "InProgress",
                           "[x,y] = " + x.ToString("0.00")
                         + ", " + y.ToString("0.00")
                         + "; pos = " + lastPosX.ToString() + "x" + lastPosY.ToString()

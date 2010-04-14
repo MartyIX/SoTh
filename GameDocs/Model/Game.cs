@@ -14,7 +14,6 @@ using System.Diagnostics;
 
 namespace Sokoban.Model
 {
-    using Debugger = Sokoban.Lib.Debugger;
 
     public class Game : IGame
     {

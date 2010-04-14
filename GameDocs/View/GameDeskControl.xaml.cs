@@ -20,7 +20,6 @@ using System.Diagnostics;
 
 namespace Sokoban.View.GameDocsComponents
 {
-    using Debugger = Sokoban.Lib.Debugger;
 
     /// <summary>
     /// Interaction logic for GameDeskControl.xaml
@@ -205,12 +204,12 @@ namespace Sokoban.View.GameDocsComponents
 
         public void DocumentContent_Loaded(object sender, RoutedEventArgs e)
         {
-            Debugger.WriteLine("[GameDeskControl]", "Loaded");
+            DebuggerIX.WriteLine("[GameDeskControl]", "Loaded");
         }
 
         protected override void OnInitialized(EventArgs e)
         {
-            Debugger.WriteLine("[GameDeskControl]", "Initialized");
+            DebuggerIX.WriteLine("[GameDeskControl]", "Initialized");
             base.OnInitialized(e);
         }
 
