@@ -89,21 +89,22 @@ namespace Sokoban
         {
             if (posX != -1)
             {
-                return "EID = " + EventID.ToString().PadRight(4) 
-                    + "; Time = " + when.ToString().PadRight(5) 
-                    + "; Obj = " + who.Description 
-                    + "; Ev = " + what.ToString().PadRight(15) 
-                    + "; Pos:" + posX.ToString().PadLeft(2) 
-                    + "x" + posY.ToString();
+                return "EID = " + EventID.ToString().PadRight(4)
+                    + "; Time = " + when.ToString().PadRight(5)
+                    + "; Obj = " + who.Description
+                    + "; Ev = " + what.ToString().PadRight(15)
+                    + "; Pos = " + posX.ToString().PadLeft(2)+ "x" + posY.ToString()
+                    + "; TME = " + who.TimeMovementEnds.ToString();
             }
             else
             {
-                return "EID = " + EventID.ToString().PadRight(4) 
-                    + "; Time = " + when.ToString().PadRight(5) 
-                    + "; Obj = " + who.Description 
-                    + "; Ev = " + what.ToString().PadRight(15) 
-                    + "; Pos: " + who.posX.ToString().PadLeft(2) 
-                    + "x" + who.posY.ToString();
+                return "EID = " + EventID.ToString().PadRight(4)
+                    + "; Time = " + when.ToString().PadRight(5)
+                    + "; Obj = " + who.Description
+                    + "; Ev = " + what.ToString().PadRight(15)
+                    + "; Pos = " + who.posX.ToString().PadLeft(2) + "x" + who.posY.ToString()
+                    + "; TME = " + who.TimeMovementEnds.ToString();
+
             }
         }
     }

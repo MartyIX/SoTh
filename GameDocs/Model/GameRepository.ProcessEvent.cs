@@ -233,9 +233,11 @@ namespace Sokoban.Model
                     }
 
                     if (ev.who == pSokoban && pSokoban.heldKeyEvent != EventType.none 
-                        && pSokoban.MovementEventsInBuffer == 0)
+                        && pSokoban.MovementEventsInBuffer == 0 
+                        && pSokoban.TimeMovementEnds <= time)
                     {
                         EventType newEvent = pSokoban.heldKeyEvent;
+                        Debugger.WriteLine("SokRepMvmt", "Raised from EventID = " + ev.EventID.ToString());
                         MakeImmediatePlan("SokRepMvmt", ev.who, newEvent);
                     }
 
@@ -263,7 +265,7 @@ namespace Sokoban.Model
 
                     // TODO: Move the code and create event
 
-                    ev.who.TimeMovementEnds = time;
+                    //ev.who.TimeMovementEnds = time;
 
 
                     break;

@@ -44,7 +44,14 @@ namespace Sokoban
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            gameManager.KeyIsDown(sender, e);
+            if (e.IsRepeat)
+            {
+                e.Handled = true;
+            }
+            else
+            {
+                gameManager.KeyIsDown(sender, e);
+            }
         }
 
         private void Window_PreviewKeyUp(object sender, KeyEventArgs e)

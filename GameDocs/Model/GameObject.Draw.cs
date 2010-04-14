@@ -42,9 +42,9 @@ namespace Sokoban.Model.GameDesk
 
                 if (Description == "S")
                 {
-                    Debugger.WriteLine("[Draw]", "InProgress = false; x = " 
-                        + x.ToString("0.0000") 
-                        + "; y = " + y.ToString("0.0000")
+                    Debugger.WriteLine("[Draw]", "NotInProgress",
+                          "[x,y] = " + x.ToString("0.00")
+                        + ", " + y.ToString("0.00")
                         + "; pos = " + posX.ToString() + "x" + posY.ToString() 
                         + "; phase = " + phase.ToString("0.0000"));
                 }            
@@ -61,15 +61,17 @@ namespace Sokoban.Model.GameDesk
 
                 if (Description == "S")
                 {
-                    Debugger.WriteLine("[Draw]", "InProgress = true; x = "
-                        + x.ToString("0.0000")
-                        + "; y = " + y.ToString("0.0000")
-                        + "; fromPos = " + lastPosX.ToString() + "x" + lastPosY.ToString()
+                    Debugger.WriteLine("[Draw]", "InProgress",
+                          "[x,y] = " + x.ToString("0.00")
+                        + ", " + y.ToString("0.00")
+                        + "; pos = " + lastPosX.ToString() + "x" + lastPosY.ToString()
+                        + " -> " + posX.ToString() + "x" + posY.ToString()
                         + "; SS = " + squareSize.ToString()
                         + "; MST = " + startTime.ToString("0.000")
                         + "; Time = " + time.ToString() + phase.ToString(".0000")
                         + "; progress = " + progress.ToString("0.000")
-                        + "; step = " + step.ToString());
+                        + "; step = " + step.ToString()
+                        + "; TimeMovementEnd = " + UI.MovementEndTime.ToString());
                 }
             
             }

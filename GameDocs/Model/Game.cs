@@ -19,7 +19,7 @@ namespace Sokoban.Model
     public class Game : IGame
     {
         // SETTINGS
-        const int PHASE_CONST = 50;
+        const int PHASE_CONST = 75;
 
         private GameDeskControl control; // assigned via RegisterVisual()
         private IQuest quest;
