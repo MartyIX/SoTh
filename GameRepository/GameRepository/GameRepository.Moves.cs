@@ -6,6 +6,7 @@ using Sokoban.Model.GameDesk;
 using System.Collections;
 using Sokoban.Lib;
 using System.Diagnostics;
+using Sokoban.Model.PluginInterface;
 
 /*
  * Keyboard buffer for Sokoban
@@ -33,14 +34,8 @@ using System.Diagnostics;
 
 namespace Sokoban.Model
 {
-    using Sokoban = Sokoban.Model.GameDesk.Sokoban;
-    using Sokoban.Model.PluginInterface;
-
     public partial class GameRepository : IBaseRepository
     {
-        const int MAX_EVENTS_IN_KB = 3; 
-        bool moveRequestCancelled = true;
-        bool kbAlreadyAdded = false;
         public IGameRealTime game = null;
 
         /// <summary>
@@ -49,86 +44,12 @@ namespace Sokoban.Model
         /// <param name="ev"></param>
         public void MoveRequest(EventType ev)
         {
-            DebuggerIX.WriteLine("[GR-MoveRequest]", ">>> MoveRequest <<<", "Time = " + time.ToString());
-
-            lock (pSokoban)
-            {
-                pSokoban.heldKeyEvent = ev;
-
-                if (pSokoban.TimeMovementEnds <= time)
-                {
-                    DebuggerIX.WriteLine("[GR-MoveRequest]", "Time is: " + time.ToString() 
-                        + "; phase = " + game.CurrentPhase.ToString() 
-                        + "; Movement is not in progress.");
-
-                    moveRequestCancelled = false;
-                    // In this moment; events for @time are processed, therefore time + 1
-                    //MakePlan("SokStartMov", time + 1, (GameObject)pSokoban, pSokoban.heldKeyEvent);
-                    MakePlan("SokStartMov", time, (IGamePlugin)pSokoban, pSokoban.heldKeyEvent);
-                    kbAlreadyAdded = true;
-
-                    ProcessAllEvents(false, game.CurrentPhase); // We don't want to update time
-                } 
-                else if (this.kbGetCount() < MAX_EVENTS_IN_KB)
-                {
-                    DebuggerIX.WriteLine("[GR-MoveRequest]", "MakePlan for move in time: " + (pSokoban.TimeMovementEnds).ToString());
-                    MakePlan("SokKeyBuf", pSokoban.TimeMovementEnds, (GameObject)pSokoban, pSokoban.heldKeyEvent);
-                }
-            }
+            
         }
 
-        /// <summary>
-        /// Don't continue with the movement of Sokoban
-        /// </summary>
         public void StopMove()
         {
-            /*
-            if (!kbAlreadyAdded && this.kbGetCount() < MAX_EVENTS_IN_KB)
-            {
-                Debugger.WriteLine("[GR-StopMove]", "MakePlan for move in time: " + (pSokoban.TimeMovementEnds).ToString());
-                MakePlan(pSokoban.TimeMovementEnds, (GameObject)pSokoban, pSokoban.heldKeyEvent);
-            }
-            else
-            {
-                Debugger.WriteLine("[GR-StopMove]", "No movement plans for Sokoban.");
-            }*/
-           
-            pSokoban.heldKeyEvent = EventType.none;
-            moveRequestCancelled = true;
-            kbAlreadyAdded = false;
+            
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        private int kbGetCount()
-        {
-            return pSokoban.MovementEventsInBuffer;
-        }
-
-        /*
-        public void PrepareMovement(Int64 goTime, IGamePlugin who, EventType ev)
-        {
-            IMovable gamePlugin = who as IMovable;
-
-            if (gamePlugin != null)
-            {
-                // Change X, Y coordinates
-                gamePlugin.MakeMove((MovementDirection)ev);
-                gamePlugin.MovementStartTime = goTime;
-                gamePlugin.MovementStartTimePhase = phase;
-                gamePlugin.MovementEndTime = goTime + gamePlugin.Speed;
-                gamePlugin.LastMovementEvent = ev;
-
-                MakePlan("PrepMovWentXXX", gamePlugin.MovementEndTime, who, (EventType)((int)ev + 10)); // goXXX -> wentXXX
-            }
-        }*/
-
-        /*
-        public void PrepareMovement(Int64 goTime, IGamePlugin who, Event ev)
-        {
-            PrepareMovement(goTime, who, ev.what);
-        }*/
     }
 }

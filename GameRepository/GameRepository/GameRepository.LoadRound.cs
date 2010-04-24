@@ -8,7 +8,6 @@ using Sokoban.Lib;
 
 namespace Sokoban.Model
 {
-    using SokobanObj = Sokoban.Model.GameDesk.Sokoban;
     using Sokoban.Model.PluginInterface;
 
     public partial class GameRepository : IBaseRepository
@@ -25,11 +24,15 @@ namespace Sokoban.Model
         {
             // Initialization of fields
             gameObjects = new List<IGamePlugin>();
-            pAims = new List<IGamePlugin>();
-            pBoxes = new List<IGamePlugin>();
-            pSokoban = null;
-            Walls = new bool[fieldsX, fieldsY];
-            tableAims = new GameObject[fieldsX, fieldsY];
+            functionalTiles = new List<IGamePlugin>();
+            movableObstructionObjects = new List<IGamePlugin>();
+            controllableByUserObjects = null;
+            solidObstructionObjects = new bool[fieldsX, fieldsY];
+            tableFunctionalTiles = new IGamePlugin[fieldsX, fieldsY];
+
+
+            //Call the find plugins routine, to search in our Plugins Folder
+            this.FindPlugins(@"D:\Bakalarka\Sokoban\Main\Plugins");
 
             // Reading from the XML 
             XmlRoundReader xmlRounds = new XmlRoundReader(xml);
@@ -42,8 +45,8 @@ namespace Sokoban.Model
             {
                 for (int i = 0; i < fieldsX; i++)
                 {
-                    Walls[i, j] = false;
-                    tableAims[i, j] = null;
+                    solidObstructionObjects[i, j] = false;
+                    tableFunctionalTiles[i, j] = null;
                 }
             }
 
@@ -77,18 +80,21 @@ namespace Sokoban.Model
 
             if (description == "S")
             {
-                SokobanObj obj = new SokobanObj(objectID, description, posX, posY, direction, speed);
+                Types.AvailablePlugin selectedPlugin = AvailablePlugins.Find("Sokoban");
+
+                //SokobanObj obj = new SokobanObj(objectID, description, posX, posY, direction, speed);
                 /*
                 logList.SaveInitPositions(obj, obj.PozX, obj.PozY, obj.direction);
                 logList.AddEvent(obj, obj.posX, obj.posY, "0:00", obj.direction, true);
                 */
 
-                gameObjects.Add(obj);
-                MakeImmediatePlan("LoadRndSokInitEv", obj, InitialEvent);
-                pSokoban = obj;
+                //gameObjects.Add(obj);
+                //MakeImmediatePlan("LoadRndSokInitEv", obj, InitialEvent);
+                //controllableByUserObjects = obj;
             }
             else
             {
+                /*
                 GameObject obj = new GameObject(objectID, description, posX, posY, direction, speed);
                 //logList.SaveInitPositions(obj, obj.PozX, obj.PozY, obj.direction);
 
@@ -97,17 +103,17 @@ namespace Sokoban.Model
 
                 if (description == "B")
                 {
-                    pBoxes.Add(obj);
+                    movableObstructionObjects.Add(obj);
                 }
                 else if (description == "W")
                 {
-                    Walls[posX - 1, posY - 1] = true;
+                    solidObstructionObjects[posX - 1, posY - 1] = true;
                 }
                 else if (description == "A")
                 {
-                    pAims.Add(obj);
-                    tableAims[posX - 1, posY - 1] = obj;
-                }                    
+                    functionalTiles.Add(obj);
+                    tableFunctionalTiles[posX - 1, posY - 1] = obj;
+                } */                   
             }
         }
 

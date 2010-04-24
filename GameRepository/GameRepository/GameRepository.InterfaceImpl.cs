@@ -30,7 +30,7 @@ namespace Sokoban.Model
             get { return time; }
         }
 
-        public GameRealTime Game
+        public IGameRealTime GameRealTime
         {
             get { return this.game; }
             set { this.game = value; }

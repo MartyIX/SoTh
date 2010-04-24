@@ -6,8 +6,10 @@ using Sokoban.Lib;
 
 namespace Sokoban.Model.PluginInterface
 {
-    public interface IMovable : IFixedObject
+    public interface IMovable
     {
+        int PosX { get; set; }
+        int PosY { get; set; }
         int Speed { get; set; }
         void MakeMove(MovementDirection whereTo);
         Int64 MovementStartTime {get; set;}

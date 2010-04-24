@@ -44,6 +44,7 @@ namespace Sokoban.Model.PluginInterface
             }
         }
 
+
         #region IMovable Members
 
         private int speed; 

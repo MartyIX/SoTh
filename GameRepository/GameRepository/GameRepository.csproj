@@ -42,11 +42,11 @@
     <Compile Include="Calendar.cs" />
     <Compile Include="class.IsPermitted.cs" />
     <Compile Include="EnumsAndDelegates.cs" />
-    <Compile Include="Event.cs" />
     <Compile Include="GameRepository.cs" />
     <Compile Include="GameRepository.InterfaceImpl.cs" />
     <Compile Include="GameRepository.LoadRound.cs" />
     <Compile Include="GameRepository.Moves.cs" />
+    <Compile Include="GameRepository.PluginService.cs" />
     <Compile Include="GameRepository.ProcessEvent.cs" />
     <Compile Include="GameRepository.TimerMethod.cs" />
     <Compile Include="IGameRealTime.cs" />

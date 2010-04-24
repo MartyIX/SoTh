@@ -7,16 +7,15 @@ using System.Diagnostics;
 using Sokoban.Model.GameDesk;
 using System.Collections;
 using Sokoban.Lib;
+using Sokoban.Lib.Events;
+using Sokoban.Model.PluginInterface;      
 
 namespace Sokoban.Model
 {
-    using Sokoban = Sokoban.Model.GameDesk.Sokoban;
-    using System.Windows;
-    using Sokoban.Lib.Events;
-    using Sokoban.Model.PluginInterface;      
+    public delegate void TimeDelegate(ref Int64 time);
 
     public partial class GameRepository : IBaseRepository, IGameRepository
-    {
+    {        
         public event TimeDelegate TimeReference;
 
         // Game fields
@@ -28,21 +27,21 @@ namespace Sokoban.Model
         /// Table of size fieldsX x fieldsY and element of table is true if there is "Wall" on coordinate (x,y)   
         /// otherwise false.
         /// </summary>
-        public bool[,] Walls;
+        public bool[,] solidObstructionObjects;
         /// <summary>
-        /// List of references to GameObjects "Aims"
+        /// List of aims
         /// </summary>
-        public List<IGamePlugin> pAims;
+        public List<IGamePlugin> functionalTiles;
         /// <summary>
-        /// Arraylist of boxes
+        /// List of boxes
         /// </summary>
-        public List<IGamePlugin> pBoxes;
+        public List<IGamePlugin> movableObstructionObjects;
         /// <summary>
         /// Table of size fieldsX x fieldsY and element of table is null if there is not GameObject "Aim" on coordinate (x,y)   
         /// otherwise there is reference to the corresponding GameObject "Aim".
         /// </summary>        
-        public IGamePlugin[,] tableAims;
-        public Sokoban pSokoban;
+        public IGamePlugin[,] tableFunctionalTiles;
+        public List<IGamePlugin> controllableByUserObjects;
 
 
         // Objects on the gamedesk        
@@ -119,21 +118,22 @@ namespace Sokoban.Model
         /// </summary>
         /// <param name="who">GameObject</param>
         /// <param name="what">Event to process</param>
-        public void MakeImmediatePlan(string debug, GameObject who, EventType what)
+        public void MakeImmediatePlan(string debug, IGamePlugin who, EventType what)
         {
             // TODO: explain why +1
             MakePlan("[Immediate]" + debug, time, who, what); 
         }
 
-        public bool IsSomeObjectOnPosition(string description, int pozX, int pozY, ref GameObject box)
+        public bool IsSomeObjectOnPosition(string description, int posX, int posY, ref IGamePlugin box)
         {
+            /*
             bool objectOnPosition = false;
-            GameObject tempObject;
+            IGamePlugin tempObject;
 
             for (int i = 0; i < gameObjects.Count; i++)
             {
-                tempObject = (GameObject)gameObjects[i];
-                if (tempObject.Description == description && tempObject.posX == pozX && tempObject.posY == pozY)
+                tempObject = (IGamePlugin)gameObjects[i];
+                if (tempObject.Description == description && tempObject.PosX == posX && tempObject.PosY == posY)
                 {
                     objectOnPosition = true;
                     box = tempObject;
@@ -141,12 +141,15 @@ namespace Sokoban.Model
                 }
             }
             return objectOnPosition;
+            */
+
+            return false;
         }
 
-        public bool IsSomeObjectOnPosition(string description, int pozX, int pozY)
+        public bool IsSomeObjectOnPosition(string description, int posX, int posY)
         {
-            GameObject box = null;
-            return IsSomeObjectOnPosition(description, pozX, pozY, ref box);
+            IGamePlugin box = null;
+            return IsSomeObjectOnPosition(description, posX, posY, ref box);
         }
 
         /// <summary>
@@ -157,10 +160,10 @@ namespace Sokoban.Model
         /// <param name="pozY">y-coordinate on game desk</param>
         /// <param name="direction">Direction we want to move GameObject</param>
         /// <returns>True if it is possible to move GameObject on position [pozX, pozY] otherwise false</returns>
-        public bool IsObstructorOnPosition(GameObject GameObject, int pozX, int pozY, MovementDirection direction)
+        public bool IsObstructorOnPosition(IGamePlugin gamePlugin, int pozX, int pozY, MovementDirection direction)
         {
-            GameObject box = null;
-            return IsObstructorOnPosition(GameObject, pozX, pozY, direction, ref box);
+            IGamePlugin box = null;
+            return IsObstructorOnPosition(gamePlugin, pozX, pozY, direction, ref box);
         }
 
         /// <summary>
@@ -172,15 +175,16 @@ namespace Sokoban.Model
         /// <param name="direction">Direction we want to move GameObject</param>
         /// <param name="box"></param>
         /// <returns>True if it is possible to move GameObject on position [pozX, pozY] otherwise false</returns>
-        public bool IsObstructorOnPosition(GameObject GameObject, int pozX, int pozY, MovementDirection direction, ref GameObject box)
+        public bool IsObstructorOnPosition(IGamePlugin GameObject, int pozX, int pozY, MovementDirection direction, ref IGamePlugin box)
         {
+            /*
             box = null;
 
             bool boxOnPosition = IsSomeObjectOnPosition("B", pozX, pozY, ref box);
 
             // Move box 
             // =========
-            if (GameObject == pSokoban && boxOnPosition == true
+            if (GameObject == controllableByUserObjects && boxOnPosition == true
                   && pozX + moves[(-1 + (int)direction) * 2] <= fieldsX
                   && pozX + moves[(-1 + (int)direction) * 2] > 0
                   && pozY + moves[(-1 + (int)direction) * 2 + 1] <= fieldsY
@@ -190,7 +194,7 @@ namespace Sokoban.Model
                 // there's no GameObject on the position where we want the GameObject move to 
                 if (IsSomeObjectOnPosition("M", pozX + moves[(-1 + (int)direction) * 2], pozY + moves[(-1 + (int)direction) * 2 + 1]) == false &&
                     IsSomeObjectOnPosition("B", pozX + moves[(-1 + (int)direction) * 2], pozY + moves[(-1 + (int)direction) * 2 + 1]) == false &&
-                    Walls[pozX + moves[(-1 + (int)direction) * 2] - 1, pozY + moves[(-1 + (int)direction) * 2 + 1] - 1] == false
+                    solidObstructionObjects[pozX + moves[(-1 + (int)direction) * 2] - 1, pozY + moves[(-1 + (int)direction) * 2 + 1] - 1] == false
                    )
                 {
                     return false;
@@ -201,23 +205,27 @@ namespace Sokoban.Model
             // ================
             bool isObstructor = false;
 
-            if (pozX > fieldsX || pozX < 1 || pozY < 1 || pozY > fieldsY || Walls[pozX - 1, pozY - 1] == true || boxOnPosition == true)
+            if (pozX > fieldsX || pozX < 1 || pozY < 1 || pozY > fieldsY || solidObstructionObjects[pozX - 1, pozY - 1] == true || boxOnPosition == true)
             {
                 isObstructor = true;
             }
 
             return isObstructor;
+            */
+
+            return false;
         }
 
         public bool CheckIfIsEnd()
         {
+            /*
             bool vsechnyNaMiste = true;
 
-            for (int j = 0; j < pBoxes.Count; j++)
+            for (int j = 0; j < movableObstructionObjects.Count; j++)
             {
-                GameObject tmpBedna = (GameObject)pBoxes[j];
+                GameObject tmpBedna = (GameObject)movableObstructionObjects[j];
 
-                if (tableAims[tmpBedna.posX - 1, tmpBedna.posY - 1] == null)
+                if (tableFunctionalTiles[tmpBedna.posX - 1, tmpBedna.posY - 1] == null)
                 {
                     vsechnyNaMiste = false;
                     break;
@@ -232,6 +240,9 @@ namespace Sokoban.Model
             {
                 return false;
             }
+             
+            */
+            return false;
         }
 
         public static int MoveDirCordX(int posX, MovementDirection movementDirection)
@@ -262,7 +273,7 @@ namespace Sokoban.Model
                 RoundFinished_TwoPlayers(roundEnd);
             }*/
 
-            MessageBox.Show("RoundFinished");
+            DebuggerIX.WriteLine("[RoundInfo]","RoundFinished");
         }
 
         public void RoundRestart()
@@ -277,7 +288,7 @@ namespace Sokoban.Model
                 RoundRestart_TwoPlayers();
             }
             */
-            MessageBox.Show("RoundRestart");
+            DebuggerIX.WriteLine("[RoundInfo]", "RoundRestart");
         }
     }
 }

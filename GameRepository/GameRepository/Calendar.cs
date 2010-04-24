@@ -6,10 +6,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Text;
 using System.Threading;
-using System.Drawing.Imaging;
 using System.Reflection;
 using System.IO;
 using System.Resources;
@@ -20,10 +18,13 @@ using Sokoban.Lib;
 using Sokoban.Model;
 using Sokoban.Model.GameDesk;
 using Sokoban.Lib.Events;
+using Sokoban.Model.PluginInterface;
 #endregion usings
 
 namespace Sokoban
 {
+    public delegate void SimulationEventHandler(int eventID, int objectID, Int64 when, EventType what);
+
     /// <summary>
     /// Queue of events of discrete simulation
     /// </summary>
@@ -80,16 +81,10 @@ namespace Sokoban
         /// <param name="when">Time when event should be processed. It's possible to add two events with same time (order of execution is not defined).</param>
         /// <param name="who">Which object should do the event</param>
         /// <param name="what">What event should be done</param>
-        public Event? AddEvent(Int64 when, GameObject who, EventType what)
+        public Event? AddEvent(Int64 when, IGamePlugin who, EventType what)
         {
-            return AddEvent(when, who, what, who.posX, who.posY, false);
+            return AddEvent(when, who, what, false);
         }
-
-        public Event? AddEvent(Int64 when, GameObject who, EventType what, int posX, int posY)
-        {
-            return AddEvent(when, who, what, posX, posY, false);
-        }
-
 
         /// <summary>
         /// Function adds an event to the calendar
@@ -101,7 +96,7 @@ namespace Sokoban
         /// <param name="posY"></param>
         /// <param name="ignoreDisabledAdding"></param>
         /// <returns>New event if event was added to the calendar; otherwise null reference</returns>
-        public Event? AddEvent(Int64 when, GameObject who, EventType what, int posX, int posY, bool ignoreDisabledAdding)
+        public Event? AddEvent(Int64 when, IGamePlugin who, EventType what, bool ignoreDisabledAdding)
         {
             // no adding of events?
             if (ignoreDisabledAdding == false && isEnabledAddingEvents == false) return null;
@@ -118,7 +113,7 @@ namespace Sokoban
             lock (list)
             {
                 // check if there's not the same event in the same time
-                newOne = new Event(eventCounter, when, who, what, posX, posY);
+                newOne = new Event(eventCounter, when, who, what);
                 
                 eventCounter++;
                 #if DEBUG_use_priority_queue
@@ -127,7 +122,7 @@ namespace Sokoban
                    list.Add(newOne.Value);
                 #endif                                            
 
-                if (AddedEvent != null) AddedEvent(eventCounter, who.ID, when, what, posX, posY); //Invoking all the event handlers
+                if (AddedEvent != null) AddedEvent(eventCounter, who.ID, when, what); //Invoking all the event handlers
             }
             
             return newOne;

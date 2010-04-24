@@ -9,11 +9,11 @@ using System.Collections;
 using System.Timers;
 using Sokoban.Lib;
 using System.Threading;
+using Sokoban.Lib.Events;
+using Sokoban.Model.PluginInterface;    
 
 namespace Sokoban.Model
 {
-    using Sokoban = Sokoban.Model.GameDesk.Sokoban;
-    using Sokoban.Lib.Events;    
 
     public partial class GameRepository : IBaseRepository
     {
@@ -99,14 +99,6 @@ namespace Sokoban.Model
                     //if (IsPermitted[ud.what])
                     //{
                     ProcessEvent(ud);
-
-                    ud.Value.who.MovementEventsInBuffer -= 
-                        EventTypeLib.IsEventOfType(ud.Value.what, EventCategory.goXXX) ? 1 : 0;
-
-                    if (ud.Value.who == pSokoban)
-                    {
-                        DebuggerIX.WriteLine("[GR-ProcessAllEvents]", ud.ToString());
-                    }
                 }
 
                 lastProcessedTime = time;

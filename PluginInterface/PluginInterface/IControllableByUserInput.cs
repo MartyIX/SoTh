@@ -8,7 +8,7 @@ namespace Sokoban.Model.PluginInterface
 {
     public interface IControllableByUserInput
     {
-        void OnKeyDown(Key key);
-        void OnKeyUp(Key key);
+        void OnKeyDown(Key key, Int64 time, double phase);
+        void OnKeyUp(Key key, Int64 time, double phase);
     }
 }
