@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="GameDocsWithAnimTest">
+</Property><Property Name="Solution File" Value="D:\Bakalarka\Sokoban\Tests\GameDocsWithAnimTest\GameDocsWithAnimTest.sln">
+</Property><Property Name="Date" Value="14. dubna 2010">
+</Property><Property Name="Time" Value="23:59">
+</Property></Properties><Event ErrorLevel="0" Project="GameDocsTest" Source="Sokoban\GameDocsTest.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="GameDocsTest" Source="Sokoban\GameDocsTest.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="GameDocs" Source="..\..\GameDocs\GameDocs.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="GameDocs" Source="..\..\GameDocs\GameDocs.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\..\Lib\Lib.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="Lib" Source="..\..\Lib\Lib.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="" Source="GameDocsWithAnimTest.sln" Description="Solution converted successfully">
+</Event><Event ErrorLevel="3" Project="" Source="GameDocsWithAnimTest.sln" Description="Converted">
+</Event><Event ErrorLevel="0" Project="GameDocsTest" Source="Sokoban\GameDocsTest.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="GameDocs" Source="..\..\GameDocs\GameDocs.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\..\Lib\Lib.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event></UpgradeLog>

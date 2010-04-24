@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameDocsTest", "Sokoban\GameDocsTest.csproj", "{17E82A17-F091-4EE2-B6D0-D588684F63E9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameDocs", "..\..\GameDocs\GameDocs.csproj", "{6DAB3F1F-6D91-4086-A2DF-ACD54307E5BC}"

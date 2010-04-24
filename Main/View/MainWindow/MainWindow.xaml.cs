@@ -49,7 +49,7 @@ namespace Sokoban
 
         private void NewGame_Click(object sender, RoutedEventArgs e)
         {
-            this.gameManager.Add();
+            //this.gameManager.Add();
         }
 
 
