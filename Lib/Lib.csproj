@@ -77,6 +77,7 @@
     <Compile Include="Http\HttpReq.cs" />
     <Compile Include="Interfaces\IBaseRepository.cs" />
     <Compile Include="Interfaces\IBaseView.cs" />
+    <Compile Include="Interfaces\IGame.cs" />
     <Compile Include="Networking\TcpInterface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

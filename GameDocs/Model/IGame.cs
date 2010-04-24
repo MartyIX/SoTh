@@ -14,7 +14,5 @@ namespace Sokoban.Model.GameDesk
         {
             get;
         }
-
-        double CurrentPhase {get; }
     }
 }

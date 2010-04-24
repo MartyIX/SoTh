@@ -15,7 +15,7 @@ using System.Diagnostics;
 namespace Sokoban.Model
 {
 
-    public class Game : IGame
+    public class Game : IGame, IGameRealTime
     {
         // SETTINGS
         const int PHASE_CONST = 75;
@@ -34,7 +34,7 @@ namespace Sokoban.Model
         {
             this.quest = quest;
             gameRepository = new GameRepository();
-            gameRepository.Game = this;
+            gameRepository.GameRealTime = this;
             gameRepository.DeskSizeChanged += new SetSizeDelegate(gameRepository_DeskSizeChanged);
             gameRepository.GameObjectsLoaded += new GameObjectsLoadedDelegate(gameRepository_GameObjectsLoaded);
         }

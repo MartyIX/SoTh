@@ -73,8 +73,6 @@
   <ItemGroup>
     <Compile Include="Model\class.Quest.cs" />
     <Compile Include="Model\Delegates.cs" />
-    <Compile Include="Model\EnumsAndDelegates.cs" />
-    <Compile Include="Model\GameRepository.InterfaceImpl.cs" />
     <Compile Include="Model\PriorityQueue.cs" />
     <Compile Include="View\GameDeskControl.xaml.cs">
       <DependentUpon>GameDeskControl.xaml</DependentUpon>
@@ -82,24 +80,12 @@
     <Compile Include="View\GameDocs.xaml.cs">
       <DependentUpon>GameDocs.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Model\Calendar.cs" />
     <Compile Include="Model\class.Coordinate.cs" />
     <Compile Include="View\class.GameDocsProperties.cs" />
-    <Compile Include="Model\class.IsPermitted.cs" />
     <Compile Include="Model\class.SimpleQuest.cs" />
     <Compile Include="Model\class.Sokoban.cs" />
-    <Compile Include="Model\Event.cs" />
     <Compile Include="Model\Game.cs" />
-    <Compile Include="Model\GameObject.cs" />
-    <Compile Include="Model\GameObject.Draw.cs" />
-    <Compile Include="Model\GameObject.UI.cs" />
-    <Compile Include="Model\GameRepository.cs" />
-    <Compile Include="Model\GameRepository.LoadRound.cs" />
-    <Compile Include="Model\GameRepository.Moves.cs" />
-    <Compile Include="Model\GameRepository.ProcessEvent.cs" />
-    <Compile Include="Model\GameRepository.TimerMethod.cs" />
     <Compile Include="Model\IGame.cs" />
-    <Compile Include="Model\IGameRepository.cs" />
     <Compile Include="Model\IQuest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -127,6 +113,10 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GameRepository\GameRepository\GameRepository.csproj">
+      <Project>{67421E82-7E18-4960-AB49-FF802B82E54D}</Project>
+      <Name>GameRepository</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Lib\Lib.csproj">
       <Project>{F44E4759-3B19-4E1B-BA4D-6E4F64086190}</Project>
       <Name>Lib</Name>
