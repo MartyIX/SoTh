@@ -18,6 +18,7 @@
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -30,7 +31,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -72,6 +72,7 @@
     <Compile Include="BasePresenter.cs" />
     <Compile Include="CommonFunc.cs" />
     <Compile Include="Debug\Debugger.cs" />
+    <Compile Include="Delegates\Delegates.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Events\EventTypeLib.cs" />
     <Compile Include="Http\HttpReq.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Xml\XmlLeagues.cs" />
     <Compile Include="Xml\XmlRoundReader.cs" />
     <Compile Include="Xml\XmlValidator.cs" />
+    <Compile Include="Xml\XmlValidatorOld.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

@@ -18,6 +18,21 @@
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -83,7 +98,6 @@
     <Compile Include="Model\class.Coordinate.cs" />
     <Compile Include="View\class.GameDocsProperties.cs" />
     <Compile Include="Model\class.SimpleQuest.cs" />
-    <Compile Include="Model\class.Sokoban.cs" />
     <Compile Include="Model\Game.cs" />
     <Compile Include="Model\IGame.cs" />
     <Compile Include="Model\IQuest.cs" />
@@ -121,6 +135,10 @@
       <Project>{F44E4759-3B19-4E1B-BA4D-6E4F64086190}</Project>
       <Name>Lib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PluginInterface\PluginInterface\PluginInterface.csproj">
+      <Project>{E1357F87-0BE7-4FF7-84B4-D4CC4CD1788E}</Project>
+      <Name>PluginInterface</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Sokoban\sokobanMovement_1.png" />
@@ -139,6 +157,23 @@
   <ItemGroup>
     <Resource Include="Resources\StaticObj\obj_A.png" />
     <Resource Include="Resources\StaticObj\obj_A_tmave.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

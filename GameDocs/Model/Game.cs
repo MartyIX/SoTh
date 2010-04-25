@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Input;
 using Sokoban.Lib.Events;
 using System.Diagnostics;
+using Sokoban.Model.PluginInterface;
 
 namespace Sokoban.Model
 {
@@ -43,11 +44,11 @@ namespace Sokoban.Model
         /// Register visuals from GameRepository
         /// </summary>
         /// <param name="gameObjects"></param>
-        private void gameRepository_GameObjectsLoaded(List<GameObject> gameObjects)
+        private void gameRepository_GameObjectsLoaded(List<IGamePlugin> gameObjects)
         {
-            foreach (GameObject g in gameObjects)
+            foreach (IGamePlugin g in gameObjects)
             {
-                control.AddVisual(g.UI.Image);
+                control.AddVisual(g.UIElement);
             }            
         }
 
@@ -97,7 +98,7 @@ namespace Sokoban.Model
                 stopwatch.Start();
             }
 
-            foreach (GameObject g in gameRepository.GetGameObjects)
+            foreach (IGamePlugin g in gameRepository.GetGameObjects)
         	{               
                 g.Draw(control.gamedeskCanvas, control.FieldSize, gameRepository.Time, phaseProp);
 	        }

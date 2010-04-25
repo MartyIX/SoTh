@@ -82,6 +82,8 @@ namespace Sokoban.Model
             {
                 Types.AvailablePlugin selectedPlugin = AvailablePlugins.Find("Sokoban");
 
+                gameObjects.Add(selectedPlugin.Instance);
+
                 //SokobanObj obj = new SokobanObj(objectID, description, posX, posY, direction, speed);
                 /*
                 logList.SaveInitPositions(obj, obj.PozX, obj.PozY, obj.direction);

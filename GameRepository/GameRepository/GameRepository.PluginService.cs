@@ -85,7 +85,7 @@ namespace Sokoban.Model
                     if (!pluginType.IsAbstract)  //Only look at non-abstract types
                     {
                         //Gets a type object of the interface we need the plugins to match
-                        Type typeInterface = pluginType.GetInterface("Sokoban.Model.PluginInterface.IPlugin", true);
+                        Type typeInterface = pluginType.GetInterface("Sokoban.Model.PluginInterface.IGamePlugin", true);
 
                         //Make sure the interface we want to use actually exists
                         if (typeInterface != null)
@@ -101,10 +101,7 @@ namespace Sokoban.Model
                             //1- Make one instance, and use it whenever we need it.. it's always there
                             //2- Don't make an instance, and instead make an instance whenever we use it, then close it
                             //For now we'll just make an instance of all the plugins
-                            newPlugin.Instance = (IGamePlugin)Activator.CreateInstance(pluginAssembly.GetType(pluginType.ToString()));
-
-                            //Set the Plugin's host to this class which inherited IPluginHost
-                            newPlugin.Instance.Parent = this;
+                            newPlugin.Instance = (IGamePlugin)Activator.CreateInstance(pluginAssembly.GetType(pluginType.ToString()), this);
 
                             //Call the initialization sub of the plugin
                             newPlugin.Instance.Load();

@@ -71,23 +71,6 @@ namespace Sokoban.Lib
             offset += tmpOffset;
         }
 
-        public static bool IsXMLValid(string xmlScheme, string validatedXml)
-        {
-            return IsXMLValid(xmlScheme, validatedXml, true);
-        }
-
-        public static bool IsXMLValid(string xmlScheme, string validatedXml, bool showErrors)
-        {
-            XmlValidator xmlSchemaValidator = new XmlValidator(xmlScheme, validatedXml);
-
-            if (!xmlSchemaValidator.IsValidXml && showErrors)
-            {
-                MessageBox.Show("[Error in XML]: " + xmlSchemaValidator.ValidationError + "\n\n[Parsed XML]: " + validatedXml);                
-            }
-
-            return xmlSchemaValidator.IsValidXml;
-        }
-
 		#endregion Methods 
     }
 }

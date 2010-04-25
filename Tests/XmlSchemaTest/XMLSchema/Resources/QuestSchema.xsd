@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns="http://www.martinvseticka.eu/SoTh" 
+           targetNamespace="http://www.martinvseticka.eu/SoTh" 
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           elementFormDefault="qualified" 
+           attributeFormDefault="unqualified">
+
+  <!-- Game objects -->
+  <xs:element name="GameObject" abstract="true" type="GameObjectType" />
+
+  <xs:complexType name="GameObjectType">
+    <xs:sequence>
+      <xs:element name="Version" type="xs:string" minOccurs="0" maxOccurs="1" />
+      <xs:element name="PosX" type="xs:integer" />
+      <xs:element name="PosY" type="xs:integer" />
+      <xs:element name="InitializeMessage" type="xs:string" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="Dimensions">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Width" type="xs:integer" />
+        <xs:element name="Height" type="xs:integer" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+
+  <!-- One game round-->
+
+    <!-- TODO: add support for custom game objects -->
+    <xs:element name="Round">      
+      <xs:complexType> 
+        <xs:sequence>
+          <xs:element name="Name" type="xs:string" minOccurs="1" maxOccurs="1" />
+          <xs:element ref="Dimensions" />
+          <xs:element ref="GameObject" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:element>
+
+
+  <!-- Quest -->
+  <xs:element name="SokobanQuest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+        <xs:element ref="Round" minOccurs="1" maxOccurs="unbounded" />
+        <xs:element name="NextQuest" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

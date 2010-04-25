@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<SokobanQuest xmlns="http://www.martinvseticka.eu/SoTh" 
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <Name>DebugQuest</Name>
+  <Round>
+    <Name>Easy start</Name>
+    <Dimensions>
+      <Width>8</Width>
+      <Height>9</Height>
+    </Dimensions>
+    <Sokoban>
+       <PosX>2</PosX>
+       <PosY>7</PosY>
+    </Sokoban>
+  </Round>  
+</SokobanQuest>

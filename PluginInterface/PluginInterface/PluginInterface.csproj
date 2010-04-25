@@ -42,9 +42,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Event.cs" />
     <Compile Include="IFixedObject.cs" />
     <Compile Include="IMovable.cs" />
     <Compile Include="IControllableByUserInput.cs" />
+    <Compile Include="ISolidObstruction.cs" />
     <Compile Include="ITile.cs" />
     <Compile Include="PluginInterface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
