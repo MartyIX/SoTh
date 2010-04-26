@@ -15,13 +15,16 @@ namespace Sokoban.Model.PluginInterface
         void MakePlan(string debug, Int64 when, IGamePlugin who, EventType what);
         void MakeImmediatePlan(string debug, IGamePlugin who, EventType what);
 
+        // Gamedesk actions
+        IGamePlugin GetObstructionOnPosition(int x, int y);
+
         // Process all events
         void ProcessAllEvents();
         void ProcessAllEvents(double phase);
         void ProcessAllEvents(bool updateTime, double phase);        
     }
 
-    public interface IGamePlugin
+    public interface IGamePlugin : IPosition
     {       
         // Plugin identification
         string Name { get; }
@@ -36,18 +39,18 @@ namespace Sokoban.Model.PluginInterface
         void Draw(Canvas canvas, double squareSize, Int64 time, double phase);
         string XmlSchema { get; }
         // Returns true if initialization was successful
-        bool ProcessXmlInitialization(XmlNode settings);
+        bool ProcessXmlInitialization(int mazeWidth, int mazeHeight, XmlNode settings);
 
         // Return false if plugin is not able to process the event, host will take care of the message
-        bool ProcessEvent(Int64 time, Event? e);
+        bool ProcessEvent(Int64 time, Event e);
 
         // Plugin's host 
         IPluginParent Parent { get; set; }
 
         // Plugin's properties
         int ID { get; set; }
+
         UIElement UIElement { get; set; }
-
-
+        int ObstructionLevel { get; }
     }
 }

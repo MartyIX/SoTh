@@ -5,10 +5,12 @@ using System.Text;
 using Sokoban.Model.GameDesk;
 using System.Collections;
 using Sokoban.Lib;
+using Sokoban.Model.PluginInterface;
+using System.Xml;
+using Sokoban.Lib.Exceptions;
 
 namespace Sokoban.Model
 {
-    using Sokoban.Model.PluginInterface;
 
     public partial class GameRepository : IBaseRepository
     {
@@ -24,31 +26,17 @@ namespace Sokoban.Model
         {
             // Initialization of fields
             gameObjects = new List<IGamePlugin>();
-            functionalTiles = new List<IGamePlugin>();
-            movableObstructionObjects = new List<IGamePlugin>();
-            controllableByUserObjects = null;
-            solidObstructionObjects = new bool[fieldsX, fieldsY];
-            tableFunctionalTiles = new IGamePlugin[fieldsX, fieldsY];
+            movableElements = new List<IGamePlugin>();
+            fixedElements = new IGamePlugin[fieldsX, fieldsY];
+            controllableByUserObjects = new List<IControllableByUserInput>();
+            gameIndicators = new List<IGamePlugin>();
 
-
-            //Call the find plugins routine, to search in our Plugins Folder
-            this.FindPlugins(@"D:\Bakalarka\Sokoban\Main\Plugins");
 
             // Reading from the XML 
             XmlRoundReader xmlRounds = new XmlRoundReader(xml);
             xmlRounds.RoundPropertiesRead += new RoundPropertiesDelegate(OnLoadedRoundProperties);
             xmlRounds.GameObjectRead += new GameObjectPropertiesDelegate(OnLoadedGameObject);
             xmlRounds.LoadRoundSettings();
-
-            // Setting walls
-            for (int j = 0; j < fieldsY; j++)
-            {
-                for (int i = 0; i < fieldsX; i++)
-                {
-                    solidObstructionObjects[i, j] = false;
-                    tableFunctionalTiles[i, j] = null;
-                }
-            }
 
             // Fire events
             if (DeskSizeChanged != null)
@@ -70,52 +58,20 @@ namespace Sokoban.Model
          * 
          */
 
-        private void OnLoadedGameObject(int objectID, string description, int posX, int posY, MovementDirection direction, EventType InitialEvent, int speed)
+        private void OnLoadedGameObject(string pluginName, XmlNode node)
         {
-            // Default speed if no speed or negative speed is in XML
-            if (speed <= 0)
+            IGamePlugin gamePlugin = pluginService.RunPlugin(pluginName);
+
+            // Find out plugin properties according to interfaces it implements
+            if (this.integratePlugin(gamePlugin) == true)
             {
-                speed = 3;
-            }
-
-            if (description == "S")
-            {
-                Types.AvailablePlugin selectedPlugin = AvailablePlugins.Find("Sokoban");
-
-                gameObjects.Add(selectedPlugin.Instance);
-
-                //SokobanObj obj = new SokobanObj(objectID, description, posX, posY, direction, speed);
-                /*
-                logList.SaveInitPositions(obj, obj.PozX, obj.PozY, obj.direction);
-                logList.AddEvent(obj, obj.posX, obj.posY, "0:00", obj.direction, true);
-                */
-
-                //gameObjects.Add(obj);
-                //MakeImmediatePlan("LoadRndSokInitEv", obj, InitialEvent);
-                //controllableByUserObjects = obj;
+                // Plugin bootstrap
+                gamePlugin.Load();
+                gamePlugin.ProcessXmlInitialization(this.fieldsX, this.fieldsY, node);
             }
             else
             {
-                /*
-                GameObject obj = new GameObject(objectID, description, posX, posY, direction, speed);
-                //logList.SaveInitPositions(obj, obj.PozX, obj.PozY, obj.direction);
-
-                gameObjects.Add(obj);
-                MakeImmediatePlan("LoadRndObjInitEv", obj, InitialEvent);
-
-                if (description == "B")
-                {
-                    movableObstructionObjects.Add(obj);
-                }
-                else if (description == "W")
-                {
-                    solidObstructionObjects[posX - 1, posY - 1] = true;
-                }
-                else if (description == "A")
-                {
-                    functionalTiles.Add(obj);
-                    tableFunctionalTiles[posX - 1, posY - 1] = obj;
-                } */                   
+                throw new PluginLoadFailedException("Error in plugin `" + pluginName +"': Plugin must be either a tile or an object.");
             }
         }
 
@@ -124,6 +80,45 @@ namespace Sokoban.Model
             this.roundName = roundName;
             this.fieldsX = fieldsX;
             this.fieldsY = fieldsY;
+        }
+
+        /// <summary>
+        /// Method integrates plugin to the structures of GameRepository according to its properties (movable, fixed, ..)
+        /// </summary>
+        /// <param name="gamePlugin"></param>
+        private bool integratePlugin(IGamePlugin gamePlugin)
+        {
+            // Plugin can receive keyboard input
+            IControllableByUserInput controllableByUser = gamePlugin as IControllableByUserInput;
+
+            if (controllableByUser != null)
+            {
+                controllableByUserObjects.Add(controllableByUser);
+            }
+
+            bool isElement = false;
+
+            // Tiles
+            IFixedElement fixedElement = gamePlugin as IFixedElement;
+
+            if (fixedElement != null)
+            {
+                isElement = true;
+                fixedElements[fixedElement.PosX, fixedElement.PosY] = gamePlugin;
+                gameObjects.Add(gamePlugin);
+            }
+
+            // Objects
+            IMovableElement movableElement = gamePlugin as IMovableElement;
+
+            if (movableElement != null)
+            {
+                isElement = true;
+                movableElements.Add(gamePlugin);
+                gameObjects.Add(gamePlugin);
+            }
+
+            return isElement;
         }
     }
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="GameDeskControlTest">
+</Property><Property Name="Solution File" Value="D:\Bakalarka\Sokoban\Tests\GameDeskControlTest\GameDeskControlTest.sln">
+</Property><Property Name="Date" Value="26. dubna 2010">
+</Property><Property Name="Time" Value="20:01">
+</Property></Properties><Event ErrorLevel="0" Project="GameDeskControlTest" Source="Sokoban\GameDeskControlTest.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="GameDeskControlTest" Source="Sokoban\GameDeskControlTest.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="GameDocs" Source="..\..\GameDocs\GameDocs.csproj" Description="The project file does not require conversion.">
+</Event><Event ErrorLevel="3" Project="GameDocs" Source="..\..\GameDocs\GameDocs.csproj" Description="No Conversion Required">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\..\Lib\Lib.csproj" Description="The project file does not require conversion.">
+</Event><Event ErrorLevel="3" Project="Lib" Source="..\..\Lib\Lib.csproj" Description="No Conversion Required">
+</Event><Event ErrorLevel="0" Project="" Source="GameDeskControlTest.sln" Description="Solution converted successfully">
+</Event><Event ErrorLevel="3" Project="" Source="GameDeskControlTest.sln" Description="Converted">
+</Event><Event ErrorLevel="0" Project="GameDeskControlTest" Source="Sokoban\GameDeskControlTest.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event></UpgradeLog>

@@ -18,6 +18,7 @@
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -30,7 +31,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -72,12 +72,6 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="View\GameDeskControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="View\GameDocs.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -86,21 +80,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\class.Quest.cs" />
-    <Compile Include="Model\Delegates.cs" />
-    <Compile Include="Model\PriorityQueue.cs" />
-    <Compile Include="View\GameDeskControl.xaml.cs">
-      <DependentUpon>GameDeskControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\GameDocs.xaml.cs">
       <DependentUpon>GameDocs.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Model\class.Coordinate.cs" />
     <Compile Include="View\class.GameDocsProperties.cs" />
-    <Compile Include="Model\class.SimpleQuest.cs" />
-    <Compile Include="Model\Game.cs" />
-    <Compile Include="Model\IGame.cs" />
-    <Compile Include="Model\IQuest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -127,6 +110,10 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GameDeskControl\GameDeskControl\GameDeskControl.csproj">
+      <Project>{D86C56B6-A996-41F1-A647-2868A1940B68}</Project>
+      <Name>GameDeskControl</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GameRepository\GameRepository\GameRepository.csproj">
       <Project>{67421E82-7E18-4960-AB49-FF802B82E54D}</Project>
       <Name>GameRepository</Name>

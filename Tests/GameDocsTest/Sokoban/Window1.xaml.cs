@@ -18,6 +18,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using Sokoban.Lib;
 
 namespace Sokoban
 {
@@ -34,8 +35,37 @@ namespace Sokoban
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            DebuggerIX.Start(DebuggerMode.File);
+            loadQuest();
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            DebuggerIX.Close();
+        }
+
+        private void loadQuest()
+        {
             string result = Sokoban.Properties.Resources.TestQuest;
-            gameManager.Add(result);          
+            gameManager.Add(result);
+        }
+
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.F1)
+            {
+                loadQuest();
+                e.Handled = true;
+            }
+            else
+            {
+                gameManager.ActiveGameControl.KeyIsDown(sender, e);
+            }
+        }
+
+        private void Window_PreviewKeyUp(object sender, KeyEventArgs e)
+        {
+            gameManager.ActiveGameControl.KeyIsUp(sender, e);
         }
     }
 }

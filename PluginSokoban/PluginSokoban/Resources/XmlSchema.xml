@@ -5,7 +5,7 @@
            elementFormDefault="qualified" attributeFormDefault="unqualified">
 
 
-  <xs:element name="firstState">
+  <xs:element name="FirstState">
     <xs:simpleType>
       <xs:restriction base="xs:string">
         <xs:enumeration value="wait"/>
@@ -30,7 +30,7 @@
           <xs:element name="PosY" type="xs:integer"/>
           <xs:element name="InitializeMessage" type="xs:string" minOccurs="0" maxOccurs="1"/>
           -->
-          <xs:firstState />
+          <xs:element ref="FirstState" />          
         </xs:sequence>
        </xs:extension>
     </xs:complexContent>

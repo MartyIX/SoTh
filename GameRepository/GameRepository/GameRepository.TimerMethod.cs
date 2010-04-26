@@ -96,9 +96,10 @@ namespace Sokoban.Model
 
                 while ((ud = calendar.First(time)) != null)
                 {
-                    //if (IsPermitted[ud.what])
-                    //{
-                    ProcessEvent(ud);
+                    if (ud.Value.who.ProcessEvent(time, ud.Value) == false)
+                    {
+                        this.ProcessEvent(ud.Value);  
+                    }
                 }
 
                 lastProcessedTime = time;

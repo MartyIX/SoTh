@@ -18,7 +18,7 @@ using System.Xml.Schema;
 namespace Sokoban.Lib
 {
     public delegate void RoundPropertiesDelegate(string roundName, int fieldsX, int fieldsY);
-    public delegate void GameObjectPropertiesDelegate(int objectID, string description, int pozX, int pozY, MovementDirection direction, EventType InitialEvent, int speed);    
+    public delegate void GameObjectPropertiesDelegate(string pluginName, XmlNode node);
 
 
     /// <summary>
@@ -47,19 +47,23 @@ namespace Sokoban.Lib
         /// <param name="round">The number of round to load. Numbered from one.</param>        
         public void LoadRoundSettings()
         {
-            XmlDocument xmlDoc = new XmlDocument(); //* create an xml document object.
+            XmlDocument xml = new XmlDocument(); //* create an xml document object.
             XmlTextReader xmlTextReader = new XmlTextReader(new StringReader(roundXml));
-            xmlDoc.Load(xmlTextReader);
+            xml.Load(xmlTextReader);
 
-            XmlNode round = (xmlDoc.GetElementsByTagName("Round"))[0];
+            XmlNamespaceManager names = new XmlNamespaceManager(xml.NameTable);
+            names.AddNamespace("x", "http://www.martinvseticka.eu/SoTh");
+
+
+            XmlNode round = (xml.GetElementsByTagName("Round"))[0];
 
             // Round properties
             if (RoundPropertiesRead != null)
             {
                 RoundPropertiesRead(
                     round["Name"].InnerXml,
-                    int.Parse(round["Dimensions"]["width"].InnerXml),
-                    int.Parse(round["Dimensions"]["height"].InnerXml)
+                    int.Parse(round["Dimensions"]["Width"].InnerXml),
+                    int.Parse(round["Dimensions"]["Height"].InnerXml)
                     );
             }
 
@@ -67,49 +71,16 @@ namespace Sokoban.Lib
             int objectID = 0;
             XmlNodeList nodeList;
 
-            // Aims, Boxes, Fakeboxes, Walls
-            nodeList = round.SelectNodes("Aim | Box | FakeBox | Wall");
+            nodeList = round.SelectNodes("./x:GameObjects/*", names);
             for (int i = 0; i < nodeList.Count; ++i)
             {
                 XmlNode node = nodeList[i];
 
                 if (GameObjectRead != null)
                 {
-                    GameObjectRead(objectID++, node.Name[0].ToString(),
-                                     int.Parse(node["posX"].InnerXml), int.Parse(node["posY"].InnerXml),
-                                     MovementDirection.none, EventType.none, 0 /* speed */);
+                    GameObjectRead(node.Name, node);
                 }
             }
-
-            // Monsters
-            nodeList = round.SelectNodes("Monster");
-            for (int i = 0; i < nodeList.Count; ++i)
-            {
-                XmlNode node = nodeList[i];
-
-                if (GameObjectRead != null)
-                {
-                    GameObjectRead(objectID++, node.Name[0].ToString(),
-                                     int.Parse(node["posX"].InnerXml), int.Parse(node["posY"].InnerXml),
-                                     (MovementDirection)Enum.Parse(typeof(MovementDirection), "go" + node["orientation"].InnerXml),
-                                     (EventType)Enum.Parse(typeof(EventType), node["firstState"].InnerXml),
-                                     int.Parse(node["speed"].InnerXml));
-                }
-            }
-
-            // Sokoban
-            {
-                XmlNode node = round["Sokoban"];
-
-                if (GameObjectRead != null)
-                {
-                    GameObjectRead(objectID++, node.Name[0].ToString(),
-                        int.Parse(node["posX"].InnerXml), int.Parse(node["posY"].InnerXml),
-                        (MovementDirection)Enum.Parse(typeof(MovementDirection), "go" + node["twoWayOrientation"].InnerXml),
-                        EventType.none,
-                        0 /* speed */);
-                }
-            }           
         }
     }
 }

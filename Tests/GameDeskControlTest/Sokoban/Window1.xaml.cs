@@ -22,8 +22,9 @@ namespace Sokoban
         public Window1()
         {
             InitializeComponent();
-            //DataContext = this;
-            
+            DataContext = this;
+            gameDeskControl.Width = 200;
+            gameDeskControl.Height = 200;
         }
     }
 }

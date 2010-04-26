@@ -55,7 +55,7 @@ namespace Sokoban.View
             dm = GameManagerProperties.GetDockingManager((DependencyObject)this);
             dm.RequestDocumentClose += new EventHandler<RequestDocumentCloseEventArgs>(dm_RequestDocumentClose);
             dm.Loaded += new RoutedEventHandler(dm_Loaded);
-            dm.SizeChanged += new SizeChangedEventHandler(dm_SizeChanged);
+            //dm.SizeChanged += new SizeChangedEventHandler(dm_SizeChanged);
             dm.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(dm_PropertyChanged);
 
             // make a new source
@@ -82,9 +82,16 @@ namespace Sokoban.View
 
         void dm_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            foreach (GameDeskControl doc in GameViews)
+            if (ActiveGameControl != null)
             {
-                doc.Resize(sender, e);
+                //double availableWidth = ((DocumentPane)(e.Source)).ActualWidth;
+                double availableWidth = ((System.Windows.FrameworkElement)(ActiveGameControl.Content)).ActualWidth;
+                double availableHeight = ((System.Windows.FrameworkElement)(ActiveGameControl.Content)).ActualHeight;
+
+                foreach (GameDeskControl doc in GameViews)
+                {
+                    doc.Resize(availableWidth, availableHeight);
+                }
             }
         }
 
@@ -95,7 +102,10 @@ namespace Sokoban.View
 
         void dm_RequestDocumentClose(object sender, RequestDocumentCloseEventArgs e)
         {
-            GameViews.Remove((GameDeskControl)e.DocumentToClose);
+            GameDeskControl gdc = (GameDeskControl)e.DocumentToClose;
+            DebuggerIX.WriteLine("[GameDocs]", "Close", string.Format("Tab {0} was closed", gdc.Title));
+            gdc.Terminate();
+            GameViews.Remove(gdc);            
         }
 
         public void Loaded(object sender, RoutedEventArgs e)
@@ -140,18 +150,20 @@ namespace Sokoban.View
             doc.ContentTypeDescription = "";
             doc.Closing += new EventHandler<CancelEventArgs>(doc_Closing);
             doc.Closed += new EventHandler(doc_Closed);
-            doc.infoPanel.SizeChanged+=new SizeChangedEventHandler(doc.ResizeInfoPanel);
+            doc.InfoPanel.SizeChanged+=new SizeChangedEventHandler(doc.ResizeInfoPanel);
             GameViews.Add(doc);
             doc.Resize(GamesDocumentPane.ActualWidth, GamesDocumentPane.ActualHeight);
         }
 
         private void doc_Closed(object sender, EventArgs e)
         {
+            
         }
 
         private void doc_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-
+            
+            
         }
 
         public void KeyIsDown(object sender, KeyEventArgs e)

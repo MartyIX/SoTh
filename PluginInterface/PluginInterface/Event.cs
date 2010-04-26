@@ -72,7 +72,7 @@ namespace Sokoban.Model.PluginInterface
 
         public override string ToString()
         {
-            IMovable obj = who as IMovable;
+            IMovableElement obj = who as IMovableElement;
 
             return "EID = " + EventID.ToString().PadRight(4)
                 + "; Time = " + when.ToString().PadRight(5)

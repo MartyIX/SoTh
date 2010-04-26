@@ -14,7 +14,7 @@ namespace Sokoban.Model
 {
     public delegate void TimeDelegate(ref Int64 time);
 
-    public partial class GameRepository : IBaseRepository, IGameRepository
+    public partial class GameRepository : IBaseRepository, IGameRepository, IPluginParent
     {        
         public event TimeDelegate TimeReference;
 
@@ -24,24 +24,21 @@ namespace Sokoban.Model
         public IsPermitted<EventType> IsPermitted;
 
         /// <summary>
-        /// Table of size fieldsX x fieldsY and element of table is true if there is "Wall" on coordinate (x,y)   
-        /// otherwise false.
+        /// 
         /// </summary>
-        public bool[,] solidObstructionObjects;
+        public List<IGamePlugin> gameIndicators;
         /// <summary>
-        /// List of aims
+        /// 
         /// </summary>
-        public List<IGamePlugin> functionalTiles;
+        public List<IGamePlugin> movableElements;
         /// <summary>
-        /// List of boxes
-        /// </summary>
-        public List<IGamePlugin> movableObstructionObjects;
-        /// <summary>
-        /// Table of size fieldsX x fieldsY and element of table is null if there is not GameObject "Aim" on coordinate (x,y)   
-        /// otherwise there is reference to the corresponding GameObject "Aim".
+        /// 
         /// </summary>        
-        public IGamePlugin[,] tableFunctionalTiles;
-        public List<IGamePlugin> controllableByUserObjects;
+        public IGamePlugin[,] fixedElements;
+        /// <summary>
+        /// 
+        /// </summary>
+        public List<IControllableByUserInput> controllableByUserObjects;
 
 
         // Objects on the gamedesk        
@@ -61,7 +58,8 @@ namespace Sokoban.Model
         private string roundName;
         private int stepsNo;
 
-        
+        private PluginService pluginService;
+
 
         public GameRepository()
         {
@@ -76,6 +74,11 @@ namespace Sokoban.Model
             fieldsY = 10;
             stepsNo = 0;
             time = 0;
+
+            pluginService = new PluginService(this);
+
+            // Searching and loading of plugins
+            //PluginService.LoadAllPlugins(@"D:\Bakalarka\Sokoban\Main\Plugins");
         }
 
         public void Initialize()
@@ -290,5 +293,12 @@ namespace Sokoban.Model
             */
             DebuggerIX.WriteLine("[RoundInfo]", "RoundRestart");
         }
+
+
+        public void Message(string message, IGamePlugin plugin)
+        {
+
+        }
+
     }
 }

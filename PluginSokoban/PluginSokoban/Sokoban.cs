@@ -12,7 +12,7 @@ using System.Xml;
 
 namespace PluginSokoban
 {
-    public class Sokoban : MovableEssentials, IGamePlugin, IMovable, IControllableByUserInput
+    public partial class Sokoban : MovableEssentials, IGamePlugin, IMovableElement, IControllableByUserInput
     {
         const int MAX_EVENTS_IN_KB = 3; 
 
@@ -52,10 +52,9 @@ namespace PluginSokoban
             get { return "1.00"; }
         }
 
-        public bool ProcessEvent(Int64 time, Event? e)
+        public new bool ProcessEvent(Int64 time, Event ev)
         {
             bool returnValue = false;
-            Event ev = e.Value;
 
             switch (ev.what)
             {
@@ -64,13 +63,12 @@ namespace PluginSokoban
                 case EventType.goUp:
                 case EventType.goDown:
 
-                    DebuggerIX.WriteLine("[PrepareMovement]", "Obj: " + ev.who.Description + "; Raised from EventID: " + ev.EventID.ToString());
-                    PrepareMovement(ev.when, 0, (IGamePlugin)ev.who, ev.what);
+                    base.SetOrientation(ev.what);
 
-                    this.MovementEventsInBuffer -= 1;
-                    DebuggerIX.WriteLine("[GR-ProcessAllEvents]", ev.ToString());
-
-                    returnValue = true;
+                    DebuggerIX.WriteLine("[Sokoban]", "ProcessEvent", ev.what.ToString() + "; Raised from EventID: " + ev.EventID.ToString());
+                    DebuggerIX.WriteLine("[Sokoban]", "", ev.ToString());
+                    returnValue = base.ProcessEvent(time, ev);                    
+         
                     break;
 
                 case EventType.wentRight:
@@ -85,13 +83,17 @@ namespace PluginSokoban
                     {
                         EventType newEvent = heldKeyEvent;
                         DebuggerIX.WriteLine("SokRepMvmt", "Raised from EventID = " + ev.EventID.ToString());
-                        host.MakeImmediatePlan("SokRepMvmt", ev.who, newEvent);
+                        base.MakeImmediatePlan("SokRepMvmt", ev.who, newEvent);
                     }
 
                     returnValue = true;
                     break;
 
                     #endregion wentXXX
+
+                default:
+                    returnValue = base.ProcessEvent(time, ev);                    
+                    break;
             }
 
             return returnValue;
@@ -102,6 +104,7 @@ namespace PluginSokoban
             // One-based values
             posX = 1;
             posY = 1;
+            obstructionLevel = 10;
 
             image = new System.Windows.Controls.Image();
 
@@ -157,14 +160,15 @@ namespace PluginSokoban
                         moveRequestCancelled = false;
                         // In this moment; events for @time are processed, therefore time + 1
                         //MakePlan("SokStartMov", time + 1, (GameObject)pSokoban, pSokoban.heldKeyEvent);
-                        host.MakePlan("SokStartMov", time, (IGamePlugin)this, this.heldKeyEvent);
+                        
+                        base.MakePlan("SokStartMov", time, (IGamePlugin)this, this.heldKeyEvent);
 
                         host.ProcessAllEvents(false, phase); // We don't want to update time
                     }
                     else if (this.MovementEventsInBuffer < MAX_EVENTS_IN_KB)
                     {
                         DebuggerIX.WriteLine("[GR-MoveRequest]", "MakePlan for move in time: " + (this.TimeMovementEnds).ToString());
-                        host.MakePlan("SokKeyBuf", timeMovementEnds, (IGamePlugin)this, heldKeyEvent);
+                        base.MakePlan("SokKeyBuf", timeMovementEnds, (IGamePlugin)this, heldKeyEvent);
                     }
                 }
             }
@@ -213,11 +217,21 @@ namespace PluginSokoban
             get { return PluginSokoban.Properties.Resources.XmlSchema; }
         }
 
-        bool ProcessXmlInitialization(XmlNode settings)
+
+        public bool ProcessXmlInitialization(int mazeWidth, int mazeHeight, XmlNode settings)
         {
+            this.Speed = 3;
+            this.fieldsX = mazeWidth;
+            this.fieldsY = mazeHeight;
+
             DebuggerIX.WriteLine("[Plugin]", this.Name, "ProcessXmlInitialization, settings: " + settings.InnerXml);
 
             return true;
+        }
+
+        public int ObstructionLevel
+        {
+            get { return obstructionLevel; }
         }
 
         #endregion

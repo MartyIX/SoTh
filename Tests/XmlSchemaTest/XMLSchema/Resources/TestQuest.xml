@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<SokobanQuest xmlns="http://www.martinvseticka.eu/SoTh" 
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<SokobanQuest xmlns="http://www.martinvseticka.eu/SoTh"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://www.martinvseticka.eu http://www.martinvseticka.eu/schemas/SoTh.xsd">
 
   <Name>DebugQuest</Name>
   <Round>
@@ -9,9 +10,14 @@
       <Width>8</Width>
       <Height>9</Height>
     </Dimensions>
-    <Sokoban>
-       <PosX>2</PosX>
-       <PosY>7</PosY>
-    </Sokoban>
-  </Round>  
+
+    <GameObjects>
+      <Sokoban>
+        <PosX>2</PosX>
+        <PosY>7</PosY>
+        <FirstState>wait</FirstState>
+      </Sokoban>
+    </GameObjects>
+  </Round>
+
 </SokobanQuest>

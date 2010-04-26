@@ -73,12 +73,14 @@
     <Compile Include="CommonFunc.cs" />
     <Compile Include="Debug\Debugger.cs" />
     <Compile Include="Delegates\Delegates.cs" />
+    <Compile Include="DS\Pair.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Events\EventTypeLib.cs" />
+    <Compile Include="Exceptions\Exceptions.cs" />
     <Compile Include="Http\HttpReq.cs" />
     <Compile Include="Interfaces\IBaseRepository.cs" />
     <Compile Include="Interfaces\IBaseView.cs" />
-    <Compile Include="Interfaces\IGame.cs" />
+    <Compile Include="Interfaces\IQuest.cs" />
     <Compile Include="Networking\TcpInterface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -98,7 +100,6 @@
     <Compile Include="Xml\XmlLeagues.cs" />
     <Compile Include="Xml\XmlRoundReader.cs" />
     <Compile Include="Xml\XmlValidator.cs" />
-    <Compile Include="Xml\XmlValidatorOld.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

@@ -7,6 +7,7 @@ using System.Collections;
 using Sokoban.Lib;
 using System.Diagnostics;
 using Sokoban.Model.PluginInterface;
+using System.Windows.Input;
 
 /*
  * Keyboard buffer for Sokoban
@@ -39,17 +40,25 @@ namespace Sokoban.Model
         public IGameRealTime game = null;
 
         /// <summary>
-        /// Sokoban's move request - movement continues until StopMove() is called !!!
+        /// Method dispatches info that user pressed key (keydown event) to the plugins that can react on keys
         /// </summary>
-        /// <param name="ev"></param>
-        public void MoveRequest(EventType ev)
+        public void MoveRequest(Key key)
         {
-            
+            foreach (IControllableByUserInput gp in this.controllableByUserObjects)
+            {
+                gp.OnKeyDown(key, time, phase);
+            }
         }
 
-        public void StopMove()
+        /// <summary>
+        /// Method dispatches info that user released key (keyup event) to the plugins that can react on keys
+        /// </summary>
+        public void StopMove(Key key)
         {
-            
+            foreach (IControllableByUserInput gp in this.controllableByUserObjects)
+            {
+                gp.OnKeyUp(key, time, phase);
+            }            
         }
     }
 }

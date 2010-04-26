@@ -3,13 +3,14 @@ using System.Xml.Schema;
 using System.Collections.Generic;
 using System;
 using System.IO;
+using System.Text;
 namespace Sokoban.Lib
 {
 
     public class XmlValidator
     {
         bool isValid;
-        string errorMessage = "";
+        StringBuilder errorMessage = null;
         XmlReaderSettings xmlReaderSettings;
         XmlSchemaSet xmlSchemaSet;
 
@@ -28,15 +29,17 @@ namespace Sokoban.Lib
 
         public string GetErrorMessage()
         {
-            return errorMessage;
+            return errorMessage.ToString();
         }
 
         private void validationEventHandler(object sender, ValidationEventArgs e)
         {
-            if (isValid == true)
+            if (errorMessage == null)
             {
-                errorMessage = e.Message;
+                errorMessage = new StringBuilder(200);
             }
+
+            errorMessage.AppendLine(e.Message);
 
             isValid = false;
 

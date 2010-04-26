@@ -8,7 +8,7 @@ using Sokoban.Model.PluginInterface;
 
 namespace Sokoban.Model
 {
-    public partial class GameRepository
+    public partial class GameRepository : IPluginParent
     {
         public int FieldsX
         {
@@ -36,6 +36,44 @@ namespace Sokoban.Model
             set { this.game = value; }
         }
 
-        // LoadRoundFromXML is in file GameRepository.LoadRound.cs
+        public PluginService PluginService
+        {
+            get { return pluginService; }
+        }
+
+        #region IPluginParent Members
+
+        public IGamePlugin GetObstructionOnPosition(int x, int y)
+        {
+            IGamePlugin gp = null;
+
+            foreach (IGamePlugin g in this.movableElements)
+            {
+                if (g.PosX == x && g.PosY == y)
+                {
+                    gp = g;
+                    break;
+                }
+            }
+
+            return gp;
+        }
+
+
+        public void Terminate()
+        {
+            pluginService.Terminate();
+            pluginService = null;
+            
+            gameIndicators = null;
+            movableElements = null;
+            fixedElements = null;
+            controllableByUserObjects = null;
+            gameObjects = null;
+            DeskSizeChanged = null;
+            GameObjectsLoaded = null;
+        }
+
+        #endregion
     }
 }

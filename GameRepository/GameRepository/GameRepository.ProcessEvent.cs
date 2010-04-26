@@ -15,9 +15,9 @@ namespace Sokoban.Model
         /// Processes given event
         /// </summary>
         /// <param name="ev">Event to process</param>
-        public void ProcessEvent(Event? e)
+        public void ProcessEvent(Event e)
         {
-            Event ev = e.Value;
+            
 
 
         }

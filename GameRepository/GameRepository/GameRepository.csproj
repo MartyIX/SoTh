@@ -37,6 +37,7 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Calendar.cs" />
@@ -46,11 +47,11 @@
     <Compile Include="GameRepository.InterfaceImpl.cs" />
     <Compile Include="GameRepository.LoadRound.cs" />
     <Compile Include="GameRepository.Moves.cs" />
-    <Compile Include="GameRepository.PluginService.cs" />
     <Compile Include="GameRepository.ProcessEvent.cs" />
     <Compile Include="GameRepository.TimerMethod.cs" />
     <Compile Include="IGameRealTime.cs" />
     <Compile Include="IGameRepository.cs" />
+    <Compile Include="PluginService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

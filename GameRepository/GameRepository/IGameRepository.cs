@@ -5,6 +5,7 @@ using System.Text;
 using System.Collections;
 using Sokoban.Lib;
 using Sokoban.Model.PluginInterface;
+using System.Windows.Input;
 
 namespace Sokoban.Model.GameDesk
 {
@@ -22,8 +23,11 @@ namespace Sokoban.Model.GameDesk
         event SetSizeDelegate DeskSizeChanged;
         event GameObjectsLoadedDelegate GameObjectsLoaded;
         void ProcessAllEvents();
-        void MoveRequest(EventType ev);
-        void StopMove();
+        void MoveRequest(Key key);
+        void StopMove(Key key);
         IGameRealTime GameRealTime { get; set; }
+        PluginService PluginService { get; }
+
+        void Terminate();
     }
 }
