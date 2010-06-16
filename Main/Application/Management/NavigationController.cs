@@ -5,6 +5,9 @@ using System.Text;
 using System.Windows.Forms;
 using Sokoban.View;
 using Sokoban.Presenter;
+using System.Windows;
+using Sokoban.Model;
+using Sokoban.View.ChooseConnection;
 
 namespace Sokoban {
     
@@ -14,6 +17,13 @@ namespace Sokoban {
     public sealed class NavigationController : INavigationController {
 
         private ChooseConnectionPresenter chooseConnectionPresenter;
+        private ApplicationRepository applicationRepository;
+
+        public NavigationController(ApplicationRepository applicationRepository)
+        {
+            this.applicationRepository = applicationRepository;
+        }
+        
         public void LoadView(string presenter, string view)
         {
             switch (presenter)
@@ -22,9 +32,9 @@ namespace Sokoban {
 
                     if (chooseConnectionPresenter == null)
                     {
-                        chooseConnectionPresenter = new ChooseConnectionPresenter(view);
+                        chooseConnectionPresenter = new ChooseConnectionPresenter(view, applicationRepository.profileRepository);
                     }
-                    chooseConnectionPresenter.InitializeView();
+                    chooseConnectionPresenter.InitializeView(applicationRepository.MainWindow);
 
                     break;                
                 

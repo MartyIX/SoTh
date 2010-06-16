@@ -1,0 +1,100 @@
+﻿<Window x:Class="Sokoban.View.ChooseConnection.ChooseConnectionDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:Sokoban.View.ChooseConnection"  
+    xmlns:components="clr-namespace:Sokoban.Components"  
+    xmlns:gameServers="clr-namespace:Sokoban.Model.Profile"  
+    Title="Sokoban: Connect to the game server" Height="238" Width="358" Topmost="True"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterScreen" MinWidth="307" MinHeight="208" MaxWidth="500" MaxHeight="500" Padding="10">
+    <Window.Resources>
+        <local:ErrorContentConverter x:Key="errorConverter" />
+
+        <SolidColorBrush x:Key="TextColor" Color="#444"/>
+        <SolidColorBrush x:Key="TextColorDisabled" Color="#888"/>
+        <SolidColorBrush x:Key="TextBackColor" Color="#FFF"/>
+        <SolidColorBrush x:Key="BorderColor" Color="#97a8ac"/>
+        <SolidColorBrush x:Key="SolidBorderBrush" Color="#ddd" />
+
+        <ControlTemplate x:Key="TextBoxErrorTemplate">
+            <DockPanel LastChildFill="True"> 
+                <AdornedElementPlaceholder>
+                    <Image Name="ErrorImage" Width="20" Height="20" Margin="0,0,4,0"
+                        Source="Resources/error.png" HorizontalAlignment="Right">
+                    </Image>
+                </AdornedElementPlaceholder>
+            </DockPanel>
+        </ControlTemplate>
+        
+        <!--
+        <ObjectDataProvider 
+            x:Key="GameServers" 
+            ObjectType="{x:Type local:ChooseConnectionDialog}"                             
+            IsAsynchronous="True"
+            MethodName="loadServers" />
+        -->
+        <Style x:Key="textStyleTextBox" TargetType="TextBox">
+           <Setter Property="Validation.ErrorTemplate" Value="{StaticResource TextBoxErrorTemplate}" />
+           <Style.Triggers>
+               <Trigger Property="Validation.HasError" Value="true">                    
+                   <Setter Property="ToolTip" Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors), Converter={StaticResource errorConverter}}"/>
+               </Trigger>
+           </Style.Triggers>            
+        </Style>                
+
+    </Window.Resources>
+
+    <Grid Margin="10">
+        <Grid.Resources>
+            <Style TargetType="TextBlock">
+                <Setter Property="Margin" Value="5,3" />
+            </Style>
+        </Grid.Resources>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Text="Connect to the server" FontSize="17" Height="30" />
+        <Label Name="lServer" Grid.Column="0" Grid.Row="1" >Game server:</Label>
+        <!--<ComboBox Grid.Column="1" Grid.Row="1" Name="cbServer" ItemsSource="{Binding Source={StaticResource GameServers}}"
+                  IsSynchronizedWithCurrentItem="True" />-->
+
+        <ComboBox Grid.Column="1" Grid.Row="1" Name="cbServer" ItemsSource="{Binding GameServers}"
+                  IsSynchronizedWithCurrentItem="True" />
+
+        
+
+        <Label Grid.Row="2" Name="lUsername" VerticalAlignment="Top" Grid.ColumnSpan="2">Username:</Label>
+        <Label Grid.Row="3" Name="lPassword" Grid.ColumnSpan="2">Password:</Label>
+        <TextBox Grid.Column="1" Grid.Row="2" MaxLength="25" Name="tbUsername" Style="{StaticResource textStyleTextBox}" Margin="0,0,0,4">
+            <TextBox.Text>
+                <Binding Path="Username">
+                    <Binding.ValidationRules>
+                        <local:NonZeroLength />
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+
+        <PasswordBox Grid.Column="1" Grid.Row="3" Name="tbPassword"
+           components:PasswordBoxAssistant.BindPassword="true"  
+           components:PasswordBoxAssistant.BoundPassword="{Binding Path=Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="25">
+        </PasswordBox>
+        <TextBox Background="White" Foreground="Red" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" x:Name="tbStatus" 
+                 Text="{Binding Path=LoginMessage}" />
+        <StackPanel Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
+        <Button Name="btnConnect" IsDefault="True" Click="btnConnect_Click">Connect</Button>
+        <Button Name="btnCancel" IsCancel="True" Margin="5,0,0,0">Cancel</Button>
+        </StackPanel>
+    </Grid>
+</Window>

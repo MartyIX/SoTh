@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Sokoban.View;
 using Sokoban.Model;
+using System.Windows;
 
 namespace Sokoban.Presenter
 {
@@ -13,6 +14,6 @@ namespace Sokoban.Presenter
     {
         protected TView view;
         protected TRepository repository;
-        public virtual void InitializeView() { }
+        public virtual void InitializeView(Window window) { }
     }
 }

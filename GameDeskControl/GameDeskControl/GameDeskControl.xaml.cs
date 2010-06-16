@@ -33,7 +33,7 @@ namespace Sokoban.View.GameDocsComponents
         private int fieldsY = 8;
         private string roundName = "";
         public event SizeChangedDelegate OnResized; // Fired in Resize(double, double)
-        private double fieldSize = 50;
+        private double fieldSize = 25;
         private double steps = 0;
         private double time = 0;
 

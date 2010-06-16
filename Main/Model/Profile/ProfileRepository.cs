@@ -8,11 +8,12 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Configuration;
 using Sokoban.Lib;
+using Sokoban.View;
 
 
 namespace Sokoban.Model
 {
-    public sealed class ProfileRepository : IBaseRepository, INotifyPropertyChanged
+    public sealed class ProfileRepository : INotifyPropertyChanged, IProfileRepository
     {
         /* Singleton: private instance, private constructor and Instance method */
         private static readonly ProfileRepository instance = new ProfileRepository();
@@ -190,6 +191,20 @@ namespace Sokoban.Model
         {
             this.LoginMessage = "Login was skipped.";
             this.isUserAutenticated = false;
+        }
+
+        public List<string> GetServers()
+        {
+            ServerConfigurationSection col = (ServerConfigurationSection)ConfigurationManager.GetSection("Sokoban.GameServers");
+
+            List<string> result = new List<string>();
+
+            foreach (ServerElement item in col.Servers)
+            {
+                result.Add((string)item.Name);
+            }
+
+            return result;
         }
 
         #region INotifyPropertyChanged Members

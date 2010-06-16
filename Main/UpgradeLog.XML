@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="Sokoban">
+</Property><Property Name="Solution File" Value="D:\Bakalarka\Sokoban\Main\Sokoban.sln">
+</Property><Property Name="User Options File" Value="D:\Bakalarka\Sokoban\Main\Sokoban.suo">
+</Property><Property Name="Date" Value="29. dubna 2010">
+</Property><Property Name="Time" Value="11:10">
+</Property></Properties><Event ErrorLevel="0" Project="" Source="Sokoban.sln" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Sokoban.sln">
+</Event><Event ErrorLevel="0" Project="" Source="Sokoban.suo" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Sokoban.suo">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Sokoban.csproj" Description="Project file successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Sokoban.csproj">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Sokoban.csproj.user" Description="Project user file successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Sokoban.csproj.user">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Application\App.xaml.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Application\App.xaml.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="View\MainWindow\MainWindow.xaml.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\View\MainWindow\MainWindow.xaml.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Properties\AssemblyInfo.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Properties\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Properties\Settings.Designer.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Properties\Settings.Designer.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Application\Exceptions\Exceptions.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Application\Exceptions\Exceptions.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Application\Management\BringToFront.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Application\Management\BringToFront.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Application\Management\ApplicationParameters.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Application\Management\ApplicationParameters.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Application\Management\SokobanAppConfig.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Application\Management\SokobanAppConfig.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Application\Management\INavigationController.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Application\Management\INavigationController.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Application\ApplicationRepository.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Application\ApplicationRepository.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Model\AvailableGames\AvailableGamesRepository.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Model\AvailableGames\AvailableGamesRepository.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Model\Console\ConsoleRepository.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Model\Console\ConsoleRepository.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Model\Profile\GameServers.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Model\Profile\GameServers.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Presenter\ChooseConnectionPresenter.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Presenter\ChooseConnectionPresenter.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Properties\Resources.Designer.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Properties\Resources.Designer.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="View\ChooseConnection\ChooseConnectionDebug.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\View\ChooseConnection\ChooseConnectionDebug.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="View\ChooseConnection\ChooseConnectionDialog.xaml.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\View\ChooseConnection\ChooseConnectionDialog.xaml.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="View\ChooseConnection\IChooseConnectionView.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\View\ChooseConnection\IChooseConnectionView.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="View\Components\PasswordBox.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\View\Components\PasswordBox.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Model\Profile\ProfileRepository.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Model\Profile\ProfileRepository.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="View\Delegates.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\View\Delegates.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="View\Splash\InitialSplash.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\View\Splash\InitialSplash.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="View\Splash\InitialSplash.designer.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\View\Splash\InitialSplash.designer.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Application\Management\NavigationController.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Application\Management\NavigationController.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Application\Management\NavigationService.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Application\Management\NavigationService.cs">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Properties\Settings.settings" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Properties\Settings.settings">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Application\Settings\App.config" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Application\Settings\App.config">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="View\Resources\Green.Monster.gif" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\View\Resources\Green.Monster.gif">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="View\Resources\intro.gif" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\View\Resources\intro.gif">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="View\Resources\scream - Kopie.wav" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\View\Resources\scream - Kopie.wav">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Properties\Resources.resx" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Properties\Resources.resx">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="View\Splash\InitialSplash.resx" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\View\Splash\InitialSplash.resx">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Application\App.xaml" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Application\App.xaml">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Themes\Generic.xaml" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Themes\Generic.xaml">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="View\ChooseConnection\ChooseConnectionDialog.xaml" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\View\ChooseConnection\ChooseConnectionDialog.xaml">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="View\MainWindow\MainWindow.xaml" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\View\MainWindow\MainWindow.xaml">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Themes\DefaultSkin.xaml" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Themes\DefaultSkin.xaml">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Sokoban.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="Sokoban" Source="Sokoban.csproj" Description="Converted">
+</Event><Event ErrorLevel="1" Project="GameDocs" Source="..\GameDocs\GameDocs.csproj" Description="Warning: The project file is being backed up to a relative path that differs from the original solution relative path.  The difference in folder hierarchy may create problems in opening or building the backed up solution and project.">
+</Event><Event ErrorLevel="0" Project="GameDocs" Source="..\GameDocs\GameDocs.csproj" Description="Project file successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\GameDocs\GameDocs.csproj">
+</Event><Event ErrorLevel="0" Project="GameDocs" Source="..\GameDocs\GameDocs.csproj.user" Description="Project user file successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\GameDocs\GameDocs.csproj.user">
+</Event><Event ErrorLevel="0" Project="GameDocs" Source="..\GameDocs\View\GameDocs.xaml.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\GameDocs\View\GameDocs.xaml.cs">
+</Event><Event ErrorLevel="0" Project="GameDocs" Source="..\GameDocs\View\class.GameDocsProperties.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\GameDocs\View\class.GameDocsProperties.cs">
+</Event><Event ErrorLevel="0" Project="GameDocs" Source="..\GameDocs\Properties\AssemblyInfo.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\GameDocs\Properties\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="GameDocs" Source="..\GameDocs\Properties\Resources.Designer.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\GameDocs\Properties\Resources.Designer.cs">
+</Event><Event ErrorLevel="0" Project="GameDocs" Source="..\GameDocs\Properties\Settings.Designer.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\GameDocs\Properties\Settings.Designer.cs">
+</Event><Event ErrorLevel="0" Project="GameDocs" Source="..\GameDocs\Properties\Settings.settings" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\GameDocs\Properties\Settings.settings">
+</Event><Event ErrorLevel="0" Project="GameDocs" Source="..\GameDocs\Resources\QuestSchema.xsd" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\GameDocs\Resources\QuestSchema.xsd">
+</Event><Event ErrorLevel="0" Project="GameDocs" Source="..\GameDocs\Resources\QuestsSchema.xsd" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\GameDocs\Resources\QuestsSchema.xsd">
+</Event><Event ErrorLevel="0" Project="GameDocs" Source="..\GameDocs\Properties\Resources.resx" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\GameDocs\Properties\Resources.resx">
+</Event><Event ErrorLevel="0" Project="GameDocs" Source="..\GameDocs\View\GameDocs.xaml" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\GameDocs\View\GameDocs.xaml">
+</Event><Event ErrorLevel="0" Project="GameDocs" Source="..\GameDocs\GameDocs.csproj" Description="The project file does not require conversion.">
+</Event><Event ErrorLevel="3" Project="GameDocs" Source="..\GameDocs\GameDocs.csproj" Description="No Conversion Required">
+</Event><Event ErrorLevel="1" Project="Lib" Source="..\Lib\Lib.csproj" Description="Warning: The project file is being backed up to a relative path that differs from the original solution relative path.  The difference in folder hierarchy may create problems in opening or building the backed up solution and project.">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\Lib.csproj" Description="Project file successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\Lib.csproj">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\Lib.csproj.user" Description="Project user file successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\Lib.csproj.user">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\BasePresenter.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\BasePresenter.cs">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\CommonFunc.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\CommonFunc.cs">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\Debug\Debugger.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\Debug\Debugger.cs">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\Delegates\Delegates.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\Delegates\Delegates.cs">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\DS\Pair.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\DS\Pair.cs">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\Enums.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\Enums.cs">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\Events\EventTypeLib.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\Events\EventTypeLib.cs">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\Exceptions\Exceptions.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\Exceptions\Exceptions.cs">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\Http\HttpReq.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\Http\HttpReq.cs">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\Interfaces\IBaseRepository.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\Interfaces\IBaseRepository.cs">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\Interfaces\IBaseView.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\Interfaces\IBaseView.cs">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\Interfaces\IQuest.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\Interfaces\IQuest.cs">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\Networking\TcpInterface.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\Networking\TcpInterface.cs">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\Properties\AssemblyInfo.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\Properties\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\Properties\Resources.Designer.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\Properties\Resources.Designer.cs">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\Properties\Settings.Designer.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\Properties\Settings.Designer.cs">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\Timer.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\Timer.cs">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\Xml\XmlLib.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\Xml\XmlLib.cs">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\Xml\XmlLeagues.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\Xml\XmlLeagues.cs">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\Xml\XmlRoundReader.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\Xml\XmlRoundReader.cs">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\Xml\XmlValidator.cs" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\Xml\XmlValidator.cs">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\Properties\Settings.settings" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\Properties\Settings.settings">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\Properties\Resources.resx" Description="File successfully backed up as D:\Bakalarka\Sokoban\Main\Backup\Lib\Properties\Resources.resx">
+</Event><Event ErrorLevel="0" Project="Lib" Source="..\Lib\Lib.csproj" Description="The project file does not require conversion.">
+</Event><Event ErrorLevel="3" Project="Lib" Source="..\Lib\Lib.csproj" Description="No Conversion Required">
+</Event><Event ErrorLevel="0" Project="" Source="Sokoban.sln" Description="Solution converted successfully">
+</Event><Event ErrorLevel="3" Project="" Source="Sokoban.sln" Description="Converted">
+</Event><Event ErrorLevel="0" Project="Sokoban" Source="Sokoban.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event></UpgradeLog>

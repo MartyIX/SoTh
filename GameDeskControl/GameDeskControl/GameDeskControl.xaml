@@ -7,21 +7,22 @@
     Loaded="DocumentContent_Loaded" 
     mc:Ignorable="d" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" >
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" Height="300" Width="300">
     <ad:DocumentContent.Resources>
         <local:FieldSizeToRectConverter x:Key="fieldSizeConverter" />
         <Style x:Key="GameDesk" TargetType="{x:Type Rectangle}">
             <Setter Property="Fill">
                 <Setter.Value>
-                    <DrawingBrush Viewport="{Binding Path=FieldSize, Converter={StaticResource fieldSizeConverter}}" ViewportUnits="Absolute" TileMode="Tile">
+                    <DrawingBrush Viewport="{Binding Path=FieldSize, Converter={StaticResource fieldSizeConverter}, FallbackValue='0,0,50,50'}" ViewportUnits="Absolute" TileMode="Tile">
                         <DrawingBrush.Drawing>
                             <DrawingGroup>
                                 <GeometryDrawing Brush="CornflowerBlue">
+                                <!--<GeometryDrawing Brush="Black">-->
                                     <GeometryDrawing.Geometry>
                                         <RectangleGeometry Rect="0,0,100,100" />
                                     </GeometryDrawing.Geometry>
                                 </GeometryDrawing>
-
+                                <!--<GeometryDrawing Brush="Red">-->
                                 <GeometryDrawing Brush="Azure">
                                     <GeometryDrawing.Geometry>
                                         <GeometryGroup>
@@ -69,7 +70,7 @@
             </Grid>
         </StackPanel>
         <Canvas Name="gamedeskCanvas">
-          <Rectangle HorizontalAlignment="Left" Width="Auto" Height="Auto" 
+            <Rectangle HorizontalAlignment="Left" Width="229" Height="300" 
                Name="gamedeskRect" Style="{DynamicResource GameDesk}" />
         </Canvas>
     </DockPanel>

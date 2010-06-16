@@ -16,6 +16,7 @@ using Sokoban;
 using Sokoban.Model;
 using Sokoban.View.ChooseConnection;
 using System.Diagnostics;
+using Sokoban.Lib;
 
 
 namespace Sokoban
@@ -43,15 +44,45 @@ namespace Sokoban
 
         public void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            DebuggerIX.Start(DebuggerMode.File);
             ApplicationRepository.Instance.OnStartUp();
+            loadQuest();
         }        
 
 
-        private void NewGame_Click(object sender, RoutedEventArgs e)
+        private void Window_Closed(object sender, EventArgs e)
         {
-            //this.gameManager.Add();
+            DebuggerIX.Close();
         }
 
+        private void loadQuest()
+        {
+            string result = Sokoban.Properties.Resources.TestQuest;
+            gameManager.Add(result);
+        }
+
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.F1)
+            {
+                loadQuest();
+                e.Handled = true;
+            }
+            else
+            {
+                gameManager.ActiveGameControl.KeyIsDown(sender, e);
+            }
+        }
+
+        private void Window_PreviewKeyUp(object sender, KeyEventArgs e)
+        {
+            gameManager.ActiveGameControl.KeyIsUp(sender, e);
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
 
     }
 }

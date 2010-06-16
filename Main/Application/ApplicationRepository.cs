@@ -10,11 +10,11 @@ using Sokoban.Lib.Http;
 using System.Net;
 using Sokoban.Application;
 using System.IO;
+using System.Windows;
 
 namespace Sokoban.Model
 {
     using Application = System.Windows.Forms.Application;
-    using System.Windows;
 
     /// <summary>
     /// Singleton !
@@ -73,6 +73,8 @@ namespace Sokoban.Model
 
         public ApplicationParameters appParams;
 
+        public ProfileRepository profileRepository;
+
         #endregion Fields
 
         private bool alreadyStarted = false;
@@ -87,6 +89,8 @@ namespace Sokoban.Model
             // must be before any calls to Console.WriteLine()
             AttachConsole(ATTACH_PARENT_PROCESS);
 
+            ApplicationRepository.Instance.profileRepository = ProfileRepository.Instance;
+
             Instance.appParams = new ApplicationParameters();
 
             try
@@ -95,7 +99,7 @@ namespace Sokoban.Model
             }
             catch (ApplicationParametersException e)
             {
-                MessageBox.Show("Parameters contain an error.\nError: " + e.Message, "Sokoban");
+                System.Windows.Forms.MessageBox.Show("Parameters contain an error.\nError: " + e.Message, "Sokoban");
                 Environment.Exit(2);
             }
 
@@ -108,7 +112,7 @@ namespace Sokoban.Model
             else
             {                
                 // launch the WPF application like normal                
-                NavigationController controller = new NavigationController();
+                NavigationController controller = new NavigationController(ApplicationRepository.Instance);
                 NavigationService.AttachNavigator(controller);
 
                 ApplicationRepository.Instance.MainWindow = new MainWindow();

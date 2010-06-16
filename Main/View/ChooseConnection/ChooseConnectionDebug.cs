@@ -12,7 +12,7 @@ using Sokoban.Application;
 using System.Diagnostics;
 using System.Windows.Data;
 
-namespace Sokoban.View
+namespace Sokoban.View.ChooseConnection
 {
     public partial class ChooseConnectionDebug : IChooseConnectionView
     {
