@@ -48,7 +48,10 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AvalonDock, Version=1.2.2691.0, Culture=neutral, PublicKeyToken=85a1e0ada7ec13e4, processorArchitecture=MSIL" />
+    <Reference Include="AvalonDock, Version=1.2.2691.0, Culture=neutral, PublicKeyToken=85a1e0ada7ec13e4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\AvalonDock\AvalonDock.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=3.1.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=3.1.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86" />
     <Reference Include="System" />
@@ -161,6 +164,7 @@
     </Compile>
     <EmbeddedResource Include="View\Splash\InitialSplash.resx">
       <DependentUpon>InitialSplash.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <!-- / old sokoban -->
@@ -242,6 +246,10 @@
     <ProjectReference Include="..\PluginInterface\PluginInterface\PluginInterface.csproj">
       <Project>{E1357F87-0BE7-4FF7-84B4-D4CC4CD1788E}</Project>
       <Name>PluginInterface</Name>
+    </ProjectReference>
+    <ProjectReference Include="Solvers\Solvers.csproj">
+      <Project>{4BE6FD20-46E6-49DB-B30A-332F436C2F7D}</Project>
+      <Name>Solvers</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

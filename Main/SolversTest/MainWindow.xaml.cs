@@ -12,6 +12,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Sokoban.Solvers;
+using System.IO;
+using System.Collections.ObjectModel;
 
 namespace SolversTest
 {
@@ -25,10 +27,13 @@ namespace SolversTest
         public MainWindow()
         {
             InitializeComponent();
+			this.DataContext = this;            
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            solversPane.Initialize(@"D:\Bakalarka\Sokoban\Main\Solvers\Solvers", this);
+
             /*
             lib = new SolverLibrary(@"D:\Bakalarka\Study\Solvers\SolverPlugins\YASS\FromSourceForge\YASS.dll", this);
             //lib = new SolverLibrary(@"D:\Bakalarka\Study\Solvers\SolverSDK\Plugins\SolverExample\Debug\SolverExample.dll", this);

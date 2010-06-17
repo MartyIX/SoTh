@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ad="clr-namespace:AvalonDock;assembly=AvalonDock"
     Startup="Application_Startup"
-    LoadCompleted="Application_LoadCompleted"
+    LoadCompleted="Application_LoadCompleted" StartupUri="/Sokoban;component/View/MainWindow/MainWindow.xaml"
     >
     <Application.Resources>
 

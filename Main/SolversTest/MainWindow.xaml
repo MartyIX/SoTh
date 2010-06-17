@@ -10,26 +10,9 @@
 
 	<ad:DockingManager x:Name="dockingManager">
 		<ad:ResizingPanel Orientation="Vertical">
-			<!--<view:Solvers x:Name="solvers" diag:PresentationTraceSources.TraceLevel="High" />-->
-			<ad:DockablePane x:Name="GamesDocumentPane" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-				<ad:DockableContent x:Name="classesContent" Title="Solvers">					
-					<DockPanel LastChildFill="True">					    
-					    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
-					    	<TextBlock VerticalAlignment="Center">Actual solver:</TextBlock>
-							<ComboBox IsEditable="False" SelectedIndex="0" Margin="10,0,0,0">
-							    <ComboBoxItem Name="cbi1">Item1</ComboBoxItem>
-							    <ComboBoxItem Name="cbi2">Item2</ComboBoxItem>
-							    <ComboBoxItem Name="cbi3">Item3</ComboBoxItem>
-							</ComboBox>
-					    </StackPanel>
-						<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
-					    	<Button>Start</Button>
-							<Button>Start</Button>
-					    </StackPanel>
-						<RichTextBox DockPanel.Dock="Top"/>
-					</DockPanel>
-				</ad:DockableContent>
-			</ad:DockablePane>
+            <ad:DockablePane>
+                <view:Solvers x:Name="solversPane" diag:PresentationTraceSources.TraceLevel="High" />
+            </ad:DockablePane>    
 		</ad:ResizingPanel>    	
 	</ad:DockingManager>
 </Window>

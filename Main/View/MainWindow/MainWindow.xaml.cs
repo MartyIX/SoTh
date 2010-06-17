@@ -27,10 +27,12 @@ namespace Sokoban
 
     public partial class MainWindow : System.Windows.Window
     {
+        public ReadOnlyObservableCollection<string> MyProperty { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = this;
+            this.DataContext = this;            
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -44,8 +46,9 @@ namespace Sokoban
 
         public void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            DebuggerIX.Start(DebuggerMode.File);
+            DebuggerIX.Start(DebuggerMode.File);                        
             ApplicationRepository.Instance.OnStartUp();
+            solversPane.Initialize(@"D:\Bakalarka\Sokoban\Main\Solvers\Solvers", this);
             loadQuest();
         }        
 
@@ -93,6 +96,11 @@ namespace Sokoban
             {
                 gameManager.Terminate();
             }
+
+            if (solversPane != null)
+            {
+                solversPane.Terminate(); // unload dynamic libraries
+            }
         }
 
 
@@ -107,5 +115,64 @@ namespace Sokoban
             this.Terminate();
         }
 
+        private void MenuItem_Console_Click(object sender, RoutedEventArgs e)
+        {
+            SetVisibilityOfMenuItems(consolePane);
+        }
+
+        private void MenuItem_Solvers_Click(object sender, RoutedEventArgs e)
+        {
+            SetVisibilityOfMenuItems(solversPane);
+        }
+
+        private void SetVisibilityOfMenuItems(DockableContent dc)
+        {
+            if (dc.Visibility == Visibility.Visible) // the value is set in ConvertBack of AvalonDockVisibilityConverter!!!
+            {
+                dockingManager.Show(dc);
+            }
+            else
+            {
+                dockingManager.Hide(dc);
+            }
+        }
+
+        private void SetVisibilityOfDockableContents(DockableContent dc, DockableContentState state)
+        {
+            if (state == DockableContentState.Hidden)
+            {
+                dc.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void solversPane_StateChanged(object sender, DockableContentState state)
+        {
+            SetVisibilityOfDockableContents(solversPane, state);
+        }
+
+        private void consolePane_StateChanged(object sender, DockableContentState state)
+        {
+            SetVisibilityOfDockableContents(consolePane, state);
+        }
+
+
+    }
+
+    [ValueConversion(/* sourceType */ typeof(System.Windows.Visibility), /* targetType */ typeof(bool))]
+    public class AvalonDockVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {            
+            Debug.Assert(targetType == typeof(bool));
+
+            Visibility visibility = (Visibility)value;
+            return visibility != Visibility.Hidden;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            bool val = (bool)value;            
+            return val ? Visibility.Visible : Visibility.Hidden;
+        }
     }
 }
