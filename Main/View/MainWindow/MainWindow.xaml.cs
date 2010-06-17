@@ -84,5 +84,28 @@ namespace Sokoban
 
         }
 
+        /// <summary>
+        /// Correctly terminates everything in the main window that needs it
+        /// </summary>
+        private void Terminate()
+        {
+            if (gameManager != null)
+            {
+                gameManager.Terminate();
+            }
+        }
+
+
+        private void Exit_Click(object sender, RoutedEventArgs e)
+        {
+            this.Terminate();
+            this.Close();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            this.Terminate();
+        }
+
     }
 }

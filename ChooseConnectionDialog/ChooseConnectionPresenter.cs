@@ -11,8 +11,8 @@ namespace Sokoban.View.ChooseConnection
 {
     public class ChooseConnectionPresenter : BasePresenter<IChooseConnectionView, IProfileRepository>
     {
-        private Window chooseConnectionDialog;
-        //private ChooseConnectionDebug chooseConnectionDebug;
+        private ChooseConnectionDialog chooseConnectionDialog;
+        private ChooseConnectionDebug chooseConnectionDebug;
         private string viewName;
 
 
@@ -23,22 +23,35 @@ namespace Sokoban.View.ChooseConnection
             this.repository.Initialize();
         }
 
-        public override void InitializeView(Window mainApp)
+        public override void InitializeView(Window window) 
+        {
+            InitializeView_preFill(window, "", "", "");
+        }
+
+        public void InitializeView_preFill(Window mainApp, string server, string username, string password)
         {
 
             if (viewName == "form" && (chooseConnectionDialog == null || PresentationSource.FromVisual(chooseConnectionDialog).IsDisposed))
             {
                 chooseConnectionDialog = new ChooseConnectionDialog(this, repository);
+                chooseConnectionDialog.SelectedURL = server;
+                chooseConnectionDialog.Username = username;
+                chooseConnectionDialog.Password = password;
+
                 this.view = (IChooseConnectionView)chooseConnectionDialog;
                 chooseConnectionDialog.Owner = mainApp;
                 chooseConnectionDialog.Show();
             }
-            //else if (viewName == "debug" && chooseConnectionDebug == null)
-            //{
-                /*chooseConnectionDebug = new ChooseConnectionDebug(this, repository);
+            else if (viewName == "debug" && chooseConnectionDebug == null)
+            {
+                chooseConnectionDebug = new ChooseConnectionDebug(this, repository);
+                chooseConnectionDebug.SelectedURL = server;
+                chooseConnectionDebug.Username = username;
+                chooseConnectionDebug.Password = password;
+
                 this.view = (IChooseConnectionView)chooseConnectionDebug;
-                this.Login();*/
-            //}
+                this.Login();
+            }
         }
 
         public void Login()

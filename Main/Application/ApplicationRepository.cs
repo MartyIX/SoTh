@@ -15,6 +15,7 @@ using System.Windows;
 namespace Sokoban.Model
 {
     using Application = System.Windows.Forms.Application;
+    using Sokoban.View.ChooseConnection;
 
     /// <summary>
     /// Singleton !
@@ -34,6 +35,9 @@ namespace Sokoban.Model
             }
         }
 
+        /// <summary>
+        /// Main window reference
+        /// </summary>
         public Window MainWindow;
 
         #region Fields (20)
@@ -75,8 +79,16 @@ namespace Sokoban.Model
 
         public ProfileRepository profileRepository;
 
+        ///
+        /// VIEWS
+        ///
+        ChooseConnectionPresenter chooseConnectionPresenter;
+
         #endregion Fields
 
+        /// <summary>
+        /// We don't want to initialize the application twice
+        /// </summary>
         private bool alreadyStarted = false;
 
         [DllImport("kernel32.dll")]
@@ -111,10 +123,7 @@ namespace Sokoban.Model
             }
             else
             {                
-                // launch the WPF application like normal                
-                NavigationController controller = new NavigationController(ApplicationRepository.Instance);
-                NavigationService.AttachNavigator(controller);
-
+                // launch the WPF application like usual                
                 ApplicationRepository.Instance.MainWindow = new MainWindow();
                 ApplicationRepository.Instance.MainWindow.ShowDialog();
             }
@@ -127,7 +136,8 @@ namespace Sokoban.Model
         {
             if (alreadyStarted == false)
             {
-                NavigationService.LoadView("ChooseConnection", Instance.appParams.getView("ChooseConnection"));
+                this.LoadViewChooseConnection();
+
                 alreadyStarted = true;
 
                 // Open windows from command-line
@@ -135,7 +145,7 @@ namespace Sokoban.Model
                 {
                     foreach (string window in Instance.appParams.OpenViewsOnStart)
                     {
-                        NavigationService.LoadView(window, Instance.appParams.getView(window));
+                        //NavigationService.LoadView(window, Instance.appParams.getView(window));
                     }
                 }
             }
@@ -189,10 +199,28 @@ namespace Sokoban.Model
                 }
                 catch (WebException e)
                 {
-                    throw new ConnectionFailureException("File `" + fullUrl + "` is unavailable.");
+                    throw new ConnectionFailureException("File `" + fullUrl + "` is unavailable. Exception message: " + e.Message);
                 }
                 return output;
             }
+        }
+
+        private void LoadViewChooseConnection()
+        {
+            chooseConnectionPresenter = new ChooseConnectionPresenter(Instance.appParams.getView("ChooseConnection"), profileRepository);
+
+
+            if (appParams.credentials != null)
+            {
+                chooseConnectionPresenter.InitializeView_preFill(MainWindow,
+                    appParams.credentials["server"],
+                    appParams.credentials["username"],
+                    appParams.credentials["password"]);
+            }
+            else
+            {
+                chooseConnectionPresenter.InitializeView(MainWindow);
+            }                        
         }
 
         #region IBaseRepository Members

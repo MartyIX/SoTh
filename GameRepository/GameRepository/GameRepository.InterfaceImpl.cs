@@ -62,7 +62,11 @@ namespace Sokoban.Model
 
         public void Terminate()
         {
-            pluginService.Terminate();
+            if (pluginService != null)
+            {
+                pluginService.Terminate();
+            }
+
             pluginService = null;
             
             gameIndicators = null;

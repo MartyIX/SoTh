@@ -9,9 +9,9 @@ namespace Sokoban.View
 {   
     public interface IChooseConnectionView : IBaseView
     {
-        string SelectedURL { get; }
-        string Username { get; }
-        string Password { get; }
+        string SelectedURL { get; set; }
+        string Username { get; set; }
+        string Password { get; set; }
         void CloseWindow();
     }
 }

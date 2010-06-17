@@ -11,12 +11,16 @@ using System.Diagnostics;
 using System.Windows.Data;
 using Sokoban.Model;
 
-namespace Sokoban.View
+namespace Sokoban.View.ChooseConnection
 {
     public partial class ChooseConnectionDebug : IChooseConnectionView
     {
         private ChooseConnectionPresenter presenter;
         private IProfileRepository model;
+        private string server;
+        private string username;
+        private string password;
+
 
         public ChooseConnectionDebug(ChooseConnectionPresenter presenter, IProfileRepository model)
         {
@@ -35,22 +39,29 @@ namespace Sokoban.View
 
         #region IChooseConnectionView Members
 
-        string IChooseConnectionView.SelectedURL
+        public string SelectedURL
         {
             get
             {
-                return ApplicationRepository.Instance.appParams.credentials["server"];
+                return server;
+            }
+
+            set
+            {
+                server = value;
             }
         }
 
-        string IChooseConnectionView.Username
+        public string Username
         {
-            get { return ApplicationRepository.Instance.appParams.credentials["username"]; }
+            get { return username; }
+            set { username = value; }
         }
 
-        string IChooseConnectionView.Password
+        public string Password
         {
-            get { return ApplicationRepository.Instance.appParams.credentials["password"]; }
+            get { return password; }
+            set { password = value; }
         }
 
         string IBaseView.Name

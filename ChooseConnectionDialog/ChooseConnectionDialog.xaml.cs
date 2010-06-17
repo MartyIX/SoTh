@@ -57,6 +57,8 @@ namespace Sokoban.View.ChooseConnection
 
         void btnConnect_Click(object sender, RoutedEventArgs e)
         {
+            
+            
             // Validate all controls
             if (ValidateBindings(this))
             {
@@ -101,7 +103,7 @@ namespace Sokoban.View.ChooseConnection
             return valid;
         }
 
-        string IChooseConnectionView.SelectedURL
+        public string SelectedURL
         {
             get
             {
@@ -113,6 +115,19 @@ namespace Sokoban.View.ChooseConnection
                 {
                     return cbServer.SelectedItem.ToString();
                 }
+            }
+
+            set
+            {
+                int i = 0;
+                foreach (string item in cbServer.Items)
+	            {
+		            if (item == value) {
+                        cbServer.SelectedIndex = i;
+                        break;
+                    }
+                    i++;
+	            }                
             }
         }
 
@@ -130,7 +145,7 @@ namespace Sokoban.View.ChooseConnection
 
         #region IChooseConnectionView Members
 
-        void IChooseConnectionView.CloseWindow()
+        public void CloseWindow()
         {
             this.Close();
         }
@@ -166,6 +181,11 @@ namespace Sokoban.View.ChooseConnection
         }
 
         #endregion
+
+        private void btnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            this.CloseWindow();
+        }
     }
 
     // Validation rules

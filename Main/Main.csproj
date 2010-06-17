@@ -58,6 +58,7 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.DynamicData.Design" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase">
@@ -123,6 +124,7 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="Application\Settings\app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -140,8 +142,6 @@
     <Compile Include="Application\Management\BringToFront.cs" />
     <Compile Include="Application\Management\ApplicationParameters.cs" />
     <Compile Include="Application\Management\SokobanAppConfig.cs" />
-    <Compile Include="Application\Management\INavigationController.cs" />
-    <None Include="Application\Settings\App.config" />
     <Compile Include="Application\ApplicationRepository.cs" />
     <Compile Include="Model\AvailableGames\AvailableGamesRepository.cs" />
     <Compile Include="Model\Console\ConsoleRepository.cs" />
@@ -159,11 +159,9 @@
     <Compile Include="View\Splash\InitialSplash.designer.cs">
       <DependentUpon>InitialSplash.cs</DependentUpon>
     </Compile>
-    <Compile Include="Application\Management\NavigationController.cs" />
     <EmbeddedResource Include="View\Splash\InitialSplash.resx">
       <DependentUpon>InitialSplash.cs</DependentUpon>
     </EmbeddedResource>
-    <Compile Include="Application\Management\NavigationService.cs" />
   </ItemGroup>
   <!-- / old sokoban -->
   <ItemGroup>

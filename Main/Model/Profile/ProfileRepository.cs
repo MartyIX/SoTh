@@ -143,6 +143,8 @@ namespace Sokoban.Model
         /// <returns>True if user has been logged in; false otherwise</returns>
         public bool TryLogin(string server, string username, string password)
         {
+            this.LoginMessage = "Connecting to the server";
+            
             // TODO: improve                          
             string postData = "name=" + username + "&pass=" + password;
             string url = server.TrimEnd(new char[] { '/' }) + "/login.php";

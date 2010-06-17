@@ -3,7 +3,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:Sokoban.View.ChooseConnection"  
     xmlns:components="clr-namespace:Sokoban.Components"  
-    xmlns:gameServers="clr-namespace:Sokoban.Model.Profile"  
     Title="Sokoban: Connect to the game server" Height="238" Width="358" Topmost="True"
     ShowInTaskbar="False"
     WindowStartupLocation="CenterScreen" MinWidth="307" MinHeight="208" MaxWidth="500" MaxHeight="500" Padding="10">
@@ -94,7 +93,7 @@
                  Text="{Binding Path=LoginMessage}" />
         <StackPanel Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
         <Button Name="btnConnect" IsDefault="True" Click="btnConnect_Click">Connect</Button>
-        <Button Name="btnCancel" IsCancel="True" Margin="5,0,0,0">Cancel</Button>
+        <Button Name="btnCancel" IsCancel="True" Margin="5,0,0,0" Click="btnCancel_Click">Cancel</Button>
         </StackPanel>
     </Grid>
 </Window>

@@ -1,0 +1,35 @@
+﻿<Window x:Class="SolversTest.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:ad="clr-namespace:AvalonDock;assembly=AvalonDock"     
+    xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase" 
+    xmlns:view="clr-namespace:Sokoban.View;assembly=Solvers"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
+    Title="Window1" Height="300" Width="300" Loaded="Window_Loaded">
+
+	<ad:DockingManager x:Name="dockingManager">
+		<ad:ResizingPanel Orientation="Vertical">
+			<!--<view:Solvers x:Name="solvers" diag:PresentationTraceSources.TraceLevel="High" />-->
+			<ad:DockablePane x:Name="GamesDocumentPane" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+				<ad:DockableContent x:Name="classesContent" Title="Solvers">					
+					<DockPanel LastChildFill="True">					    
+					    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+					    	<TextBlock VerticalAlignment="Center">Actual solver:</TextBlock>
+							<ComboBox IsEditable="False" SelectedIndex="0" Margin="10,0,0,0">
+							    <ComboBoxItem Name="cbi1">Item1</ComboBoxItem>
+							    <ComboBoxItem Name="cbi2">Item2</ComboBoxItem>
+							    <ComboBoxItem Name="cbi3">Item3</ComboBoxItem>
+							</ComboBox>
+					    </StackPanel>
+						<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
+					    	<Button>Start</Button>
+							<Button>Start</Button>
+					    </StackPanel>
+						<RichTextBox DockPanel.Dock="Top"/>
+					</DockPanel>
+				</ad:DockableContent>
+			</ad:DockablePane>
+		</ad:ResizingPanel>    	
+	</ad:DockingManager>
+</Window>
