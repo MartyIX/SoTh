@@ -48,8 +48,8 @@ namespace Sokoban
         {
             DebuggerIX.Start(DebuggerMode.File);                        
             ApplicationRepository.Instance.OnStartUp();
-            solversPane.Initialize(@"D:\Bakalarka\Sokoban\Main\Solvers\Solvers", this);
-            loadQuest();
+            solversPane.Initialize(@"D:\Bakalarka\Sokoban\Main\Solvers\Solvers", this.gameManager, this);
+            this.loadQuest();
         }        
 
 

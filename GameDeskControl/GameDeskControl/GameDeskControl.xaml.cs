@@ -24,7 +24,7 @@ namespace Sokoban.View.GameDocsComponents
     /// <summary>
     /// Interaction logic for GameDeskControl.xaml
     /// </summary>
-    public partial class GameDeskControl : DocumentContent, INotifyPropertyChanged
+    public partial class GameDeskControl : DocumentContent, INotifyPropertyChanged, ISolverProvider
     {        
         private double availableWidth = 200;
         private double availableHeight = 200;
@@ -256,6 +256,25 @@ namespace Sokoban.View.GameDocsComponents
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(prop));
             }
+        }
+
+        #endregion
+
+        #region ISolverProvider Members
+
+        public int GetMazeWidth()
+        {
+            return this.game.GetMazeWidth();
+        }
+
+        public int GetMazeHeight()
+        {
+            return game.GetMazeHeight();
+        }
+
+        public string SerializeMaze()
+        {
+            return game.SerializeMaze();
         }
 
         #endregion

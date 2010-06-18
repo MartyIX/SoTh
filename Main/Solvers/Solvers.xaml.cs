@@ -26,8 +26,10 @@ namespace Sokoban.View
 
         public string CurrentSolver
         {
-            get { return solversManager.CurrentSolver; }
-            set { solversManager.CurrentSolver = value; Notify("CurrentSolver"); }
+            get { return (solversManager != null) ? solversManager.CurrentSolver : ""; }
+            set { if (solversManager != null) 
+                     solversManager.CurrentSolver = value; 
+                  Notify("CurrentSolver"); }
         }
 
         // Private fields
@@ -45,7 +47,7 @@ namespace Sokoban.View
         /// </summary>
         /// <param name="path">Absolute path to the directory with solvers</param>
         /// <param name="parentWindow">We need to display dialogs and the dialogs need to be bound to a window; main window reference is expected</param>
-        public void Initialize(string path, Window parentWindow)
+        public void Initialize(string path, ISolverProvider solverProvider, Window parentWindow)
         {
             solversManager = new SolversManager(path, parentWindow);
             SolversList = new ObservableCollection<string>(solversManager.Solvers); // we want to notify

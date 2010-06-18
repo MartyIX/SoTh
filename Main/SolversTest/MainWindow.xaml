@@ -6,7 +6,7 @@
     xmlns:view="clr-namespace:Sokoban.View;assembly=Solvers"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
-    Title="Window1" Height="300" Width="300" Loaded="Window_Loaded">
+    Title="Window1" Height="300" Width="300" Loaded="Window_Loaded" Closed="Window_Closed">
 
 	<ad:DockingManager x:Name="dockingManager">
 		<ad:ResizingPanel Orientation="Vertical">

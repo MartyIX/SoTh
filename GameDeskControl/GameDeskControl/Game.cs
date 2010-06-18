@@ -18,7 +18,7 @@ using Sokoban.Lib.Exceptions;
 namespace Sokoban.Model
 {
 
-    public class Game : IGame, IGameRealTime
+    public class Game : IGame, IGameRealTime, ISolverProvider
     {
         // SETTINGS
         const int PHASE_CONST = 75;
@@ -192,5 +192,24 @@ namespace Sokoban.Model
             this.stopRendering();
             gameRepository.Terminate();
         }
+
+        #region ISolverProvider Members
+
+        public int GetMazeWidth()
+        {
+            return gameRepository.GetMazeWidth();
+        }
+
+        public int GetMazeHeight()
+        {
+            return gameRepository.GetMazeHeight();
+        }
+
+        public string SerializeMaze()
+        {
+            return gameRepository.SerializeMaze();
+        }
+
+        #endregion
     }
 }

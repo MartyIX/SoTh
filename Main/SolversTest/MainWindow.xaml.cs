@@ -49,6 +49,14 @@ namespace SolversTest
 
             Close();
             */
+            
         }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            solversPane.Terminate();   
+        }
+
+
     }
 }

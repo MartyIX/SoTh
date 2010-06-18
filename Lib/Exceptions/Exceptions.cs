@@ -18,4 +18,20 @@ namespace Sokoban.Lib.Exceptions
         {
         }
     }
+
+
+    public class NotStandardSokobanVariantException : System.Exception
+    {
+        // The default constructor needs to be defined
+        // explicitly now since it would be gone otherwise.
+
+        public NotStandardSokobanVariantException()
+        {
+        }
+
+        public NotStandardSokobanVariantException(string message)
+            : base(message)
+        {
+        }
+    }
 }

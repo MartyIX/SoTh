@@ -12,7 +12,7 @@ namespace Sokoban.Model.GameDesk
     public delegate void GameObjectsLoadedDelegate(List<IGamePlugin> gameObjects);
     public delegate void SetSizeDelegate(int fieldsX, int fieldsY);
 
-    public interface IGameRepository
+    public interface IGameRepository : ISolverProvider
     {
         int FieldsX { get; }
         int FieldsY { get; }

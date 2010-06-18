@@ -25,7 +25,7 @@ namespace Sokoban.View
     /// <summary>
     /// Interaction logic for GameDocs.xaml
     /// </summary>
-    public partial class GameDocs : DocumentPane, INotifyPropertyChanged
+    public partial class GameDocs : DocumentPane, INotifyPropertyChanged, ISolverProvider
     {
         public DockingManager dm;
         public ObservableCollection<DocumentContent> GameViews { get; set; }
@@ -221,6 +221,38 @@ namespace Sokoban.View
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(prop));
             }
+        }
+
+        #endregion
+    
+        #region ISolverProvider Members
+
+        /// <summary>
+        /// Returns width of current maze
+        /// </summary>
+        /// <returns></returns>
+        public int  GetMazeWidth()
+        {
+            return ActiveGameControl.GetMazeWidth();
+        }
+
+        /// <summary>
+        /// Returns height of current maze
+        /// </summary>
+        /// <returns></returns>
+        public int  GetMazeHeight()
+        {
+            return ActiveGameControl.GetMazeHeight();
+        }
+
+        /// <summary>
+        /// Returns string of XSB characters representing objects in maze; 
+        /// may raise exception NotStandardSokobanVariantException when current maze is not standard
+        /// </summary>
+        /// <returns></returns>
+        public string  SerializeMaze()
+        {
+            return ActiveGameControl.SerializeMaze();
         }
 
         #endregion

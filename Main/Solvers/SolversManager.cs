@@ -14,10 +14,11 @@ namespace Sokoban.Solvers
         public List<string> Solvers;
 
         // Private Fields
-        //private Dictionary<string, SolverLibrary> solversDictionary;
-        private Dictionary<string, string> solversDictionary;
+        private Dictionary<string, SolverLibrary> solversDictionary;
+        //private Dictionary<string, string> solversDictionary;
         private Window parentWindow;
         private string currentSolver = null;
+        private ISolverProvider solverProvider;
 
         public string CurrentSolver
         {
@@ -30,11 +31,12 @@ namespace Sokoban.Solvers
         /// </summary>
         /// <param name="solversPath"></param>
         /// <param name="parentWindow"></param>
-        public SolversManager(string solversPath, Window parentWindow)
+        public SolversManager(string solversPath, ISolverProvider solverProvider, Window parentWindow)
         {
-            //solversDictionary = new Dictionary<string, SolverLibrary>();
-            solversDictionary = new Dictionary<string, string>();
+            solversDictionary = new Dictionary<string, SolverLibrary>();
+            //solversDictionary = new Dictionary<string, string>();
             this.parentWindow = parentWindow;
+            this.solverProvider = solverProvider;
             loadSolverPlugins(solversPath);            
         }
 
@@ -53,8 +55,10 @@ namespace Sokoban.Solvers
                 if (file.Extension.Equals(".dll"))
                 {
                     string solverName = System.IO.Path.GetFileNameWithoutExtension(file.FullName);
+                    SolverLibrary lib = new SolverLibrary(file.FullName, this.parentWindow);
                     Solvers.Add(solverName);
-                    solversDictionary.Add(solverName, file.FullName);
+                    //solversDictionary.Add(solverName, file.FullName);
+                    solversDictionary.Add(solverName, lib);
 
                     if (currentSolver == null)
                     {
@@ -67,16 +71,26 @@ namespace Sokoban.Solvers
 
         public void SolveRound()
         {
-            SolverLibrary lib = new SolverLibrary(solversDictionary[currentSolver], this.parentWindow);
-            MessageBox.Show(lib.GetPluginName());
+            //SolverLibrary lib = new SolverLibrary(solversDictionary[currentSolver], this.parentWindow);
+            SolverLibrary lib = solversDictionary[currentSolver];
+            //MessageBox.Show(lib.GetPluginName());
+            
+            
             lib.SolveEx(19, 17, "##############################################################   ################$  ################  $##############  $ $ ############# # ## ###########   # ## #####  ..## $  $          ..###### ### #@##  ..######     ########################################################################################################");
-            lib.Unload();
+            //lib.Unload();
         }
 
         public void Terminate()
         {            
             // Correctly release all libraries
             // TODO
+
+            foreach (string solverName in Solvers)
+            {
+                solversDictionary[solverName].Unload();
+            }
+
+            solversDictionary.Clear();
         }
     }
 }

@@ -98,6 +98,10 @@ namespace Sokoban.Solvers
             UInt32 uiSolutionBufferSize, ref PluginStatus psStatus, IntPtr pc);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        private delegate int SolveDel(UInt32 uiWidth, UInt32 uiHeight, StringBuilder pcBoard /* unsigned char** ppucBoard -- wrong */, 
+            StringBuilder pcSolution, UInt32 uiSolutionBufferSize);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate int OptimizeDel(UInt32 uiWidth, UInt32 uiHeight, StringBuilder pcBoard, StringBuilder pcSolution,
             UInt32 uiMovesBufferSize, ref PluginStatus psStatus, IntPtr pc);
 
@@ -177,7 +181,7 @@ namespace Sokoban.Solvers
                 Debug.WriteLine("- GetLastWin32Error: " + Marshal.GetLastWin32Error().ToString());
             }
 
-            Debug.WriteLine("- Done");
+            Debug.WriteLine("- Library '" + path + "' loaded");
         }
 
         /// <summary>
@@ -243,6 +247,43 @@ namespace Sokoban.Solvers
                 else
                 {
                     Debug.WriteLine("- Resolving function " + methodName + " error: " + Marshal.GetLastWin32Error().ToString());
+                    Debug.WriteLine("- Trying deprecated equivalent GetSolverName");
+                    return this.GetSolverName(); // may raise exception
+                }
+            }
+            else
+            {
+                throw new Exception(methodName + ": Solver library is not loaded.");
+            }
+        }
+
+        /// <summary>
+        /// Depreceated version of function GetPluginName
+        /// </summary>
+        /// <returns></returns>
+        public string GetSolverName()
+        {
+            string methodName = "GetSolverName";
+            if (this.libraryLoaded == true)
+            {
+                IntPtr pAddressOfFunctionToCall = NativeMethods.GetProcAddress(this.pDll, methodName);
+
+                if (pAddressOfFunctionToCall != IntPtr.Zero)
+                {
+                    // PLUGIN NAME
+                    GetPluginNameDel getPluginName = (GetPluginNameDel)Marshal.GetDelegateForFunctionPointer(pAddressOfFunctionToCall, typeof(GetPluginNameDel));
+                    StringBuilder sb = new StringBuilder(255);
+                    uint buf = 255;
+
+                    getPluginName(sb, buf);
+
+                    Debug.WriteLine("- Plugin name: " + sb.ToString());
+                    return sb.ToString();
+                }
+                else
+                {
+                    Debug.WriteLine("- Resolving function " + methodName + " error: " + Marshal.GetLastWin32Error().ToString());
+
                     throw new Exception(methodName + ": Cannot resolve function address.");
                 }
             }
@@ -251,6 +292,7 @@ namespace Sokoban.Solvers
                 throw new Exception(methodName + ": Solver library is not loaded.");
             }
         }
+
 
 
         public bool IsSupportedOptimization(UInt32 uiOptimization)
@@ -311,6 +353,70 @@ namespace Sokoban.Solvers
             {
                 throw new Exception(methodName + ": Solver library is not loaded.");
             }
+        }
+
+
+        /// <summary>
+        /// Deprecated function; newer function is SolveEx
+        /// </summary>
+        /// <param name="mazeWidth"></param>
+        /// <param name="mazeHeight"></param>
+        /// <param name="inputBoard"></param>
+        /// <returns></returns>
+        public SOKOBAN_PLUGIN_RESULT Solve(uint mazeWidth, uint mazeHeight, string inputBoard)
+        {
+            SOKOBAN_PLUGIN_RESULT spr = SOKOBAN_PLUGIN_RESULT.FAILURE; // just default value; will be overwritten
+
+            string methodName = "SolveEx";
+            if (this.libraryLoaded == true)
+            {
+                IntPtr pAddressOfFunctionToCall = NativeMethods.GetProcAddress(pDll, methodName);
+
+                if (pAddressOfFunctionToCall != IntPtr.Zero)
+                {
+                    // PLUGIN CONFIGURATION
+                    SolveExDel solveEx = (SolveExDel)Marshal.GetDelegateForFunctionPointer(pAddressOfFunctionToCall, typeof(SolveExDel));
+
+                    Debug.WriteLine("- SolveEx started");
+
+                    board = new StringBuilder(inputBoard);
+                    solution = new StringBuilder(solutionBufferSize);
+                    psStatus = new PluginStatus();
+
+                    unsafe
+                    {
+                        int result = solveEx(mazeWidth, mazeHeight, board, solution, (uint)solutionBufferSize,
+                            ref psStatus,
+                            Marshal.GetFunctionPointerForDelegate(new PluginCallbackDel(this.PluginCallback)));
+
+                        spr = (SOKOBAN_PLUGIN_RESULT)result;
+                    }
+
+                    if (spr == SOKOBAN_PLUGIN_RESULT.OK)
+                    {
+                        Debug.WriteLine("-- Solution is: " + solution.ToString());
+
+                        if (psStatus.uiPluginTimeMS > 0)
+                        {
+                            Debug.WriteLine("-- Finished in: " + psStatus.uiPluginTimeMS.ToString());
+                        }
+                    }
+
+                    Debug.WriteLine("- SolveEx ended with status: " + spr.ToString());
+                }
+                else
+                {
+                    Debug.WriteLine("- Resolving function '" + methodName + "' error: " + Marshal.GetLastWin32Error().ToString());
+                    throw new Exception(methodName + ": Cannot resolve function address.");
+                }
+            }
+            else
+            {
+                throw new Exception(methodName + ": Solver library is not loaded.");
+            }
+
+
+            return spr;
         }
 
 
