@@ -8,15 +8,24 @@ using Sokoban.Lib.Events;
 using System.Xml;
 using System.Windows.Media.Imaging;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Controls;
 
-namespace PluginBox
+namespace PluginWall
 {
-    public partial class Box : MovableEssentials, IGamePlugin, IMovableElement
+    public partial class Wall : IGamePlugin, IFixedElement
     {
         private object syncRoot = new object();
+        private int obstructionLevel = 20;
+        private int posX = 1; // 1-based
+        private int posY = 1;
+        protected ScaleTransform scale;
+        protected Image image;
+        protected IPluginParent host;
 
-        public Box(IPluginParent host) : base(host)
+        public Wall(IPluginParent host)
         {
+            this.host = host;
         }
 
 
@@ -24,12 +33,12 @@ namespace PluginBox
 
         public string Name
         {
-            get { return "Box"; }
+            get { return "Wall"; }
         }
 
         public string Description
         {
-            get { return "Oficial Box implementation"; }
+            get { return "Oficial Wall implementation"; }
         }
 
         public string Author
@@ -47,11 +56,6 @@ namespace PluginBox
             get { return "1.00"; }
         }
 
-        public new bool ProcessEvent(Int64 time, Event ev)
-        {
-            return base.ProcessEvent(time, ev);
-        }
-
         public void Load()
         {
             // One-based values
@@ -63,7 +67,7 @@ namespace PluginBox
 
             BitmapImage bi = new BitmapImage();
             bi.BeginInit();
-            bi.UriSource = new Uri("pack://application:,,,/PluginBox;component/Resources/obj_B.png");
+            bi.UriSource = new Uri("pack://application:,,,/PluginWall;component/Resources/obj_W.png");
             bi.EndInit();
             image.Source = bi;
 
@@ -120,15 +124,12 @@ namespace PluginBox
 
         public string XmlSchema
         {
-            get { return PluginBox.Properties.Resources.XmlSchema; }
+            get { return PluginWall.Properties.Resources.XmlSchema; }
         }
 
 
         public bool ProcessXmlInitialization(int mazeWidth, int mazeHeight, XmlNode settings)
         {
-            this.fieldsX = mazeWidth;
-            this.fieldsY = mazeHeight;
-
             DebuggerIX.WriteLine("[Plugin]", this.Name, "ProcessXmlInitialization, settings: " + settings.InnerXml);
 
             posX = int.Parse(settings["PosX"].InnerText);
@@ -142,5 +143,65 @@ namespace PluginBox
             get { return obstructionLevel; }
         }
 
+
+        #region IPosition Members
+
+        public int PosX
+        {
+            get
+            {
+                return posX;
+            }
+            set
+            {
+                posX = value;
+            }
+        }
+
+        public int PosY
+        {
+            get
+            {
+                return posY;
+            }
+            set
+            {
+                posY = value;
+            }
+        }
+
+        #endregion
+
+        #region IGamePlugin Members
+
+
+        public void Draw(System.Windows.Controls.Canvas canvas, double squareSize, long time, double phase)
+        {
+            double x = (this.posX - 1) * squareSize;
+            double y = (this.posY - 1) * squareSize;
+
+
+            double scaleX = squareSize / image.ActualWidth;
+            double scaleY = squareSize / image.ActualHeight;
+
+            if (scale == null || (scale.ScaleX != scaleX || scale.ScaleY != scaleY))
+            {
+                scale = new ScaleTransform(scaleX, scaleY);
+                image.RenderTransformOrigin = new Point(0, 0);
+                image.RenderTransform = this.scale;
+            }
+
+            Canvas.SetLeft(image, x);
+            Canvas.SetTop(image, y);
+
+            Canvas.SetZIndex(image, 30); // 10 is for tile, 11 - 19 is for middle layer objects and GameObjects have 20
+        }
+
+        public bool ProcessEvent(long time, Event e)
+        {
+            return true;
+        }
+
+        #endregion
     }
 }

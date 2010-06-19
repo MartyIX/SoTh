@@ -94,6 +94,14 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Lib\Lib.csproj">
+      <Project>{F44E4759-3B19-4E1B-BA4D-6E4F64086190}</Project>
+      <Name>Lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Tests\DummyObjectImplementations\DummyObjectImplementations.csproj">
+      <Project>{0AA86DD8-394C-44E2-89CF-C6FF45D4C6D0}</Project>
+      <Name>DummyObjectImplementations</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Solvers\Solvers.csproj">
       <Project>{4BE6FD20-46E6-49DB-B30A-332F436C2F7D}</Project>
       <Name>Solvers</Name>

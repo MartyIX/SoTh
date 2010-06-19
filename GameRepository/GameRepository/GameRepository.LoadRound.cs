@@ -66,8 +66,15 @@ namespace Sokoban.Model
             if (this.integratePlugin(gamePlugin) == true)
             {
                 // Plugin bootstrap
-                gamePlugin.Load();
-                gamePlugin.ProcessXmlInitialization(this.fieldsX, this.fieldsY, node);
+                //try
+                //{
+                    gamePlugin.Load();
+                    gamePlugin.ProcessXmlInitialization(this.fieldsX, this.fieldsY, node);
+                //}
+                //catch (Exception e)
+                //{
+                //   throw new PluginLoadFailedException("Plugin " + pluginName + " failed to load. Error: " + e.Message);
+                //}
             }
             else
             {

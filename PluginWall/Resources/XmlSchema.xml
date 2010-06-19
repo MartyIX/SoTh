@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema xmlns="http://www.martinvseticka.eu/SoTh"
+           targetNamespace="http://www.martinvseticka.eu/SoTh"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+
+  <xs:complexType name="WallType">
+    <xs:complexContent>
+      <xs:extension base="GameObjectType">
+        <xs:sequence>
+          <!--
+          <xs:element name="Version" type="xs:string" minOccurs="0" maxOccurs="1" />
+          <xs:element name="PosX" type="xs:integer"/>
+          <xs:element name="PosY" type="xs:integer"/>
+          <xs:element name="InitializeMessage" type="xs:string" minOccurs="0" maxOccurs="1"/>
+          -->
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="Wall" substitutionGroup="GameObject" type="WallType" />
+
+</xs:schema>

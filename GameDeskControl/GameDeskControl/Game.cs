@@ -23,11 +23,20 @@ namespace Sokoban.Model
         // SETTINGS
         const int PHASE_CONST = 75;
 
+        // API
+        public string QuestValidationErrorMessage
+        {
+            get { return questValidationErrorMessage; }
+        }
+
+        // Private fields
         private GameDeskControl control; // assigned via RegisterVisual()
         private IQuest quest;
         private IGameRepository gameRepository;
         private Stopwatch stopwatch = new Stopwatch();
         private List<string> pluginSchemata = new List<string>();
+        private string questValidationErrorMessage;
+        
 
         private double phaseProp
         {
@@ -48,7 +57,6 @@ namespace Sokoban.Model
         {
             bool isValid = true;
 
-
             var xml = new XmlDocument();
             xml.LoadXml(quest.WholeQuestXml);
             var names = new XmlNamespaceManager(xml.NameTable);
@@ -56,16 +64,26 @@ namespace Sokoban.Model
             XmlNodeList nodes = xml.SelectNodes("/x:SokobanQuest/x:Round/x:GameObjects/*", names);
             
             XmlValidator xmlValidator = new XmlValidator();
+            xmlValidator.AddSchema(null,  Sokoban.View.GameDocsComponents.Properties.Resources.QuestSchema); // main schema
 
-            xmlValidator.AddSchema(null,  Sokoban.View.GameDocsComponents.Properties.Resources.QuestSchema);
+            // We have to prevent to adding a schema twice to the collection of schemas (to xmlValidator)
+            // Therefore we use Dictonary and then we extract each schema exactly once.
+            Dictionary<string, string> schemas = new Dictionary<string, string>();
 
+            // schemas from plugins
             foreach (XmlNode node in nodes)
-            {
-                string schema = gameRepository.PluginService.GetPluginSchema(node.Name);
-                xmlValidator.AddSchema(null, schema);
+            {                
+                schemas[node.Name] = gameRepository.PluginService.GetPluginSchema(node.Name);
             }
-            
-            isValid = xmlValidator.IsValid(quest.WholeQuestXml);
+
+            foreach (KeyValuePair<string, string> pair in schemas)
+            {
+                xmlValidator.AddSchema(null, pair.Value);
+            }
+
+            isValid = xmlValidator.IsValid(quest.WholeQuestXml);            
+            questValidationErrorMessage = (isValid) ? "" : xmlValidator.GetErrorMessage();
+
             return isValid;
         }
 
@@ -98,15 +116,9 @@ namespace Sokoban.Model
         private void loadRound(string roundXml)
         {
             bool roundLoaded = true;
-            try
-            {
-                gameRepository.LoadRoundFromXML(roundXml);
-            }
-            catch (PluginLoadFailedException e)
-            {
-                roundLoaded = false;
-                DebuggerIX.WriteLine("[Game]", "loadRound", e.Message);
-            }
+            
+            // may raise exception PluginLoadFailedException - it is catched in GameDocs.xaml.cs
+            gameRepository.LoadRoundFromXML(roundXml); 
 
             if (roundLoaded)
             {
@@ -195,12 +207,12 @@ namespace Sokoban.Model
 
         #region ISolverProvider Members
 
-        public int GetMazeWidth()
+        public uint GetMazeWidth()
         {
             return gameRepository.GetMazeWidth();
         }
 
-        public int GetMazeHeight()
+        public uint GetMazeHeight()
         {
             return gameRepository.GetMazeHeight();
         }

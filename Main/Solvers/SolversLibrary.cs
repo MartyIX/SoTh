@@ -60,6 +60,10 @@ namespace Sokoban.Solvers
 
     public class SolverLibrary
     {
+        //
+        // Public part
+        //
+
         [StructLayout(LayoutKind.Sequential)]
         public unsafe struct PluginStatus
         {
@@ -71,6 +75,43 @@ namespace Sokoban.Solvers
             public fixed char szStatusText[256];      // char[256] 
             public uint uiPluginTimeMS;      // [out] plugin running time, not necessarily identical to clock time
         }
+
+        public enum StatusPriority
+        {
+            Debug,
+            Warning,
+            Error,
+            FunctionStatusChange
+        }
+
+        public enum AlertCodes
+        {
+            TerminationIsSupportedButSolverIsNotRunning,
+            TerminationIsNotSupported,
+            TerminationInMoment,
+            TerminationUnsuccesful,
+            Other
+        }
+
+        /// <summary>
+        /// Callback for customers using SolversLibrary. Callback is called when a function does something interesting.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="parameter">Mostly null but may be useful in future</param>
+        public delegate void StatusCallbackDel(StatusPriority priority, AlertCodes alertCode, string message, object parameter);
+
+        public event StatusCallbackDel StatusCallback;
+
+        /// <summary>
+        /// When methods SolveEx or Solve return status OK then this field contain the result of work one or the other method
+        /// </summary>
+        public string LastSolution { get { return lastSolution; } }
+
+        //
+        // Private part
+        //
+
+        private string lastSolution;
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         private delegate void GetPluginNameDel(StringBuilder pcString, uint uiStringBufferSize);
@@ -98,8 +139,8 @@ namespace Sokoban.Solvers
             UInt32 uiSolutionBufferSize, ref PluginStatus psStatus, IntPtr pc);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        private delegate int SolveDel(UInt32 uiWidth, UInt32 uiHeight, StringBuilder pcBoard /* unsigned char** ppucBoard -- wrong */, 
-            StringBuilder pcSolution, UInt32 uiSolutionBufferSize);
+        private delegate int SolveDel(UInt32 uiWidth, UInt32 uiHeight, string[] pcBoard, StringBuilder pcSolution, 
+            UInt32 uiSolutionBufferSize);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate int OptimizeDel(UInt32 uiWidth, UInt32 uiHeight, StringBuilder pcBoard, StringBuilder pcSolution,
@@ -111,12 +152,9 @@ namespace Sokoban.Solvers
         private bool libraryLoaded;
         private string path;
         private Window parentWindow;
-        private bool isSolverRunning = false;
-        private StringBuilder board;
+        private bool isSolverRunning = false;        
         private StringBuilder solution;
         private PluginStatus psStatus;
-
-
 
         /// <summary>
         /// 
@@ -177,11 +215,11 @@ namespace Sokoban.Solvers
                  21 Application requires Microsoft Windows 32-bit extensions.
                 */
 
-                Debug.WriteLine("- Load library error code: " + (uint)this.pDll);
-                Debug.WriteLine("- GetLastWin32Error: " + Marshal.GetLastWin32Error().ToString());
+                alertStatusMessage(StatusPriority.Debug, "Load library error code: " + (uint)this.pDll);
+                alertStatusMessage(StatusPriority.Debug, "GetLastWin32Error: " + Marshal.GetLastWin32Error().ToString());
             }
 
-            Debug.WriteLine("- Library '" + path + "' loaded");
+            alertStatusMessage(StatusPriority.Debug, "Library '" + path + "' loaded");
         }
 
         /// <summary>
@@ -198,23 +236,18 @@ namespace Sokoban.Solvers
 
                 if (pAddressOfFunctionToCall != IntPtr.Zero)
                 {
-                    //UIntPtr[] parameters = new UIntPtr[3];
-                    //parameters[0] = parameters[1] = parameters[2] = UIntPtr.Zero;
-
                     // PLUGIN NAME
                     GetConstraintsDel getConstraints = (GetConstraintsDel)Marshal.GetDelegateForFunctionPointer(pAddressOfFunctionToCall, typeof(GetConstraintsDel));
 
                     uint maxWidth, maxHeight, maxBoxes;
-
                     getConstraints(out maxWidth, out maxHeight, out maxBoxes);
-
-                    Debug.WriteLine(string.Format("- Plugin constraints | maxWidth: {0}, maxHeight: {1}, maxBoxes: {2}", maxWidth, maxHeight, maxBoxes));
+                    alertStatusMessage(StatusPriority.Debug, string.Format("Plugin constraints | maxWidth: {0}, maxHeight: {1}, maxBoxes: {2}", maxWidth, maxHeight, maxBoxes));
 
                     return new uint[3] { maxWidth, maxHeight, maxBoxes };
                 }
                 else
                 {
-                    Debug.WriteLine("- Resolving function '" + methodName + "' error: " + Marshal.GetLastWin32Error().ToString());
+                    alertStatusMessage(StatusPriority.Debug, "Resolving function '" + methodName + "' error: " + Marshal.GetLastWin32Error().ToString());
                     throw new Exception(methodName + ": Cannot resolve function address.");
                 }
             }
@@ -241,13 +274,13 @@ namespace Sokoban.Solvers
 
                     getPluginName(sb, buf);
 
-                    Debug.WriteLine("- Plugin name: " + sb.ToString());
+                    alertStatusMessage(StatusPriority.Debug, "Plugin name: " + sb.ToString());
                     return sb.ToString();
                 }
                 else
                 {
-                    Debug.WriteLine("- Resolving function " + methodName + " error: " + Marshal.GetLastWin32Error().ToString());
-                    Debug.WriteLine("- Trying deprecated equivalent GetSolverName");
+                    alertStatusMessage(StatusPriority.Debug, "Resolving function " + methodName + " error: " + Marshal.GetLastWin32Error().ToString());
+                    alertStatusMessage(StatusPriority.Debug, "Trying deprecated equivalent GetSolverName");
                     return this.GetSolverName(); // may raise exception
                 }
             }
@@ -277,13 +310,13 @@ namespace Sokoban.Solvers
 
                     getPluginName(sb, buf);
 
-                    Debug.WriteLine("- Plugin name: " + sb.ToString());
+                    alertStatusMessage(StatusPriority.Debug, "Plugin name: " + sb.ToString());
                     return sb.ToString();
                 }
                 else
                 {
-                    Debug.WriteLine("- Resolving function " + methodName + " error: " + Marshal.GetLastWin32Error().ToString());
-
+                    alertStatusMessage(StatusPriority.Debug, "Resolving function " + methodName + " error: " + 
+                        Marshal.GetLastWin32Error().ToString());
                     throw new Exception(methodName + ": Cannot resolve function address.");
                 }
             }
@@ -310,12 +343,12 @@ namespace Sokoban.Solvers
                     int result = isSupportedOptimization(uiOptimization);
                     bool retVal = (result == 0) ? false : true;
 
-                    Debug.WriteLine("- IsSupportedOptimization: " + retVal.ToString());
+                    alertStatusMessage(StatusPriority.Debug, "IsSupportedOptimization: " + retVal.ToString());
                     return retVal;
                 }
                 else
                 {
-                    Debug.WriteLine("- Resolving function " + methodName + " error: " + Marshal.GetLastWin32Error().ToString());
+                    alertStatusMessage(StatusPriority.Debug, "Resolving function " + methodName + " error: " + Marshal.GetLastWin32Error().ToString());
                     throw new Exception(methodName + ": Cannot resolve function address.");
                 }
             }
@@ -339,13 +372,14 @@ namespace Sokoban.Solvers
 
                     WindowInteropHelper wih = new WindowInteropHelper(this.parentWindow);
 
-                    Debug.WriteLine("- ShowAbout started");
+                    alertStatusMessage(StatusPriority.Debug, "ShowAbout started");
                     showAbout(wih.Handle);
-                    Debug.WriteLine("- ShowAbout ended");
+                    alertStatusMessage(StatusPriority.Debug, "ShowAbout ended");
                 }
                 else
                 {
-                    Debug.WriteLine("- Resolving function '" + methodName + "' error: " + Marshal.GetLastWin32Error().ToString());
+                    alertStatusMessage(StatusPriority.Debug, "Resolving function '" + methodName + "' error: " + 
+                        Marshal.GetLastWin32Error().ToString());
                     throw new Exception(methodName + ": Cannot resolve function address.");
                 }
             }
@@ -367,7 +401,7 @@ namespace Sokoban.Solvers
         {
             SOKOBAN_PLUGIN_RESULT spr = SOKOBAN_PLUGIN_RESULT.FAILURE; // just default value; will be overwritten
 
-            string methodName = "SolveEx";
+            string methodName = "Solve";
             if (this.libraryLoaded == true)
             {
                 IntPtr pAddressOfFunctionToCall = NativeMethods.GetProcAddress(pDll, methodName);
@@ -375,38 +409,50 @@ namespace Sokoban.Solvers
                 if (pAddressOfFunctionToCall != IntPtr.Zero)
                 {
                     // PLUGIN CONFIGURATION
-                    SolveExDel solveEx = (SolveExDel)Marshal.GetDelegateForFunctionPointer(pAddressOfFunctionToCall, typeof(SolveExDel));
+                    SolveDel solve = (SolveDel)Marshal.GetDelegateForFunctionPointer(pAddressOfFunctionToCall, typeof(SolveDel));
 
-                    Debug.WriteLine("- SolveEx started");
+                    alertStatusMessage(StatusPriority.Debug, "Solve started");
+                    alertStatusMessage(StatusPriority.FunctionStatusChange, "Solver is being initialized.");
 
-                    board = new StringBuilder(inputBoard);
+                    string[] board = new string[mazeHeight];
+
+                    for (int i = 0; i < mazeHeight; i++)
+                    {
+                        board[i] = inputBoard.Substring(i * (int)mazeWidth, (int)mazeWidth);
+                    }
+
                     solution = new StringBuilder(solutionBufferSize);
-                    psStatus = new PluginStatus();
 
+                    isSolverRunning = true;
                     unsafe
                     {
-                        int result = solveEx(mazeWidth, mazeHeight, board, solution, (uint)solutionBufferSize,
-                            ref psStatus,
-                            Marshal.GetFunctionPointerForDelegate(new PluginCallbackDel(this.PluginCallback)));
+                        int result = solve(mazeWidth, mazeHeight, board, solution, (uint)solutionBufferSize);
 
                         spr = (SOKOBAN_PLUGIN_RESULT)result;
                     }
+                    isSolverRunning = false;
 
                     if (spr == SOKOBAN_PLUGIN_RESULT.OK)
                     {
-                        Debug.WriteLine("-- Solution is: " + solution.ToString());
+                        alertStatusMessage(StatusPriority.FunctionStatusChange, "Solution is: " + solution.ToString());
 
                         if (psStatus.uiPluginTimeMS > 0)
                         {
-                            Debug.WriteLine("-- Finished in: " + psStatus.uiPluginTimeMS.ToString());
+                            alertStatusMessage(StatusPriority.FunctionStatusChange, "Finished in: " + psStatus.uiPluginTimeMS.ToString() + " miliseconds");
                         }
-                    }
 
-                    Debug.WriteLine("- SolveEx ended with status: " + spr.ToString());
+                        lastSolution = solution.ToString();
+                    }
+                    else
+                    {
+                        alertStatusMessage(StatusPriority.Debug, "Solve ended with status: " + spr.ToString());
+                        alertStatusMessage(StatusPriority.FunctionStatusChange, "Solver ended with status: " + spr.ToString());
+                    }
                 }
                 else
                 {
-                    Debug.WriteLine("- Resolving function '" + methodName + "' error: " + Marshal.GetLastWin32Error().ToString());
+                    alertStatusMessage(StatusPriority.Debug, "Resolving function '" + methodName + "' error: " + 
+                        Marshal.GetLastWin32Error().ToString());
                     throw new Exception(methodName + ": Cannot resolve function address.");
                 }
             }
@@ -434,37 +480,52 @@ namespace Sokoban.Solvers
                     // PLUGIN CONFIGURATION
                     SolveExDel solveEx = (SolveExDel)Marshal.GetDelegateForFunctionPointer(pAddressOfFunctionToCall, typeof(SolveExDel));
 
-                    Debug.WriteLine("- SolveEx started");
+                    alertStatusMessage(StatusPriority.Debug, "SolveEx started");
+                    alertStatusMessage(StatusPriority.FunctionStatusChange, "Solver is being initialized.");
 
-                    board = new StringBuilder(inputBoard);
+                    StringBuilder board = new StringBuilder(inputBoard);
                     solution = new StringBuilder(solutionBufferSize);
                     psStatus = new PluginStatus();
+
+                    this.pluginCallback = new PluginCallbackDel(this.PluginCallback);
+                    isSolverRunning = true;
 
                     unsafe
                     {
                         int result = solveEx(mazeWidth, mazeHeight, board, solution, (uint)solutionBufferSize,
                             ref psStatus,
-                            Marshal.GetFunctionPointerForDelegate(new PluginCallbackDel(this.PluginCallback)));
+                            Marshal.GetFunctionPointerForDelegate(this.pluginCallback));
 
                         spr = (SOKOBAN_PLUGIN_RESULT)result;
                     }
 
+                    isSolverRunning = false;
+
                     if (spr == SOKOBAN_PLUGIN_RESULT.OK)
                     {
-                        Debug.WriteLine("-- Solution is: " + solution.ToString());
+                        alertStatusMessage(StatusPriority.Debug, "Solution is: " + solution.ToString());
 
                         if (psStatus.uiPluginTimeMS > 0)
                         {
-                            Debug.WriteLine("-- Finished in: " + psStatus.uiPluginTimeMS.ToString());
+                            alertStatusMessage(StatusPriority.FunctionStatusChange, "Finished in: " + psStatus.uiPluginTimeMS.ToString());
                         }
-                    }
 
-                    Debug.WriteLine("- SolveEx ended with status: " + spr.ToString());
+                         lastSolution = solution.ToString();
+                    }
+                    else
+                    {
+                        alertStatusMessage(StatusPriority.Debug, "SolveEx ended with status: " + spr.ToString());
+                        alertStatusMessage(StatusPriority.FunctionStatusChange, "Solver ended with status: " + spr.ToString());
+                    }
+                                       
                 }
                 else
                 {
-                    Debug.WriteLine("- Resolving function '" + methodName + "' error: " + Marshal.GetLastWin32Error().ToString());
-                    throw new Exception(methodName + ": Cannot resolve function address.");
+                    alertStatusMessage(StatusPriority.Debug, "Resolving function '" + methodName + "' error: " + 
+                        Marshal.GetLastWin32Error().ToString());
+                    alertStatusMessage(StatusPriority.Debug, "Trying deprecated function 'Solve'");
+                    alertStatusMessage(StatusPriority.FunctionStatusChange, "Solver uses old API. Progress of the plugin can't be tracked.");
+                    return Solve(mazeWidth, mazeHeight, inputBoard);
                 }
             }
             else
@@ -499,34 +560,38 @@ namespace Sokoban.Solvers
                 {
                     // PLUGIN CONFIGURATION
                     TerminateDel terminate = (TerminateDel)Marshal.GetDelegateForFunctionPointer(pAddressOfFunctionToCall, typeof(TerminateDel));
-                    Debug.WriteLine("- Terminate: ... is about to call the solver's method.");
+                    alertStatusMessage(StatusPriority.Debug, "Terminate: ... is about to call the solver's method.");
                     int result = terminate();
 
                     if (isSolverRunning == false)
                     {
                         if (result == (int)SOKOBAN_PLUGIN_RESULT.OK)
                         {
-                            Debug.WriteLine("- Terminate: Termination is supported.");
+                            alertStatusMessage(StatusPriority.FunctionStatusChange, AlertCodes.TerminationIsSupportedButSolverIsNotRunning, 
+                                "Terminate solver: Termination is supported but solver is not solving right now.");
                         }
                         else
                         {
-                            Debug.WriteLine("- Terminate: Termination is not supported.");
+                            alertStatusMessage(StatusPriority.FunctionStatusChange, AlertCodes.TerminationIsNotSupported, 
+                                "Terminate solver: Termination is not supported.");
                         }
                     }
                     else
                     {
                         if (result == (int)SOKOBAN_PLUGIN_RESULT.OK)
                         {
-                            Debug.WriteLine("- Terminate: The solver has accepted the command and will return shortly.");
+                            alertStatusMessage(StatusPriority.FunctionStatusChange, AlertCodes.TerminationInMoment, 
+                                "Terminate solver: The solver has accepted the command and will return shortly.");
                             wasTerminated = true;
                         }
                         else
                         {
-                            Debug.WriteLine("- Terminate: The solver cannot terminate at the moment, or an attempt to terminate failed.");
+                            alertStatusMessage(StatusPriority.FunctionStatusChange, AlertCodes.TerminationUnsuccesful, 
+                                "Terminate solver: The solver cannot terminate at the moment, or an attempt to terminate failed.");
                         }
                     }
 
-                    Debug.WriteLine("- Terminate: Ended");
+                    alertStatusMessage(StatusPriority.Debug, "Terminate: Ended");
                 }
                 else
                 {
@@ -561,13 +626,14 @@ namespace Sokoban.Solvers
                     WindowInteropHelper wih = new WindowInteropHelper(this.parentWindow);
                     //wih.Handle    
 
-                    Debug.WriteLine("- Configuration started");
+                    alertStatusMessage(StatusPriority.Debug, "Configuration started");
                     configure(wih.Handle);
-                    Debug.WriteLine("- Configuration ended");
+                    alertStatusMessage(StatusPriority.Debug, "Configuration ended");
                 }
                 else
                 {
-                    Debug.WriteLine("- Resolving function '" + methodName + "' error: " + Marshal.GetLastWin32Error().ToString());
+                    alertStatusMessage(StatusPriority.Debug, "Resolving function '" + methodName + "' error: " + 
+                        Marshal.GetLastWin32Error().ToString());
                     throw new Exception(methodName + ": Cannot resolve function address.");
                 }
             }
@@ -585,12 +651,39 @@ namespace Sokoban.Solvers
             if (this.libraryLoaded)
             {
                 bool result = NativeMethods.FreeLibrary(this.pDll);
-                Debug.WriteLine("- Unloaded: " + result.ToString());
+                alertStatusMessage(StatusPriority.Debug, "Unloaded: " + result.ToString());
             }
             else
             {
-                Debug.WriteLine("- Unloaded: No. Library was not loaded at all.");
+                alertStatusMessage(StatusPriority.Debug, "Unloaded: No. Library was not loaded at all.");
             }
         }
+
+        public string GetLastSolution()
+        {
+            return lastSolution;
+        }
+
+        // Private methods
+
+        private void alertStatusMessage(StatusPriority priority, string message)
+        {
+            alertStatusMessage(priority, AlertCodes.Other, message, null);
+        }
+
+        private void alertStatusMessage(StatusPriority priority, AlertCodes alertCode, string message)
+        {
+            alertStatusMessage(priority, alertCode, message, null);
+        }
+
+        private void alertStatusMessage(StatusPriority priority, AlertCodes alertCode, string message, object parameter)
+        {
+            if (StatusCallback != null)
+            {
+                StatusCallback(priority, alertCode, message, parameter);
+            }
+        }
+
+        private PluginCallbackDel pluginCallback { get; set; }
     }
 }

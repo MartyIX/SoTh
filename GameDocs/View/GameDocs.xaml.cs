@@ -19,6 +19,7 @@ using System.Collections.ObjectModel;
 using Sokoban.Model.GameDesk;
 using Sokoban.View.GameDocsComponents;
 using Sokoban.Lib;
+using Sokoban.Lib.Exceptions;
 
 namespace Sokoban.View
 {
@@ -160,15 +161,29 @@ namespace Sokoban.View
 
         public void Add(IQuest quest)
         {
-            GameDeskControl doc = new GameDeskControl(quest);
-            doc.Title = quest.Name;
-            doc.InfoTip = "Info tipo for " + doc.Title;
-            doc.ContentTypeDescription = "";
-            doc.Closing += new EventHandler<CancelEventArgs>(doc_Closing);
-            doc.Closed += new EventHandler(doc_Closed);
-            doc.InfoPanel.SizeChanged+=new SizeChangedEventHandler(doc.ResizeInfoPanel);
-            GameViews.Add(doc);
-            doc.Resize(GamesDocumentPane.ActualWidth, GamesDocumentPane.ActualHeight);
+            //try
+            //{
+                GameDeskControl doc = new GameDeskControl(quest);
+                doc.Title = quest.Name;
+                doc.InfoTip = "Info tipo for " + doc.Title;
+                doc.ContentTypeDescription = "";
+                doc.Closing += new EventHandler<CancelEventArgs>(doc_Closing);
+                doc.Closed += new EventHandler(doc_Closed);
+                doc.InfoPanel.SizeChanged += new SizeChangedEventHandler(doc.ResizeInfoPanel);
+                GameViews.Add(doc);
+                doc.Resize(GamesDocumentPane.ActualWidth, GamesDocumentPane.ActualHeight);
+
+            //}
+            /*
+            catch (PluginLoadFailedException e)
+            {
+                MessageBox.Show("Cannot load quest. There's a problem in plugin: " + e.Message);
+            }
+            
+            catch (NotValidQuestException e)
+            {
+                MessageBox.Show("Cannot load quest. There's a problem in quest XML: " + e.Message);
+            }*/
         }
 
         private void doc_Closed(object sender, EventArgs e)
@@ -231,7 +246,7 @@ namespace Sokoban.View
         /// Returns width of current maze
         /// </summary>
         /// <returns></returns>
-        public int  GetMazeWidth()
+        public uint  GetMazeWidth()
         {
             return ActiveGameControl.GetMazeWidth();
         }
@@ -240,7 +255,7 @@ namespace Sokoban.View
         /// Returns height of current maze
         /// </summary>
         /// <returns></returns>
-        public int  GetMazeHeight()
+        public uint  GetMazeHeight()
         {
             return ActiveGameControl.GetMazeHeight();
         }

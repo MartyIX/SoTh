@@ -18,14 +18,14 @@ namespace Sokoban.Model
 
         #region ISolverProvider Members
 
-        public int GetMazeWidth()
+        public uint GetMazeWidth()
         {
-            return fieldsX;
+            return (uint)fieldsX;
         }
 
-        public int GetMazeHeight()
+        public uint GetMazeHeight()
         {
-            return fieldsY;
+            return (uint)fieldsY;
         }
 
 
@@ -44,7 +44,8 @@ namespace Sokoban.Model
         public string SerializeMaze()
         {
             StringBuilder sb = new StringBuilder(fieldsX * fieldsY);
-           
+            sb.Length = fieldsX * fieldsY;
+
             for (int i = 0; i < sb.Length; i++)
             {
                 sb[i] = ' ';
@@ -54,7 +55,7 @@ namespace Sokoban.Model
 
             foreach (IGamePlugin go in gameObjects)
             {
-                posInStr = go.PosX + go.PosY * FieldsX;
+                posInStr = go.PosX - 1 + (go.PosY - 1) * FieldsX;
 
                 if (go.Name == "Sokoban")
                 {

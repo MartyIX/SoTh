@@ -17,6 +17,7 @@ using System.Diagnostics;
 using Sokoban.Lib;
 using Sokoban.Model;
 using Sokoban.Model.GameDesk;
+using Sokoban.Lib.Exceptions;
 
 namespace Sokoban.View.GameDocsComponents
 {
@@ -69,7 +70,8 @@ namespace Sokoban.View.GameDocsComponents
             else
             {
                 DebuggerIX.WriteLine("[Game]", "Quest", "Quest is not valid!");
-            }            
+                throw new NotValidQuestException(game.QuestValidationErrorMessage);
+            }
         }
 
         public void Terminate()
@@ -262,12 +264,12 @@ namespace Sokoban.View.GameDocsComponents
 
         #region ISolverProvider Members
 
-        public int GetMazeWidth()
+        public uint GetMazeWidth()
         {
             return this.game.GetMazeWidth();
         }
 
-        public int GetMazeHeight()
+        public uint GetMazeHeight()
         {
             return game.GetMazeHeight();
         }

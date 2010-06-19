@@ -82,6 +82,7 @@
     <Compile Include="Interfaces\IBaseRepository.cs" />
     <Compile Include="Interfaces\IBaseView.cs" />
     <Compile Include="Interfaces\IQuest.cs" />
+    <Compile Include="Solvers\ISolverProvider.cs" />
     <Compile Include="Networking\TcpInterface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

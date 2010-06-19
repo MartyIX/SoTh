@@ -4,25 +4,230 @@
               xsi:schemaLocation="http://www.martinvseticka.eu http://www.martinvseticka.eu/schemas/SoTh.xsd">
 
   <Name>DebugQuest</Name>
-  <Round>
-    <Name>Easy start</Name>
-    <Dimensions>
-      <Width>8</Width>
-      <Height>9</Height>
-    </Dimensions>
+  <Round xmlns="http://www.martinvseticka.eu/SoTh" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>Round no. 1</Name>
+  <Dimensions>
+    <Width>8</Width>
+    <Height>8</Height>
+  </Dimensions>
+  <GameObjects>
+    <Wall>
+      <PosX>1</PosX>
+      <PosY>1</PosY>
+    </Wall>
 
-    <GameObjects>
-      <Sokoban>
-        <PosX>2</PosX>
-        <PosY>7</PosY>
-        <FirstState>wait</FirstState>
-      </Sokoban>
+    <Wall>
+      <PosX>2</PosX>
+      <PosY>1</PosY>
+    </Wall>
 
-      <Box>
-        <PosX>3</PosX>
-        <PosY>7</PosY>        
-      </Box>
-    </GameObjects>
-  </Round>
+    <Wall>
+      <PosX>3</PosX>
+      <PosY>1</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>4</PosX>
+      <PosY>1</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>5</PosX>
+      <PosY>1</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>6</PosX>
+      <PosY>1</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>7</PosX>
+      <PosY>1</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>8</PosX>
+      <PosY>1</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>1</PosX>
+      <PosY>2</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>2</PosX>
+      <PosY>2</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>3</PosX>
+      <PosY>2</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>7</PosX>
+      <PosY>2</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>8</PosX>
+      <PosY>2</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>1</PosX>
+      <PosY>3</PosY>
+    </Wall>
+
+    <Box>
+      <PosX>3</PosX>
+      <PosY>3</PosY>
+    </Box>
+
+    <Wall>
+      <PosX>5</PosX>
+      <PosY>3</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>7</PosX>
+      <PosY>3</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>8</PosX>
+      <PosY>3</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>1</PosX>
+      <PosY>4</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>3</PosX>
+      <PosY>4</PosY>
+    </Wall>
+
+    <Aim>
+      <PosX>6</PosX>
+      <PosY>4</PosY>
+    </Aim>
+
+    <Wall>
+      <PosX>8</PosX>
+      <PosY>4</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>1</PosX>
+      <PosY>5</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>6</PosX>
+      <PosY>5</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>8</PosX>
+      <PosY>5</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>1</PosX>
+      <PosY>6</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>2</PosX>
+      <PosY>6</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>4</PosX>
+      <PosY>6</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>8</PosX>
+      <PosY>6</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>1</PosX>
+      <PosY>7</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>2</PosX>
+      <PosY>7</PosY>
+    </Wall>
+
+    <Sokoban>
+      <PosX>3</PosX>
+      <PosY>7</PosY>
+      <FirstState>wait</FirstState>
+    </Sokoban>
+
+    <Wall>
+      <PosX>6</PosX>
+      <PosY>7</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>7</PosX>
+      <PosY>7</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>8</PosX>
+      <PosY>7</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>1</PosX>
+      <PosY>8</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>2</PosX>
+      <PosY>8</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>3</PosX>
+      <PosY>8</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>4</PosX>
+      <PosY>8</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>5</PosX>
+      <PosY>8</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>6</PosX>
+      <PosY>8</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>7</PosX>
+      <PosY>8</PosY>
+    </Wall>
+
+    <Wall>
+      <PosX>8</PosX>
+      <PosY>8</PosY>
+    </Wall>
+
+  </GameObjects>
+</Round>
 
 </SokobanQuest>

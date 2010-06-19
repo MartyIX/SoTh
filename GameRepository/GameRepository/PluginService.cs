@@ -6,6 +6,7 @@ using System.Reflection;
 using Sokoban.Lib;
 using System.IO;
 using Sokoban.Model.PluginInterface;
+using Sokoban.Lib.Exceptions;
 
 namespace Sokoban.Model
 {
@@ -71,7 +72,7 @@ namespace Sokoban.Model
                 }
                 else
                 {
-                    throw new Exception("Plugin `" + pluginName + "' cannot be loaded.");
+                    throw new PluginLoadFailedException("Plugin `" + pluginName + "' cannot be loaded.");
                 }
             }
         }
@@ -92,26 +93,33 @@ namespace Sokoban.Model
         public bool LoadPlugin(string fileName)
         {
             bool succesfullyLoaded = false;
-            Assembly pluginAssembly;
+            Assembly pluginAssembly = null;
             Type pluginType = null;
 
             if (loadedFiles.ContainsKey(fileName) == false)
             {
-                loadedFiles[fileName] = true;                
-                pluginAssembly = Assembly.LoadFrom(fileName);
+                loadedFiles[fileName] = true;
 
-                foreach (Type type in pluginAssembly.GetTypes())
+                try
                 {
-                    if (type.IsPublic && !type.IsAbstract)
+                    pluginAssembly = Assembly.LoadFrom(fileName);
+                    foreach (Type type in pluginAssembly.GetTypes())
                     {
-                        Type typeInterface = type.GetInterface("Sokoban.Model.PluginInterface.IGamePlugin", true);
-
-                        if (typeInterface != null)
+                        if (type.IsPublic && !type.IsAbstract)
                         {
-                            succesfullyLoaded = true;
-                            pluginType = type;
+                            Type typeInterface = type.GetInterface("Sokoban.Model.PluginInterface.IGamePlugin", true);
+
+                            if (typeInterface != null)
+                            {
+                                succesfullyLoaded = true;
+                                pluginType = type;
+                            }
                         }
                     }
+                }
+                catch (FileNotFoundException e)
+                {
+                    succesfullyLoaded = false;
                 }
 
                 if (succesfullyLoaded)

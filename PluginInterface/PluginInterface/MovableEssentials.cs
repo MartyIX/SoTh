@@ -85,9 +85,6 @@ namespace Sokoban.Model.PluginInterface
 
         public virtual void Draw(Canvas canvas, double squareSize, Int64 time, double phase)
         {
-            // 50x50 is maximal expected size of image
-            double expectedSize = 50;
-
             double x;
             double y;
 
@@ -155,6 +152,8 @@ namespace Sokoban.Model.PluginInterface
                 Canvas.SetLeft(image, x);
                 Canvas.SetTop(image, y);
             }
+
+            Canvas.SetZIndex(image, 20); // 10 is for tile, 11 - 19 is for middle layer objects and GameObjects have 20 - 29 and 30 is for walls
         }
 
         public bool ProcessEvent(Int64 time, Event ev)

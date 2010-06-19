@@ -14,6 +14,8 @@ using System.Windows.Shapes;
 using Sokoban.Solvers;
 using System.IO;
 using System.Collections.ObjectModel;
+using DummyObjectImplementations;
+using Sokoban;
 
 namespace SolversTest
 {
@@ -22,7 +24,8 @@ namespace SolversTest
     /// </summary>
     public partial class MainWindow : Window
     {
-        SolverLibrary lib;
+        DummySolverProvider dsp;
+
 
         public MainWindow()
         {
@@ -32,31 +35,13 @@ namespace SolversTest
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            solversPane.Initialize(@"D:\Bakalarka\Sokoban\Main\Solvers\Solvers", this);
-
-            /*
-            lib = new SolverLibrary(@"D:\Bakalarka\Study\Solvers\SolverPlugins\YASS\FromSourceForge\YASS.dll", this);
-            //lib = new SolverLibrary(@"D:\Bakalarka\Study\Solvers\SolverSDK\Plugins\SolverExample\Debug\SolverExample.dll", this);
-
-            lib.GetConstraints();
-            lib.GetPluginName();
-            lib.ShowAbout();
-            lib.Configure();
-
-            lib.SolveEx(19, 17, "##############################################################   ################$  ################  $##############  $ $ ############# # ## ###########   # ## #####  ..## $  $          ..###### ### #@##  ..######     ########################################################################################################");
-
-            lib.Unload();
-
-            Close();
-            */
-            
+            dsp = new DummySolverProvider(DummySolverProviderEnum.TestTwo);
+            solversPane.Initialize(@"D:\Bakalarka\Sokoban\Main\Solvers\Solvers", (ISolverProvider)dsp, this);            
         }
 
         private void Window_Closed(object sender, EventArgs e)
         {
             solversPane.Terminate();   
         }
-
-
     }
 }

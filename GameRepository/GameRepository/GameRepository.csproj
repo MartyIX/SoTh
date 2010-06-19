@@ -49,6 +49,7 @@
     <Compile Include="GameRepository.LoadRound.cs" />
     <Compile Include="GameRepository.Moves.cs" />
     <Compile Include="GameRepository.ProcessEvent.cs" />
+    <Compile Include="GameRepository.SolverProviderImplementation.cs" />
     <Compile Include="GameRepository.TimerMethod.cs" />
     <Compile Include="IGameRealTime.cs" />
     <Compile Include="IGameRepository.cs" />

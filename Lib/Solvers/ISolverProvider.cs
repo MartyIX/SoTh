@@ -7,8 +7,8 @@ namespace Sokoban
 {
     public interface ISolverProvider
     {
-        int GetMazeWidth();
-        int GetMazeHeight();
+        uint GetMazeWidth();
+        uint GetMazeHeight();
         string SerializeMaze();
     }
 }

@@ -7,7 +7,9 @@ Notes: DockableContent is not closed, only hiden when closed!
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ad="clr-namespace:AvalonDock;assembly=AvalonDock"
     xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"
     mc:Ignorable="d" 
     x:Class="Sokoban.View.Solvers"
     HorizontalAlignment="Stretch" 
@@ -18,16 +20,29 @@ Notes: DockableContent is not closed, only hiden when closed!
 		<StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="5,5,5,0">
 		    <TextBlock VerticalAlignment="Center"><Run Text="Current solver:"/></TextBlock>
             <ComboBox IsEditable="False" SelectedItem="{Binding Path=CurrentSolver}" SelectedIndex="0" Margin="5,0,0,0" ItemsSource="{Binding SolversList, IsAsync=True}"/>
+            <Button Click="Configure_Click">Configure</Button>
+            <Button Click="About_Click">About</Button>
 		</StackPanel>
 		<DockPanel DockPanel.Dock="Bottom" LastChildFill="True" Margin="5,0,5,5">
 		    <Button Content="Start" Click="Start_Click" Margin="0,0,5,0"/>
             <Button Content="Stop" Click="Stop_Click" />							
 			<StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
 				<TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,3,0"><Run Text="Status:"/></TextBlock>
-                <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" Text=""/>
-                <!-- {Binding Status, FallbackValue=No action is in progress} -->
+                <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" Text="{Binding SolverStatus, FallbackValue='No action is in progress'}"/>
+               
 			</StackPanel>
 		</DockPanel>
-		<RichTextBox DockPanel.Dock="Top" Margin="5,0,5,5"/>
-	</DockPanel>
+        <toolkit:DataGrid x:Name="MyDataGrid" HorizontalAlignment="Stretch" 
+                  ItemsSource="{Binding DataGridItemsSource}"
+                  Margin="5,0,5,5" DockPanel.Dock="Top" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False">
+            <toolkit:DataGrid.Columns>
+                <toolkit:DataGridTextColumn Binding="{Binding Move}" Header="Move" x:Name="Move" />
+                <toolkit:DataGridTextColumn Binding="{Binding Plugin}" Header="Plugin" x:Name="Plugin" />
+                <toolkit:DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="*"  x:Name="Message" />
+            </toolkit:DataGrid.Columns>
+        </toolkit:DataGrid>           
+
+    </DockPanel>
 </ad:DockableContent>    

@@ -19,6 +19,20 @@ namespace Sokoban.Lib.Exceptions
         }
     }
 
+    public class SolverException : System.Exception
+    {
+        // The default constructor needs to be defined
+        // explicitly now since it would be gone otherwise.
+
+        public SolverException()
+        {
+        }
+
+        public SolverException(string message)
+            : base(message)
+        {
+        }
+    }
 
     public class NotStandardSokobanVariantException : System.Exception
     {
@@ -34,4 +48,20 @@ namespace Sokoban.Lib.Exceptions
         {
         }
     }
+
+    public class NotValidQuestException : System.Exception
+    {
+        // The default constructor needs to be defined
+        // explicitly now since it would be gone otherwise.
+
+        public NotValidQuestException()
+        {
+        }
+
+        public NotValidQuestException(string message)
+            : base(message)
+        {
+        }
+    }
+
 }

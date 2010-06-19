@@ -36,6 +36,7 @@ namespace Sokoban.Model.PluginInterface
         // Plugin main actions
         void Load();
         void Unload();
+        // Plugin has to draw itself on canvas
         void Draw(Canvas canvas, double squareSize, Int64 time, double phase);
         string XmlSchema { get; }
         // Returns true if initialization was successful
@@ -51,6 +52,6 @@ namespace Sokoban.Model.PluginInterface
         int ID { get; set; }
 
         UIElement UIElement { get; set; }
-        int ObstructionLevel { get; }
+        int ObstructionLevel { get; } // 5 is for Box, 10 is for Sokoban, 20 is for a wall
     }
 }

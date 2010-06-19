@@ -23,13 +23,19 @@ namespace Sokoban.Lib
             xmlReaderSettings.ValidationEventHandler += new ValidationEventHandler(validationEventHandler);
             xmlReaderSettings.ValidationFlags |= XmlSchemaValidationFlags.ProcessInlineSchema;
             xmlReaderSettings.ValidationFlags |= XmlSchemaValidationFlags.ReportValidationWarnings;
-
             xmlReaderSettings.Schemas = xmlSchemaSet;
         }
 
         public string GetErrorMessage()
         {
-            return errorMessage.ToString();
+            if (errorMessage == null)
+            {
+                return "<No error message available>";
+            }
+            else
+            {
+                return errorMessage.ToString();
+            }
         }
 
         private void validationEventHandler(object sender, ValidationEventArgs e)
@@ -69,17 +75,26 @@ namespace Sokoban.Lib
         {
             isValid = true;
 
-            XmlTextReader instance = new XmlTextReader(new StringReader(xmlInstance));            
-            XmlReader reader = XmlReader.Create(instance, xmlReaderSettings);
+            XmlTextReader instance = new XmlTextReader(new StringReader(xmlInstance));
 
             try
             {
-                while (reader.Read()) ;               
+                XmlReader reader = XmlReader.Create(instance, xmlReaderSettings);
+                while (reader.Read()) ;
             }
             //This code catches any XML exceptions.
             catch (XmlException XmlExp)
             {
                 DebuggerIX.WriteLine("[XmlValidation]", XmlExp.Message);
+                errorMessage = new StringBuilder();
+                errorMessage.Append(XmlExp.Message);
+                isValid = false;
+            }
+            catch (XmlSchemaValidationException e)
+            {
+                DebuggerIX.WriteLine("[XmlValidation]", e.Message);
+                errorMessage = new StringBuilder();
+                errorMessage.Append(e.Message);
                 isValid = false;
             }
 

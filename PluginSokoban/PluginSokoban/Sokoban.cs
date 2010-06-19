@@ -226,6 +226,9 @@ namespace PluginSokoban
 
             DebuggerIX.WriteLine("[Plugin]", this.Name, "ProcessXmlInitialization, settings: " + settings.InnerXml);
 
+            posX = int.Parse(settings["PosX"].InnerText);
+            posY = int.Parse(settings["PosY"].InnerText);
+
             return true;
         }
 
