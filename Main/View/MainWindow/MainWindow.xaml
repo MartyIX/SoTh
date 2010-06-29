@@ -8,7 +8,10 @@
     xmlns:model="clr-namespace:Sokoban.Model"
     xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
     Title="Sokoban" Height="526" Width="1041" Loaded="Window_Loaded" WindowState="Maximized"
-    PreviewKeyDown="Window_PreviewKeyDown" PreviewKeyUp="Window_PreviewKeyUp" Icon="/Sokoban;component/View/Resources/favicon.ico" Closing="Window_Closing">
+    PreviewKeyDown="Window_PreviewKeyDown" PreviewKeyUp="Window_PreviewKeyUp" 
+    Icon="/Sokoban;component/View/Resources/favicon.ico" 
+    Closing="Window_Closing"
+    ContentRendered="Window_ContentRendered">
     <Window.Resources>        
         <ResourceDictionary>
             <local:AvalonDockVisibilityConverter x:Key="avalonDockVisibilityConverter" />
@@ -31,6 +34,7 @@
                     </MenuItem>
                     <MenuItem Header="_Multiplayer" Click="Button_Click">
                     </MenuItem>
+                    <MenuItem Header="_Settings" Click="MenuItem_Settings_Click" />
                     <MenuItem Header="E_xit" Click="Exit_Click">
                         <!--<MenuItem.Icon>
                             <Image Source="../Resources/user_icon.gif" Style="{StaticResource menuItemIconStyle}" />
@@ -47,7 +51,7 @@
                         <MenuItem.IsChecked>
                             <Binding ElementName="solversPane" Path="Visibility" Converter="{StaticResource avalonDockVisibilityConverter}" Mode="TwoWay" />
                         </MenuItem.IsChecked>
-                    </MenuItem>
+                    </MenuItem>                    
                 </MenuItem>
                 <MenuItem Header="_Tools">
                     <MenuItem Header="_Console">

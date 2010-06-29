@@ -84,7 +84,7 @@ namespace Sokoban.Model
 
         private void OnLoadedRoundProperties(string roundName, int fieldsX, int fieldsY)
         {
-            this.roundName = roundName;
+            this.RoundName = roundName; // we want to notify
             this.fieldsX = fieldsX;
             this.fieldsY = fieldsY;
         }
@@ -101,6 +101,12 @@ namespace Sokoban.Model
             if (controllableByUser != null)
             {
                 controllableByUserObjects.Add(controllableByUser);
+
+
+                if (controllableByUser.StepsCount != -1)
+                {
+                    stepsCountGameObject = controllableByUser;
+                }
             }
 
             bool isElement = false;

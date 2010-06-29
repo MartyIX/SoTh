@@ -8,14 +8,17 @@ using Sokoban.Model.GameDesk;
 using System.Collections;
 using Sokoban.Lib;
 using Sokoban.Lib.Events;
-using Sokoban.Model.PluginInterface;      
+using Sokoban.Model.PluginInterface;
+using System.ComponentModel;
+using System.Windows;      
 
 namespace Sokoban.Model
 {
     public delegate void TimeDelegate(ref Int64 time);
 
-    public partial class GameRepository : IBaseRepository, IGameRepository, IPluginParent
+    public partial class GameRepository : DependencyObject, IBaseRepository, IGameRepository, IPluginParent, INotifyPropertyChanged
     {        
+        // API
         public event TimeDelegate TimeReference;
 
         // Game fields
@@ -40,6 +43,21 @@ namespace Sokoban.Model
         /// </summary>
         public List<IControllableByUserInput> controllableByUserObjects;
 
+        public string RoundName
+        {
+            get { return roundName; }
+            set { roundName = value; Notify("RoundName"); }
+        }
+
+
+        public int StepsCount
+        {
+            get { return stepsCountGameObject.StepsCount; } 
+        }
+
+        //
+        // PRIVATE FIELDS
+        //
 
         // Objects on the gamedesk        
         private List<IGamePlugin> gameObjects;
@@ -56,8 +74,7 @@ namespace Sokoban.Model
         private int fieldsY;
 
         private string roundName;
-        private int stepsNo;
-
+        private IControllableByUserInput stepsCountGameObject = null;
         private PluginService pluginService;
 
 
@@ -72,7 +89,6 @@ namespace Sokoban.Model
             gameState = GameState.NotLoaded;
             fieldsX = 10;
             fieldsY = 10;
-            stepsNo = 0;
             time = 0;
 
             pluginService = new PluginService(this);
@@ -90,15 +106,6 @@ namespace Sokoban.Model
         {
             if (TimeReference != null) TimeReference(ref time);
         }
-
-
-        /// <summary>
-        /// Increment number of steps Sokoban did and show actual number in formular
-        /// </summary>
-        public void AddStep()
-        {
-            stepsNo++;
-        }       
 
         /// <summary>
         /// Adds event to the calendar of model
@@ -299,6 +306,20 @@ namespace Sokoban.Model
         {
 
         }
+
+        #region INotifyPropertyChanged Members
+        
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        void Notify(string prop)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(prop));
+            }
+        }
+
+        #endregion
 
     }
 }

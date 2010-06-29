@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:Sokoban.View.ChooseConnection"  
     xmlns:components="clr-namespace:Sokoban.Components"  
-    Title="Sokoban: Connect to the game server" Height="238" Width="358" Topmost="True"
+    Title="Sokoban: Connect to the game server" Height="238" Width="358"
     ShowInTaskbar="False"
     WindowStartupLocation="CenterScreen" MinWidth="307" MinHeight="208" MaxWidth="500" MaxHeight="500" Padding="10">
     <Window.Resources>

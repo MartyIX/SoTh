@@ -5,6 +5,7 @@
     xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"        
     xmlns:view="clr-namespace:Sokoban.View;assembly=GameDocs"        
     Title="Window1" Height="300" Width="300" Loaded="Window_Loaded"
+    ContentRendered="Window_ContentRendered"
     PreviewKeyDown="Window_PreviewKeyDown"       
     PreviewKeyUp="Window_PreviewKeyUp"
     Closed="Window_Closed">

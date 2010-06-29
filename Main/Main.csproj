@@ -47,13 +47,29 @@
     <OutputPath>.\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugGameDocsTest|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\DebugGameDocsTest\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>true</CodeAnalysisFailOnMissingRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugGameDocsTest|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\DebugGameDocsTest\</OutputPath>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AvalonDock, Version=1.2.2691.0, Culture=neutral, PublicKeyToken=85a1e0ada7ec13e4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\AvalonDock\AvalonDock.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Xna.Framework, Version=3.1.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86" />
-    <Reference Include="Microsoft.Xna.Framework.Game, Version=3.1.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86" />
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -115,6 +131,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Application\Management\AppConfigManagement.cs" />
+    <Compile Include="Model\Settings\SettingsRepository.cs" />
     <Compile Include="View\MainWindow\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -144,7 +162,6 @@
     <Compile Include="Application\Exceptions\Exceptions.cs" />
     <Compile Include="Application\Management\BringToFront.cs" />
     <Compile Include="Application\Management\ApplicationParameters.cs" />
-    <Compile Include="Application\Management\SokobanAppConfig.cs" />
     <Compile Include="Application\ApplicationRepository.cs" />
     <Compile Include="Model\AvailableGames\AvailableGamesRepository.cs" />
     <Compile Include="Model\Console\ConsoleRepository.cs" />
@@ -156,16 +173,6 @@
     </Compile>
     <Compile Include="Model\Profile\ProfileRepository.cs" />
     <Compile Include="View\Delegates.cs" />
-    <Compile Include="View\Splash\InitialSplash.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="View\Splash\InitialSplash.designer.cs">
-      <DependentUpon>InitialSplash.cs</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="View\Splash\InitialSplash.resx">
-      <DependentUpon>InitialSplash.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
   </ItemGroup>
   <!-- / old sokoban -->
   <ItemGroup>
@@ -180,12 +187,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Application\Images\GranSasso.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="View\Resources\Green.Monster.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="View\Resources\intro.gif" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="View\Resources\user_icon.gif" />
@@ -247,6 +248,10 @@
       <Project>{E1357F87-0BE7-4FF7-84B4-D4CC4CD1788E}</Project>
       <Name>PluginInterface</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SettingsWindow\SettingsDialog.csproj">
+      <Project>{B6FC1AE6-0066-442F-BF3F-AEA88A344C80}</Project>
+      <Name>SettingsDialog</Name>
+    </ProjectReference>
     <ProjectReference Include="Solvers\Solvers.csproj">
       <Project>{4BE6FD20-46E6-49DB-B30A-332F436C2F7D}</Project>
       <Name>Solvers</Name>
@@ -263,6 +268,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="View\Resources\favicon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="View\Splash\SokobanSplash.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

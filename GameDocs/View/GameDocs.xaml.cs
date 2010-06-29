@@ -20,17 +20,18 @@ using Sokoban.Model.GameDesk;
 using Sokoban.View.GameDocsComponents;
 using Sokoban.Lib;
 using Sokoban.Lib.Exceptions;
+using Sokoban.Solvers;
 
 namespace Sokoban.View
 {
     /// <summary>
     /// Interaction logic for GameDocs.xaml
     /// </summary>
-    public partial class GameDocs : DocumentPane, INotifyPropertyChanged, ISolverProvider
+    public partial class GameDocs : DocumentPane, INotifyPropertyChanged, ISolverProvider, ISolverPainter
     {
         public DockingManager dm;
         public ObservableCollection<DocumentContent> GameViews { get; set; }
-        public GameDeskControl ActiveGameControl;
+        public GameDeskControl ActiveGameControl = null;
 
         private bool isKeyDown = false;
 
@@ -142,7 +143,8 @@ namespace Sokoban.View
             //    "</DockingManager>";
 
             //StringReader sr = new StringReader(xmlLayout);
-            //dockingManager.RestoreLayout(sr);          
+            //dockingManager.RestoreLayout(sr); 
+            //Debug.WriteLine("DM Loaded");
         }
 
         public void SetActiveGameChanged(GameDeskControl g)
@@ -162,17 +164,19 @@ namespace Sokoban.View
         public void Add(IQuest quest)
         {
             //try
-            //{
+            //{                
+
                 GameDeskControl doc = new GameDeskControl(quest);
                 doc.Title = quest.Name;
-                doc.InfoTip = "Info tipo for " + doc.Title;
+                doc.InfoTip = doc.Title;
                 doc.ContentTypeDescription = "";
                 doc.Closing += new EventHandler<CancelEventArgs>(doc_Closing);
                 doc.Closed += new EventHandler(doc_Closed);
                 doc.InfoPanel.SizeChanged += new SizeChangedEventHandler(doc.ResizeInfoPanel);
                 GameViews.Add(doc);
                 doc.Resize(GamesDocumentPane.ActualWidth, GamesDocumentPane.ActualHeight);
-
+                
+                this.SetActiveGameChanged(doc);
             //}
             /*
             catch (PluginLoadFailedException e)
@@ -268,6 +272,41 @@ namespace Sokoban.View
         public string  SerializeMaze()
         {
             return ActiveGameControl.SerializeMaze();
+        }
+
+        /// <summary>
+        /// Not implemented!!
+        /// </summary>
+        public event GameObjectMovedDel SokobanMoved;
+
+        public object GetIdentifier()
+        {
+            return ActiveGameControl.GetIdentifier();
+        }
+
+        #endregion
+
+        #region ISolverPainter Members
+
+
+        public void DrawSolverSolution(object mazeID, string solution, int sokobanX, int sokobanY)
+        {
+            GameDeskControl gdc = mazeID as GameDeskControl;
+
+            // TODO MAY LEAD TO ILLEGAL STATE OF APP
+            if (GameViews.Contains(gdc))
+            {
+                gdc.Game.DrawSolverSolution(solution, sokobanX, sokobanY);
+            }
+            else
+            {
+                MessageBox.Show("The solution cannot be displayed because the tab has been closed in the mean time.");
+            }
+        }
+
+        public void DrawSolverSolution(string solution, int sokobanX, int sokobanY)
+        {
+            ActiveGameControl.Game.DrawSolverSolution(solution, sokobanX, sokobanY);
         }
 
         #endregion

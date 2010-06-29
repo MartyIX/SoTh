@@ -82,6 +82,14 @@ namespace Sokoban.View
             solversManager.RegisterStatusChangeCallback(solverStatusChange);
             SolversList = new ObservableCollection<string>(solversManager.Solvers); // we want to notify
             CurrentSolver = solversManager.CurrentSolver;
+
+                        
+            solverPainter = solverProvider as ISolverPainter;
+
+            if (solverPainter == null)
+            {
+                throw new Exception("Reference `solverProvider' should also implement ISolverPainter.");
+            }
         } 
 
 
@@ -93,12 +101,18 @@ namespace Sokoban.View
         private string solverStatus = "No action is in progress";
         private SolversManager solversManager;
         private ObservableCollection<string> solversList = new ObservableCollection<string>();
+        
+        // Initialized in method Initialize from ISolverProvider -- it's a hack actually because we expect that the object implements
+        // ISolverPainter and ISolverProvider at the same time. But we save a parameter..
+        private ISolverPainter solverPainter;
 
         private void Start_Click(object sender, RoutedEventArgs e)
         {
             dataGridItemsSource.Clear();
-            SolverStatus = "Solver is running";            
-            
+            SolverStatus = "Solver is running";
+
+            disableStartOfSolver();
+
             try
             {
                 // We specify that we want to get results via method solverWorkCompleted
@@ -106,18 +120,32 @@ namespace Sokoban.View
             } 
             catch (SolverException ex) 
             {
+                enableStartOfSolver();
                 SolverStatus = "Solver cannot finish its work.";
-                addItemToMessageLog(0, ex.Message);
+                addItemToMessageLog(0, ex.Message);                
             }                        
         }
+
+        private void disableStartOfSolver()
+        {
+            butStart.IsEnabled = false;
+            cbCurrentSolver.IsEnabled = false;
+        }
+
+        private void enableStartOfSolver()
+        {
+            butStart.IsEnabled = true;
+            cbCurrentSolver.IsEnabled = true;
+        }
+
 
         /// <summary>
         /// Param contains solution. If empty then solver was not able to find a solution
         /// </summary>
         /// <param name="param">Gots string in form of object</param>
-        private void solverWorkCompleted(object param)
-        {            
-            string solution = param as string;
+        private void solverWorkCompleted(object mazeID, uint width, uint height, string maze, string solution)
+        {
+            enableStartOfSolver();
             SolverStatus = "Solver stopped working.";
 
             if (solution != "")
@@ -147,13 +175,31 @@ namespace Sokoban.View
 
                     addItemToMessageLog(i + 1, message);
                 }
+
+                if (solverPainter != null)
+                {
+                    int pos1 = maze.IndexOf('+');
+                    int pos2 = maze.IndexOf('@');
+                    int sokobanX = 0;
+                    int sokobanY = 0;
+
+                    if (pos1 == -1 && pos2 > -1)
+                    {
+                        pos1 = pos2;
+                    }
+
+                    sokobanX = pos1 % (int)width + 1;
+                    sokobanY = (pos1 - sokobanX + 1) / (int)width + 1;
+
+                    solverPainter.DrawSolverSolution(mazeID, solution, sokobanX, sokobanY);
+                }
             }
         }
 
         private void Stop_Click(object sender, RoutedEventArgs e)
         {
-            solversManager.TerminateSolver();  
-        }        
+            solversManager.TerminateSolver();
+        }
 
         /// <summary>
         /// Handler of SolverLibrary.StatusCallback event 

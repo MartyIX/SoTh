@@ -21,7 +21,10 @@ namespace Sokoban.Model.PluginInterface
         // Process all events
         void ProcessAllEvents();
         void ProcessAllEvents(double phase);
-        void ProcessAllEvents(bool updateTime, double phase);        
+        void ProcessAllEvents(bool updateTime, double phase);
+
+
+        void PropertyChanged(string name);
     }
 
     public interface IGamePlugin : IPosition

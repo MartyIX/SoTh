@@ -19,13 +19,13 @@ Notes: DockableContent is not closed, only hiden when closed!
     <DockPanel LastChildFill="True">					    
 		<StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="5,5,5,0">
 		    <TextBlock VerticalAlignment="Center"><Run Text="Current solver:"/></TextBlock>
-            <ComboBox IsEditable="False" SelectedItem="{Binding Path=CurrentSolver}" SelectedIndex="0" Margin="5,0,0,0" ItemsSource="{Binding SolversList, IsAsync=True}"/>
+            <ComboBox x:Name="cbCurrentSolver" IsEditable="False" SelectedItem="{Binding Path=CurrentSolver}" SelectedIndex="0" Margin="5,0,0,0" ItemsSource="{Binding SolversList, IsAsync=True}"/>
             <Button Click="Configure_Click">Configure</Button>
             <Button Click="About_Click">About</Button>
 		</StackPanel>
 		<DockPanel DockPanel.Dock="Bottom" LastChildFill="True" Margin="5,0,5,5">
-		    <Button Content="Start" Click="Start_Click" Margin="0,0,5,0"/>
-            <Button Content="Stop" Click="Stop_Click" />							
+            <Button x:Name="butStart" Content="Start" Click="Start_Click" Margin="0,0,5,0"/>
+            <Button x:Name="butStop" Content="Stop" Click="Stop_Click" />							
 			<StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
 				<TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,3,0"><Run Text="Status:"/></TextBlock>
                 <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" Text="{Binding SolverStatus, FallbackValue='No action is in progress'}"/>

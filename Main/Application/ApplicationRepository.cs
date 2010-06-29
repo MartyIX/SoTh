@@ -16,6 +16,12 @@ namespace Sokoban.Model
 {
     using Application = System.Windows.Forms.Application;
     using Sokoban.View.ChooseConnection;
+    using System.Threading;
+    using System.Globalization;
+    using Sokoban.View.Settings;
+    using Sokoban.Model.Settings;
+    using Sokoban.Configuration;
+    using System.Reflection;
 
     /// <summary>
     /// Singleton !
@@ -78,11 +84,13 @@ namespace Sokoban.Model
         public ApplicationParameters appParams;
 
         public ProfileRepository profileRepository;
+        public SettingsRepository settingsRepository;
 
         ///
         /// VIEWS
         ///
         ChooseConnectionPresenter chooseConnectionPresenter;
+        SettingsPresenter settingsPresenter;
 
         #endregion Fields
 
@@ -97,11 +105,17 @@ namespace Sokoban.Model
 
         public static void Start(string[] args)
         {
+            // Changes the CurrentCulture of the current thread to en-US.
+            // We want double.ToString() in format 1.55 instead of 1,55; 
+            // The app is in English so it is logical to have this culture set
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US", false); 
+            
             // redirect console output to parent process;
             // must be before any calls to Console.WriteLine()
             AttachConsole(ATTACH_PARENT_PROCESS);
 
             ApplicationRepository.Instance.profileRepository = ProfileRepository.Instance;
+            ApplicationRepository.Instance.settingsRepository = SettingsRepository.Instance;
 
             Instance.appParams = new ApplicationParameters();
 
@@ -136,7 +150,14 @@ namespace Sokoban.Model
         {
             if (alreadyStarted == false)
             {
-                this.LoadViewChooseConnection();
+                //
+                // Load Splash
+                //
+                if (AppConfigManagement.Settings["IsSplashEnabled"].ToLower() == "true")
+                {
+                    SplashScreen screen = new SplashScreen("View/Splash/SokobanSplash.png");
+                    screen.Show(true);
+                }                                
 
                 alreadyStarted = true;
 
@@ -153,6 +174,14 @@ namespace Sokoban.Model
             {
                 throw new Exception("Application was already initialized!");
             }
+        }
+
+        /// <summary>
+        /// After the main window is rendered
+        /// </summary>
+        public void OnStartUp_PhaseTwo()
+        {
+            this.LoadViewChooseConnection();
         }
 
         public static bool ContentFileExists(string file)
@@ -222,6 +251,17 @@ namespace Sokoban.Model
                 chooseConnectionPresenter.InitializeView(MainWindow);
             }                        
         }
+
+        public void LoadViewSettings()
+        {
+            if (settingsPresenter == null)
+            {
+                settingsPresenter = new SettingsPresenter(Instance.appParams.getView("Settings"), settingsRepository);
+            }
+
+            settingsPresenter.InitializeView(MainWindow);
+        }
+
 
         #region IBaseRepository Members
 

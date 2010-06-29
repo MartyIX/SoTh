@@ -60,20 +60,6 @@ namespace Sokoban.Properties {
             }
         }
         
-        internal static System.Drawing.Bitmap Green_Monster {
-            get {
-                object obj = ResourceManager.GetObject("Green_Monster", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        internal static System.Drawing.Bitmap intro {
-            get {
-                object obj = ResourceManager.GetObject("intro", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
         /// <summary>
         ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
         ///&lt;SokobanQuest xmlns=&quot;http://www.martinvseticka.eu/SoTh&quot;
@@ -81,17 +67,12 @@ namespace Sokoban.Properties {
         ///              xsi:schemaLocation=&quot;http://www.martinvseticka.eu http://www.martinvseticka.eu/schemas/SoTh.xsd&quot;&gt;
         ///
         ///  &lt;Name&gt;DebugQuest&lt;/Name&gt;
-        ///  &lt;Round&gt;
-        ///    &lt;Name&gt;Easy start&lt;/Name&gt;
-        ///    &lt;Dimensions&gt;
-        ///      &lt;Width&gt;8&lt;/Width&gt;
-        ///      &lt;Height&gt;9&lt;/Height&gt;
-        ///    &lt;/Dimensions&gt;
-        ///
-        ///    &lt;GameObjects&gt;
-        ///      &lt;Sokoban&gt;
-        ///        &lt;PosX&gt;2&lt;/PosX&gt;
-        ///        &lt;PosY&gt;7 [rest of string was truncated]&quot;;.
+        ///  &lt;Round xmlns=&quot;http://www.martinvseticka.eu/SoTh&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&gt;
+        ///  &lt;Name&gt;Round no. 1&lt;/Name&gt;
+        ///  &lt;Dimensions&gt;
+        ///    &lt;Width&gt;8&lt;/Width&gt;
+        ///    &lt;Height&gt;8&lt;/Height&gt;
+        ///  &lt;/Dim [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string TestQuest {
             get {

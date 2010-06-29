@@ -59,6 +59,10 @@ namespace Sokoban.Model
             return gp;
         }
 
+        void IPluginParent.PropertyChanged(string property)
+        {
+            Notify(property);
+        }
 
         public void Terminate()
         {

@@ -9,10 +9,11 @@ using Sokoban.Lib.Events;
 using System.Windows.Media.Imaging;
 using System.Windows;
 using System.Xml;
+using System.ComponentModel;
 
 namespace PluginSokoban
 {
-    public partial class Sokoban : MovableEssentials, IGamePlugin, IMovableElement, IControllableByUserInput
+    public partial class Sokoban : MovableEssentials, IGamePlugin, IMovableElement, IControllableByUserInput, INotifyPropertyChanged
     {
         const int MAX_EVENTS_IN_KB = 3; 
 
@@ -105,6 +106,7 @@ namespace PluginSokoban
             posX = 1;
             posY = 1;
             obstructionLevel = 10;
+            StepsCount = 0; // we want to notify
 
             image = new System.Windows.Controls.Image();
 
@@ -238,5 +240,6 @@ namespace PluginSokoban
         }
 
         #endregion
+
     }
 }

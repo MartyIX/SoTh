@@ -17,6 +17,7 @@ using Sokoban.Model;
 using Sokoban.View.ChooseConnection;
 using System.Diagnostics;
 using Sokoban.Lib;
+using Sokoban.Configuration;
 
 
 namespace Sokoban
@@ -79,8 +80,14 @@ namespace Sokoban
 
         private void Window_PreviewKeyUp(object sender, KeyEventArgs e)
         {
-            gameManager.ActiveGameControl.KeyIsUp(sender, e);
+            gameManager.ActiveGameControl.KeyIsUp(sender, e);        
         }
+
+        private void Window_ContentRendered(object sender, EventArgs e)
+        {
+            ApplicationRepository.Instance.OnStartUp_PhaseTwo();
+        }
+
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
@@ -115,6 +122,10 @@ namespace Sokoban
             this.Terminate();
         }
 
+        //
+        // MENU CLICKS HANDLERS
+        //
+
         private void MenuItem_Console_Click(object sender, RoutedEventArgs e)
         {
             SetVisibilityOfMenuItems(consolePane);
@@ -124,6 +135,12 @@ namespace Sokoban
         {
             SetVisibilityOfMenuItems(solversPane);
         }
+
+        private void MenuItem_Settings_Click(object sender, RoutedEventArgs e)
+        {
+            ApplicationRepository.Instance.LoadViewSettings();
+        }
+
 
         private void SetVisibilityOfMenuItems(DockableContent dc)
         {
@@ -154,7 +171,6 @@ namespace Sokoban
         {
             SetVisibilityOfDockableContents(consolePane, state);
         }
-
 
     }
 

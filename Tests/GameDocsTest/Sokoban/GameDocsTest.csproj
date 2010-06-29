@@ -53,6 +53,17 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugGameDocsTest|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\DebugGameDocsTest\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AvalonDock, Version=1.2.2691.0, Culture=neutral, PublicKeyToken=85a1e0ada7ec13e4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -128,6 +139,10 @@
     <ProjectReference Include="..\..\..\GameDocs\GameDocs.csproj">
       <Project>{6DAB3F1F-6D91-4086-A2DF-ACD54307E5BC}</Project>
       <Name>GameDocs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\GameRepository\GameRepository\GameRepository.csproj">
+      <Project>{67421E82-7E18-4960-AB49-FF802B82E54D}</Project>
+      <Name>GameRepository</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Lib\Lib.csproj">
       <Project>{F44E4759-3B19-4E1B-BA4D-6E4F64086190}</Project>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Sokoban;
+using Sokoban.Solvers;
 
 namespace DummyObjectImplementations
 {
@@ -79,6 +80,8 @@ namespace DummyObjectImplementations
 
             throw new Exception("Unknown test: " + en.ToString());
         }
+
+        public event Sokoban.Lib.GameObjectMovedDel SokobanMoved;
 
         #endregion
     }

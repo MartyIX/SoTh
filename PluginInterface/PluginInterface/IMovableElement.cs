@@ -16,5 +16,6 @@ namespace Sokoban.Model.PluginInterface
         EventType LastMovementEvent { get; set; }
         int MovementEventsInBuffer { get; set; }
         Int64 TimeMovementEnds { get; set; }
+        event GameObjectMovedDel ElementMoved;
     }
 }

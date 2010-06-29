@@ -3,11 +3,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ad="clr-namespace:AvalonDock;assembly=AvalonDock"
     xmlns:local="clr-namespace:Sokoban.View.GameDocsComponents"
-    Background="AliceBlue" 
     Loaded="DocumentContent_Loaded" 
     mc:Ignorable="d" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" Height="300" Width="300">
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+	Height="336" Width="352">
     <ad:DocumentContent.Resources>
         <local:FieldSizeToRectConverter x:Key="fieldSizeConverter" />
         <Style x:Key="GameDesk" TargetType="{x:Type Rectangle}">
@@ -40,9 +40,21 @@
     </ad:DocumentContent.Resources>
     <!-- view -->
 
-    <DockPanel LastChildFill="True">
-        <StackPanel Name="infoPanel" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="10,0,0,0">
-            <Grid HorizontalAlignment="Left">
+    <DockPanel LastChildFill="True" Background="white"> <!-- TODO Remove background -->
+        <Canvas Name="gamedeskCanvas" DockPanel.Dock="Left" Width="{Binding ElementName=gamedeskRect, Path=Width}">
+          <Rectangle HorizontalAlignment="Left" Width="229" Height="300" 
+        	  x:Name="gamedeskRect" Style="{DynamicResource GameDesk}" />
+        </Canvas>
+		
+		  <Viewbox
+		      Margin="4"
+		      VerticalAlignment="Stretch"
+		      Height="Auto">
+
+		<StackPanel Name="infoPanel" DockPanel.Dock="Right" 
+			VerticalAlignment="Center" Margin="10,0,0,0"
+			Orientation="Horizontal">        
+		    <Grid HorizontalAlignment="Left" >
                 <Grid.Resources>
                     <Style TargetType="TextBlock">
                         <Setter Property="Margin" Value="5,3" />
@@ -66,12 +78,9 @@
                 <TextBlock Style="{StaticResource LeftColumnTitles}" Grid.Row="1" Grid.Column="0" Text="Time:" />
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Time}" />
                 <TextBlock Style="{StaticResource LeftColumnTitles}" Grid.Row="2" Grid.Column="0" Text="Steps:" />
-                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Steps}" />
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=Game.GameRepository.StepsCount, FallbackValue='NA'}" />
             </Grid>
         </StackPanel>
-        <Canvas Name="gamedeskCanvas">
-            <Rectangle HorizontalAlignment="Left" Width="229" Height="300" 
-               Name="gamedeskRect" Style="{DynamicResource GameDesk}" />
-        </Canvas>
+	</Viewbox>        
     </DockPanel>
 </ad:DocumentContent>

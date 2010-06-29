@@ -10,6 +10,7 @@ using System.Threading;
 using Sokoban.Lib.Events;
 using Sokoban.Model.PluginInterface;
 using Sokoban.Lib.Exceptions;
+using Sokoban.Solvers;
 
 namespace Sokoban.Model
 {
@@ -130,6 +131,16 @@ namespace Sokoban.Model
 
 
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Not implemented!!
+        /// </summary>
+        public event GameObjectMovedDel SokobanMoved;
+
+        public object GetIdentifier()
+        {
+            throw new NotImplementedException("This method is not implemented by purpose.");
         }
 
         #endregion

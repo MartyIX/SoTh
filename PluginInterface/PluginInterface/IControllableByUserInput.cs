@@ -10,5 +10,6 @@ namespace Sokoban.Model.PluginInterface
     {
         void OnKeyDown(Key key, Int64 time, double phase);
         void OnKeyUp(Key key, Int64 time, double phase);
+        int StepsCount { get; } // If the plugin doesn't want to provide the information; it has to return -1 always
     }
 }

@@ -24,7 +24,7 @@ namespace Sokoban.Solvers
         /// Param contains result
         /// </summary>
         /// <param name="param"></param>
-        public delegate void SolverWorkCompletedDel(object param);
+        public delegate void SolverWorkCompletedDel(object mazeID, uint width, uint height, string maze, string solution);
 
         // Private Fields
         private Dictionary<string, SolverLibrary> solversDictionary;
@@ -115,11 +115,14 @@ namespace Sokoban.Solvers
             uint width = solverProvider.GetMazeWidth();
             uint height = solverProvider.GetMazeHeight();
             string maze = solverProvider.SerializeMaze();
+            object mazeID = solverProvider.GetIdentifier();
             uint boxesNo = 0;
+            
             // Count boxes
             for (int i = 0; i < maze.Length; i++)
             {
                 if (maze[i] == '*' || maze[i] == '$') boxesNo++;
+
             }            
 
             if (width > constraints[0] && constraints[0] != 0) // 0 = unlimited
@@ -144,13 +147,14 @@ namespace Sokoban.Solvers
 
             SolvingThreadParameterObject param = new SolvingThreadParameterObject
             {
+                MazeID = mazeID,
                 Lib = lib,
                 Height = height,
                 Width = width,
                 Maze = maze,
                 SolverWorkCompleteDel = solverWorkCompleteDelegate
             };
-
+            
             solvingThread.RunWorkerAsync(param);                          
         }
 
@@ -163,17 +167,29 @@ namespace Sokoban.Solvers
         {
             SolvingThreadParameterObject param = e.Argument as SolvingThreadParameterObject;
 
+            // TODO REMOVE
+            System.Threading.Thread.Sleep(5000); // For debugging purposes
+
             if (param.Lib.SolveEx(param.Width, param.Height, param.Maze) == SOKOBAN_PLUGIN_RESULT.SUCCESS)
             {
-                e.Result = new SolvingThreadResultObject {
-                 Solution = param.Lib.LastSolution,
-                 SolverWorkCompleteDel = param.SolverWorkCompleteDel,
+                e.Result = new SolvingThreadResultObject 
+                {                     
+                     MazeID = param.MazeID,
+                     Height = param.Height,
+                     Width = param.Width,
+                     Maze = param.Maze,
+                     Solution = param.Lib.LastSolution,
+                     SolverWorkCompleteDel = param.SolverWorkCompleteDel,
                 } ;
             }
             else
             {
                 e.Result = new SolvingThreadResultObject
                 {
+                    MazeID = param.MazeID,
+                    Height = param.Height,
+                    Width = param.Width,
+                    Maze = param.Maze,
                     Solution = "",
                     SolverWorkCompleteDel = param.SolverWorkCompleteDel,
                 };
@@ -183,7 +199,7 @@ namespace Sokoban.Solvers
         private void solvingThread_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             SolvingThreadResultObject result = e.Result as SolvingThreadResultObject;
-            result.SolverWorkCompleteDel(result.Solution);
+            result.SolverWorkCompleteDel(result.MazeID, result.Width, result.Height, result.Maze, result.Solution);
         }
 
 
@@ -226,6 +242,7 @@ namespace Sokoban.Solvers
         private class SolvingThreadParameterObject
         {
             public SolverLibrary Lib { get; set; }
+            public object MazeID { get; set; }
             public uint Width { get; set; }
             public uint Height { get; set; }
             public string Maze { get; set; }
@@ -237,7 +254,11 @@ namespace Sokoban.Solvers
         /// Result of solving thread
         /// </summary>
         private class SolvingThreadResultObject
-        {            
+        {
+            public object MazeID { get; set; }
+            public uint Width { get; set; }
+            public uint Height { get; set; }
+            public string Maze { get; set; }
             public string Solution { get; set; }
             public SolverWorkCompletedDel SolverWorkCompleteDel { get; set; }
         }

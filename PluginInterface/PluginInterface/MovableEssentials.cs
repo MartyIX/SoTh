@@ -10,11 +10,14 @@ using System.Diagnostics;
 using System.Windows.Media;
 using System.Windows.Controls;
 using System.Windows;
+using System.ComponentModel;
 
 namespace Sokoban.Model.PluginInterface
 {
-    public class MovableEssentials : IMovableElement
+    public class MovableEssentials : IMovableElement, INotifyPropertyChanged
     {
+        public event GameObjectMovedDel ElementMoved;
+        
         private object syncRoot = new object();
         protected IPluginParent host;
         protected int lastPosX;
@@ -25,6 +28,7 @@ namespace Sokoban.Model.PluginInterface
         protected int obstructionLevel = 0;
         protected int fieldsX = 0;
         protected int fieldsY = 0;
+        protected int stepsCount;
         private static int[] moves = { -1,  0, 
                                         1,  0, 
                                         0, -1, 
@@ -264,22 +268,35 @@ namespace Sokoban.Model.PluginInterface
         {
             lastPosX = posX;
             lastPosY = posY;
+            char direction = ' ';
 
             if (whereTo == MovementDirection.goLeft)
             {
                 posX--;
+                direction = 'l';
             }
             else if (whereTo == MovementDirection.goRight)
             {
                 posX++;
+                direction = 'r';
             }
             else if (whereTo == MovementDirection.goUp)
             {
                 posY--;
+                direction = 'u';
             }
             else if (whereTo == MovementDirection.goDown)
             {
                 posY++;
+                direction = 'd';
+            }
+
+            StepsCount++;
+
+            // Fire event
+            if (ElementMoved != null)
+            {
+                ElementMoved(posX, posY, direction);
             }
         }
 
@@ -481,5 +498,25 @@ namespace Sokoban.Model.PluginInterface
             
             host.MakeImmediatePlan(debugMessage, iGamePlugin, eventType);
         }
+
+        public int StepsCount
+        {
+            get { return stepsCount; }
+            set { stepsCount = value; host.PropertyChanged("StepsCount"); }
+        }
+
+        #region INotifyPropertyChanged Members
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        void Notify(string prop)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(prop));
+            }
+        }
+
+        #endregion
     }
 }

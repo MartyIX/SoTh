@@ -18,6 +18,7 @@ using Sokoban.Lib;
 using Sokoban.Model;
 using Sokoban.Model.GameDesk;
 using Sokoban.Lib.Exceptions;
+using Sokoban.Solvers;
 
 namespace Sokoban.View.GameDocsComponents
 {
@@ -26,21 +27,22 @@ namespace Sokoban.View.GameDocsComponents
     /// Interaction logic for GameDeskControl.xaml
     /// </summary>
     public partial class GameDeskControl : DocumentContent, INotifyPropertyChanged, ISolverProvider
-    {        
-        private double availableWidth = 200;
-        private double availableHeight = 200;
-        private Game game;
-        private int fieldsX = 8;
-        private int fieldsY = 8;
-        private string roundName = "";
+    {
         public event SizeChangedDelegate OnResized; // Fired in Resize(double, double)
-        private double fieldSize = 25;
-        private double steps = 0;
-        private double time = 0;
-
+        
         public StackPanel InfoPanel
         {
             get { return infoPanel; }
+        }
+
+        public Canvas GamedeskCanvas
+        {
+            get { return gamedeskCanvas; }
+        }
+
+        public IGame Game
+        {
+            get { return game; }
         }
 
         /// <summary>
@@ -81,8 +83,7 @@ namespace Sokoban.View.GameDocsComponents
 
         public string RoundName
         {
-            get { return roundName; }
-            set { roundName = value; Notify("RoundName"); }
+            get { return game.RoundName; }
         }
 
         public double FieldSize
@@ -90,15 +91,9 @@ namespace Sokoban.View.GameDocsComponents
             get  { return fieldSize; }
             set 
             { 
-                fieldSize = value; 
+                fieldSize = value;
                 Notify("FieldSize"); /* in XAML is biding and ViewPort is changed automatically */
             }
-        }
-
-        public double Steps
-        {
-            get { return steps; }
-            set { steps = value; Notify("Steps"); }
         }
 
         public double Time
@@ -199,16 +194,24 @@ namespace Sokoban.View.GameDocsComponents
             base.OnApplyTemplate();
         }
 
+        public bool IsChanged { get; set; }
+
+        public static readonly RoutedCommand ViewCommand = new RoutedCommand();
+
+        private double availableWidth = 200;
+        private double availableHeight = 200;
+        private Game game;
+        private int fieldsX = 8;
+        private int fieldsY = 8;
+        private double fieldSize = 25;
+        private double time = 0;
+
         private void OnCanClose(object sender, CanExecuteRoutedEventArgs e)
         {
             //e.Handled = true;
             //e.CanExecute = false;
         }
-
-        public bool IsChanged { get; set; }
-
-        public static readonly RoutedCommand ViewCommand = new RoutedCommand();
-
+        
         private void CommandBinding_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
@@ -279,8 +282,27 @@ namespace Sokoban.View.GameDocsComponents
             return game.SerializeMaze();
         }
 
+        public event GameObjectMovedDel SokobanMoved
+        {   
+            add
+            {
+                game.SokobanMoved += value;
+            }
+            remove
+            {
+                game.SokobanMoved -= value;
+            }
+        }
+
+        public object GetIdentifier()
+        {
+            return game.GetIdentifier();
+        }
+
         #endregion
     }
+
+
 
     [ValueConversion(/* sourceType */ typeof(int), /* targetType */ typeof(Rect))]
     public class FieldSizeToRectConverter : IValueConverter

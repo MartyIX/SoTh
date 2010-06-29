@@ -6,6 +6,7 @@ using System.Collections;
 using Sokoban.Lib;
 using Sokoban.Model.PluginInterface;
 using System.Windows.Input;
+using Sokoban.Solvers;
 
 namespace Sokoban.Model.GameDesk
 {
@@ -17,6 +18,8 @@ namespace Sokoban.Model.GameDesk
         int FieldsX { get; }
         int FieldsY { get; }
         Int64 Time { get; }
+        string RoundName { get; }
+        int StepsCount { get; }
         IEnumerable<IGamePlugin> GetGameObjects { get; }
         
         void LoadRoundFromXML(string xml);

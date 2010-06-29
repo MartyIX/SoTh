@@ -19,6 +19,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using Sokoban.Lib;
+using System.Globalization;
+using System.Threading;
 
 namespace Sokoban
 {
@@ -29,14 +31,15 @@ namespace Sokoban
     {
         public Window1()
         {
-            InitializeComponent();            
+            InitializeComponent();
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US", false); 
             DataContext = this;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             DebuggerIX.Start(DebuggerMode.File);
-            loadQuest();
+            loadQuest();            
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -67,5 +70,11 @@ namespace Sokoban
         {
             gameManager.ActiveGameControl.KeyIsUp(sender, e);
         }
+
+        private void Window_ContentRendered(object sender, EventArgs e)
+        {
+            gameManager.DrawSolverSolution("uuluuR", 3, 7);
+        }
+
     }
 }
