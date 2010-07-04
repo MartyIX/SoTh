@@ -21,13 +21,14 @@ using Sokoban.View.GameDocsComponents;
 using Sokoban.Lib;
 using Sokoban.Lib.Exceptions;
 using Sokoban.Solvers;
+using Sokoban.Model.Quests;
 
 namespace Sokoban.View
 {
     /// <summary>
     /// Interaction logic for GameDocs.xaml
     /// </summary>
-    public partial class GameDocs : DocumentPane, INotifyPropertyChanged, ISolverProvider, ISolverPainter
+    public partial class GameDocs : DocumentPane, INotifyPropertyChanged, ISolverProvider, ISolverPainter, IQuestHandler
     {
         public DockingManager dm;
         public ObservableCollection<DocumentContent> GameViews { get; set; }
@@ -307,6 +308,15 @@ namespace Sokoban.View
         public void DrawSolverSolution(string solution, int sokobanX, int sokobanY)
         {
             ActiveGameControl.Game.DrawSolverSolution(solution, sokobanX, sokobanY);
+        }
+
+        #endregion
+
+        #region IQuestHandler Members
+
+        public void QuestSelected(IQuest quest)
+        {
+            this.Add(quest);
         }
 
         #endregion

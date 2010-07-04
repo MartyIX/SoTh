@@ -9,6 +9,11 @@ using System.Collections.Generic;
 using System.Configuration;
 using Sokoban.Lib;
 using Sokoban.View;
+using System.Security.Cryptography;
+using System.Text;
+using Sokoban.Cryptography;
+using Sokoban.Model.Profile;
+using Sokoban.Lib.Exceptions;
 
 
 namespace Sokoban.Model
@@ -48,7 +53,7 @@ namespace Sokoban.Model
                 }
                 else
                 {
-                    throw new Exception("User is not authenticated.");
+                    return String.Empty;
                 }
             }
             set { server = value; }
@@ -137,22 +142,21 @@ namespace Sokoban.Model
         /// <summary>
         /// Attempt to login user to the remote server
         /// </summary>
-        /// <param name="server"></param>
+        /// <param name="server">Server name without "/remote/"</param>
         /// <param name="username"></param>
-        /// <param name="password"></param>
+        /// <param name="password">Not hashed password</param>
         /// <returns>True if user has been logged in; false otherwise</returns>
         public bool TryLogin(string server, string username, string password)
         {
             this.LoginMessage = "Connecting to the server";
-            
-            // TODO: improve                          
-            string postData = "name=" + username + "&pass=" + password;
-            string url = server.TrimEnd(new char[] { '/' }) + "/login.php";
+
+            string postData = "username=" + username + "&password=" + Hashing.CalculateSHA1(password, Encoding.Default).ToLower();
+            string url = server.TrimEnd(new char[] { '/' }) + "/remote/login/";
             string output;
 
             try
             {
-                output = HttpReq.Request(url, postData);
+                output = HttpReq.GetRequest(url, postData);
             }
             catch (WebException e)
             {
@@ -163,11 +167,28 @@ namespace Sokoban.Model
             catch (Exception e)
             {
                 output = "error";
-                this.LoginMessage = "Unknow error occured.\n" +
+                                               
+                this.LoginMessage = "Unknown error occured." +
                                     "Additional information: " + e.Message;
             }
 
-            if (output == "1")
+            ProfileXmlServerResponse response = new ProfileXmlServerResponse();
+
+            if (output != "error")
+            {               
+                try
+                {
+                    response.Parse(output);
+
+                }
+                catch (InvalidStateException e)
+                {
+                    output = "error";
+                    this.LoginMessage = e.Message;
+                }
+            }
+
+            if (response.IsLoggedIn)
             {
                 this.LoginMessage = "Login was successful.";
                 this.isUserAutenticated = true;
@@ -199,14 +220,21 @@ namespace Sokoban.Model
         {
             ServerConfigurationSection col = (ServerConfigurationSection)ConfigurationManager.GetSection("Sokoban.GameServers");
 
-            List<string> result = new List<string>();
-
-            foreach (ServerElement item in col.Servers)
+            if (col == null)
             {
-                result.Add((string)item.Name);
+                throw new Exception("An error occured during reading Sokoban.GameServers from .config file.");
             }
+            else
+            {
+                List<string> result = new List<string>();
 
-            return result;
+                foreach (ServerElement item in col.Servers)
+                {
+                    result.Add((string)item.Name);
+                }
+
+                return result;
+            }
         }
 
         #region INotifyPropertyChanged Members

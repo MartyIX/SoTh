@@ -43,16 +43,33 @@ namespace Sokoban.Model
 
         #region IPluginParent Members
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="x">one-based x-coord</param>
+        /// <param name="y">one-based y-coord</param>
+        /// <returns></returns>
         public IGamePlugin GetObstructionOnPosition(int x, int y)
         {
             IGamePlugin gp = null;
 
-            foreach (IGamePlugin g in this.movableElements)
+            // Fixed elements
+                
+            if (fixedElements[x - 1, y - 1] != null) 
             {
-                if (g.PosX == x && g.PosY == y)
+                gp = fixedElements[x - 1, y - 1];
+            }
+            else 
+            {
+                // Movable elements
+
+                foreach (IGamePlugin g in this.movableElements)
                 {
-                    gp = g;
-                    break;
+                    if (g.PosX == x && g.PosY == y)
+                    {
+                        gp = g;
+                        break;
+                    }
                 }
             }
 

@@ -31,9 +31,23 @@ namespace Sokoban
     {
         public Window1()
         {
+            Initialize();
             InitializeComponent();
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US", false); 
             DataContext = this;
+        }
+
+        private void Initialize()
+        {
+            PluginService.Initialize(@"D:\Bakalarka\Sokoban\Main\Plugins");
+        }
+
+        private void testList()
+        {
+            // Draw solution
+            // gameManager.DrawSolverSolution("uuluuR", 3, 7);
+
+
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -49,7 +63,8 @@ namespace Sokoban
 
         private void loadQuest()
         {
-            string result = Sokoban.Properties.Resources.TestQuest;
+            //string result = Sokoban.Properties.Resources.TestQuest;
+            string result = Sokoban.Properties.Resources.SimpleQuest;
             gameManager.Add(result);
         }
 
@@ -59,6 +74,10 @@ namespace Sokoban
             {
                 loadQuest();
                 e.Handled = true;
+            }
+            else if (e.Key == Key.R)
+            {
+                gameManager.ActiveGameControl.Reload();
             }
             else
             {
@@ -73,8 +92,9 @@ namespace Sokoban
 
         private void Window_ContentRendered(object sender, EventArgs e)
         {
-            gameManager.DrawSolverSolution("uuluuR", 3, 7);
+            testList();
         }
+
 
     }
 }

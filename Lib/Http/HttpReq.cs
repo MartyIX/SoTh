@@ -9,13 +9,43 @@ namespace Sokoban.Lib.Http
 {
     public class HttpReq
     {
+
+        public static string GetRequest(string file)
+        {
+            return GetRequest(file, null);
+        }
+
+        public static string GetRequest(string file, string args)
+        {
+            string responseData = null;
+
+            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(file + (args != null ? "?" + args : String.Empty));
+            request.Method = "GET";
+            request.UserAgent = "SoTh/C#";
+
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                StreamReader responseReader = new StreamReader(response.GetResponseStream());
+                responseData = responseReader.ReadToEnd();
+                responseReader.Close();
+            }
+            else
+            {
+                throw new WebException("HTTP response status was not 200 OK.");
+            }
+
+            return responseData;
+        }
+
         /// <summary>
         /// Sends @postData to the file @file (on server: @file) and returns response of the server
         /// </summary>
         /// <param name="file">file is an URL</param>
         /// <param name="postData">in form: variable=data&amp;variable2=someotherdata;</param>
         /// <returns>Response of the server</returns>
-        public static string Request(string file, string postData)
+        public static string PostRequest(string file, string postData)
         {
             HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(file);
             httpWebRequest.Method = "POST";
@@ -44,6 +74,7 @@ namespace Sokoban.Lib.Http
             return streamReader.ReadToEnd();
         }
 
+        /*
         /// <summary>
         /// 
         /// </summary>
@@ -56,6 +87,6 @@ namespace Sokoban.Lib.Http
             fileContent = client.DownloadString(file);
 
             return fileContent;
-        }
+        }*/
     }
 }

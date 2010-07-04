@@ -1,7 +1,0 @@
-﻿<ad:DocumentPane x:Class="Sokoban.View.GameDocs"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:ad="clr-namespace:AvalonDock;assembly=AvalonDock"
-    xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
-    Name="GamesDocumentPane" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-</ad:DocumentPane>

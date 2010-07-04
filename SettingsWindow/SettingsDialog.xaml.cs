@@ -23,7 +23,6 @@ namespace Sokoban.View
     {
         private ISettingsRepository model;
         public SettingsPresenter presenter;
-        private bool isSplashEnabled;
 
         public SettingsDialog(SettingsPresenter presenter, ISettingsRepository model)
         {
@@ -32,8 +31,6 @@ namespace Sokoban.View
 
             this.presenter = presenter;
             this.model = model;
-
-            isSplashEnabled = (this.model.Settings["IsSplashEnabled"] == "True");
         }
 
         #region ISettingsView Members
@@ -47,11 +44,11 @@ namespace Sokoban.View
         {
             get
             {
-                return isSplashEnabled;
+                return (bool)this.model["IsSplashEnabled"];
             }
             set
             {
-                isSplashEnabled = value;
+                this.model["IsSplashEnabled"] = value;
             }
         }
 

@@ -17,5 +17,6 @@ namespace Sokoban.Model.PluginInterface
         int MovementEventsInBuffer { get; set; }
         Int64 TimeMovementEnds { get; set; }
         event GameObjectMovedDel ElementMoved;
+        int ObstructionLevel { get; } // e.g., 5 is for Box, 10 is for Sokoban
     }
 }

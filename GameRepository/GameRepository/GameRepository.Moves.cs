@@ -36,29 +36,51 @@ using System.Windows.Input;
 namespace Sokoban.Model
 {
     public partial class GameRepository : IBaseRepository
-    {
+    {        
+        public event VoidChangeDelegate GameStarted;
         public IGameRealTime game = null;
+        private bool wasGameStarted = false;
 
         /// <summary>
         /// Method dispatches info that user pressed key (keydown event) to the plugins that can react on keys
         /// </summary>
-        public void MoveRequest(Key key)
+        public bool MoveRequest(Key key, double phase)
         {
+            if (wasGameStarted == false)
+            {
+                if (GameStarted != null) GameStarted(); // Fire event
+                wasGameStarted = true;
+            }
+            
+            bool wasHandled = false;
+
             foreach (IControllableByUserInput gp in this.controllableByUserObjects)
             {
-                gp.OnKeyDown(key, time, phase);
+                if (gp.OnKeyDown(key, time, phase) == true) // was request handled
+                {
+                    wasHandled = true;
+                }
             }
+
+            return wasHandled;
         }
 
         /// <summary>
         /// Method dispatches info that user released key (keyup event) to the plugins that can react on keys
         /// </summary>
-        public void StopMove(Key key)
+        public bool StopMove(Key key, double phase)
         {
+            bool wasHandled = false;
+
             foreach (IControllableByUserInput gp in this.controllableByUserObjects)
-            {
-                gp.OnKeyUp(key, time, phase);
-            }            
+            {               
+                if (gp.OnKeyUp(key, time, phase) == true)
+                {
+                    wasHandled = true;
+                }
+            }
+
+            return wasHandled;        
         }
     }
 }

@@ -3,12 +3,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ad="clr-namespace:AvalonDock;assembly=AvalonDock"
     xmlns:local="clr-namespace:Sokoban.View.GameDocsComponents"
+    xmlns:wpf="clr-namespace:Sokoban.WPF;assembly=Lib"
     Loaded="DocumentContent_Loaded" 
     mc:Ignorable="d" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 	Height="336" Width="352">
     <ad:DocumentContent.Resources>
+
+        <wpf:BindableTimeCounter x:Key="timeCounter" />
         <local:FieldSizeToRectConverter x:Key="fieldSizeConverter" />
         <Style x:Key="GameDesk" TargetType="{x:Type Rectangle}">
             <Setter Property="Fill">
@@ -75,10 +78,11 @@
                 </Grid.RowDefinitions>
                 <TextBlock Style="{StaticResource LeftColumnTitles}" Grid.Row="0" Grid.Column="0" Text="Round:" />
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding RoundName}" />
-                <TextBlock Style="{StaticResource LeftColumnTitles}" Grid.Row="1" Grid.Column="0" Text="Time:" />
-                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Time}" />
+                <TextBlock Style="{StaticResource LeftColumnTitles}" Grid.Row="1" Grid.Column="0" Text="Time:"></TextBlock>
+                    <TextBlock x:Name="tbTime" Grid.Row="1" Grid.Column="1" 
+                               Text="{Binding Source={StaticResource timeCounter}, Path=FormattedTime}" />                
                 <TextBlock Style="{StaticResource LeftColumnTitles}" Grid.Row="2" Grid.Column="0" Text="Steps:" />
-                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=Game.GameRepository.StepsCount, FallbackValue='NA'}" />
+                <TextBlock x:Name="tbSteps" Grid.Row="2" Grid.Column="1" Text="{Binding Path=StepsCount, FallbackValue='NA'}" />
             </Grid>
         </StackPanel>
 	</Viewbox>        

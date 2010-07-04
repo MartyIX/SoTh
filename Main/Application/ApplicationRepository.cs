@@ -22,6 +22,7 @@ namespace Sokoban.Model
     using Sokoban.Model.Settings;
     using Sokoban.Configuration;
     using System.Reflection;
+    using Sokoban.Solvers;
 
     /// <summary>
     /// Singleton !
@@ -133,7 +134,7 @@ namespace Sokoban.Model
             if (args.Length > 0 && args[0] == "/cmd")
             {
                 // Todo: 
-                ApplicationRepository.Instance.OnStartUp();
+                //ApplicationRepository.Instance.OnStartUp();
             }
             else
             {                
@@ -150,16 +151,26 @@ namespace Sokoban.Model
         {
             if (alreadyStarted == false)
             {
+                alreadyStarted = true;
+
                 //
                 // Load Splash
                 //
-                if (AppConfigManagement.Settings["IsSplashEnabled"].ToLower() == "true")
+                if (UserSettingsManagement.IsSplashEnabled)
                 {
                     SplashScreen screen = new SplashScreen("View/Splash/SokobanSplash.png");
                     screen.Show(true);
-                }                                
+                }
 
-                alreadyStarted = true;
+                // Paths initialization
+                PluginService.Initialize(ApplicationRepository.AssemblyDirectory + @"\Plugins\");
+                SolversManager.Initialize(ApplicationRepository.AssemblyDirectory + @"\Solvers\");                
+
+                // Console initialization
+                ConsoleControl.Initialize(
+                    UserSettingsManagement.ConsoleCommandPrefix,
+                    UserSettingsManagement.ConsoleInitialText);
+                    
 
                 // Open windows from command-line
                 if (Instance.appParams.OpenViewsOnStart != null)
@@ -172,7 +183,8 @@ namespace Sokoban.Model
             }
             else
             {
-                throw new Exception("Application was already initialized!");
+                Debug.WriteLine("Application was already initialized!");
+                //throw new Exception("Application was already initialized!");
             }
         }
 
@@ -182,6 +194,15 @@ namespace Sokoban.Model
         public void OnStartUp_PhaseTwo()
         {
             this.LoadViewChooseConnection();
+        }
+
+
+        /// <summary>
+        /// After the user is logged in (or he/she skips the dialog window)
+        /// </summary>
+        public void OnStartUp_PhaseThree()
+        {
+            QuestsControl.Initialize(profileRepository.Server);
         }
 
         public static bool ContentFileExists(string file)
@@ -249,7 +270,9 @@ namespace Sokoban.Model
             else
             {
                 chooseConnectionPresenter.InitializeView(MainWindow);
-            }                        
+            }
+
+            OnStartUp_PhaseThree();
         }
 
         public void LoadViewSettings()
@@ -272,5 +295,18 @@ namespace Sokoban.Model
 
         #endregion
 
+        /// <summary>
+        /// Returns path to the executing assembly without trailing "\"
+        /// </summary>
+        static public string AssemblyDirectory
+        {
+            get
+            {
+                string codeBase = Assembly.GetExecutingAssembly().CodeBase;
+                UriBuilder uri = new UriBuilder(codeBase);
+                string path = Uri.UnescapeDataString(uri.Path);
+                return Path.GetDirectoryName(path);
+            }
+        }
     }
 }

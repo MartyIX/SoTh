@@ -5,6 +5,8 @@
     xmlns:local="clr-namespace:Sokoban"    
     xmlns:view="clr-namespace:Sokoban.View;assembly=GameDocs"    
     xmlns:solvers="clr-namespace:Sokoban.View;assembly=Solvers"    
+    xmlns:console="clr-namespace:Sokoban.View;assembly=Console"    
+    xmlns:quests="clr-namespace:Sokoban.View;assembly=QuestsControl"    
     xmlns:model="clr-namespace:Sokoban.Model"
     xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
     Title="Sokoban" Height="526" Width="1041" Loaded="Window_Loaded" WindowState="Maximized"
@@ -51,7 +53,12 @@
                         <MenuItem.IsChecked>
                             <Binding ElementName="solversPane" Path="Visibility" Converter="{StaticResource avalonDockVisibilityConverter}" Mode="TwoWay" />
                         </MenuItem.IsChecked>
-                    </MenuItem>                    
+                    </MenuItem>
+                    <MenuItem Header="_Leagues" IsCheckable="true" Click="MenuItem_Leagues_Click">
+                        <MenuItem.IsChecked>
+                            <Binding ElementName="questsPane" Path="Visibility" Converter="{StaticResource avalonDockVisibilityConverter}" Mode="TwoWay" />
+                        </MenuItem.IsChecked>
+                    </MenuItem>
                 </MenuItem>
                 <MenuItem Header="_Tools">
                     <MenuItem Header="_Console">
@@ -73,23 +80,19 @@
                 <ad:ResizingPanel Orientation="Horizontal">
                     <view:GameDocs x:Name="gameManager" view:GameManagerProperties.DockingManager="{Binding ElementName=dockingManager}" diag:PresentationTraceSources.TraceLevel="High" />
                     <ad:DocumentPaneResizingPanel Name="Splitter1"></ad:DocumentPaneResizingPanel>
-                    <ad:DocumentPane x:Name="documentsHost">
-                    <ad:DocumentContent Title="Available games">
-                        <RichTextBox/>
-                    </ad:DocumentContent >
-                </ad:DocumentPane>                
+                    
+                    <ad:DockablePane>
+                        <quests:QuestsControl StateChanged="questsPane_StateChanged" x:Name="questsPane" diag:PresentationTraceSources.TraceLevel="High" HideOnClose="True" />
+                    </ad:DockablePane>                
             </ad:ResizingPanel>   
             <ad:DocumentPaneResizingPanel Name="Splitter2"></ad:DocumentPaneResizingPanel>
                         
             <ad:DockablePane>
-                <ad:DockableContent StateChanged="consolePane_StateChanged" Title="Console" x:Name="consolePane" HideOnClose="True" >
-                    <RichTextBox />
-                </ad:DockableContent>
-
-                <solvers:Solvers StateChanged="solversPane_StateChanged" x:Name="solversPane" diag:PresentationTraceSources.TraceLevel="High" HideOnClose="True" />
+                    <console:ConsoleControl x:Name="consolePane" Title="Console" StateChanged="consolePane_StateChanged" diag:PresentationTraceSources.TraceLevel="High" HideOnClose="True"  />
+                    <solvers:Solvers StateChanged="solversPane_StateChanged" x:Name="solversPane" diag:PresentationTraceSources.TraceLevel="High" HideOnClose="True" />
             </ad:DockablePane>
         </ad:ResizingPanel>
     </ad:DockingManager>
-        <ToolBar Height="25.553" Name="toolBar1" Width="199.98" />
+        <!--<ToolBar Height="25.553" Name="toolBar1" Width="199.98" />-->
     </DockPanel>
 </Window>

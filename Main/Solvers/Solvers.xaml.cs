@@ -62,8 +62,6 @@ namespace Sokoban.View
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
         public Solvers()
         {
             InitializeComponent();
@@ -75,9 +73,9 @@ namespace Sokoban.View
         /// </summary>
         /// <param name="path">Absolute path to the directory with solvers</param>
         /// <param name="parentWindow">We need to display dialogs and the dialogs need to be bound to a window; main window reference is expected</param>
-        public void Initialize(string path, ISolverProvider solverProvider, Window parentWindow)
+        public void Initialize(ISolverProvider solverProvider, Window parentWindow)
         {
-            solversManager = new SolversManager(path, solverProvider, parentWindow);
+            solversManager = new SolversManager(solverProvider, parentWindow);
             // Register callback
             solversManager.RegisterStatusChangeCallback(solverStatusChange);
             SolversList = new ObservableCollection<string>(solversManager.Solvers); // we want to notify
@@ -109,21 +107,29 @@ namespace Sokoban.View
         private void Start_Click(object sender, RoutedEventArgs e)
         {
             dataGridItemsSource.Clear();
-            SolverStatus = "Solver is running";
 
-            disableStartOfSolver();
-
-            try
+            if (cbCurrentSolver.Items.Count == 0)
             {
-                // We specify that we want to get results via method solverWorkCompleted
-                solversManager.SolveRound(new SolversManager.SolverWorkCompletedDel(solverWorkCompleted));                
+                SolverStatus = "No solver is available";
+            }
+            else
+            {
+                SolverStatus = "Solver is running";
+
+                disableStartOfSolver();
+
+                try
+                {
+                    // We specify that we want to get results via method solverWorkCompleted
+                    solversManager.SolveRound(new SolversManager.SolverWorkCompletedDel(solverWorkCompleted));
+                }
+                catch (SolverException ex)
+                {
+                    enableStartOfSolver();
+                    SolverStatus = "Solver cannot finish its work.";
+                    addItemToMessageLog(0, ex.Message);
+                }
             } 
-            catch (SolverException ex) 
-            {
-                enableStartOfSolver();
-                SolverStatus = "Solver cannot finish its work.";
-                addItemToMessageLog(0, ex.Message);                
-            }                        
         }
 
         private void disableStartOfSolver()
@@ -148,7 +154,7 @@ namespace Sokoban.View
             enableStartOfSolver();
             SolverStatus = "Solver stopped working.";
 
-            if (solution != "")
+            if (solution != "" && solution != null)
             {
                 // Alert
                 addItemToMessageLog(0, "Solution was found and will be presented below:");
@@ -266,6 +272,8 @@ namespace Sokoban.View
 
 
         #region INotifyPropertyChanged Members
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
 
         void Notify(string prop)

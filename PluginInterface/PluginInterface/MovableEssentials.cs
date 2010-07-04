@@ -1,4 +1,4 @@
-﻿//#define DebugDraw
+﻿#define DebugDraw
 
 using System;
 using System.Collections.Generic;
@@ -26,6 +26,12 @@ namespace Sokoban.Model.PluginInterface
         protected int posY;
         protected Image image;
         protected int obstructionLevel = 0;
+
+        public int ObstructionLevel
+        {
+            get { return obstructionLevel; }
+            set { obstructionLevel = value; }
+        }
         protected int fieldsX = 0;
         protected int fieldsY = 0;
         protected int stepsCount;
@@ -191,6 +197,8 @@ namespace Sokoban.Model.PluginInterface
         /// <param name="ev"></param>
         public void ProcessGoEvent(Int64 time, Event ev)
         {            
+            // TODO: It's not possible to move object if there's something behind it
+
             this.MovementEventsInBuffer -= 1;
 
             MovementDirection md = EventType2MovementDirection(ev.what);
@@ -200,24 +208,34 @@ namespace Sokoban.Model.PluginInterface
             int nextFieldY = CoordinationOfMovementDirectionY(posY, md);
 
             bool isThereWall = this.isThereWall(nextFieldX, nextFieldY);
-            IGamePlugin gp = null;
+            IGamePlugin obstructionGp = null;
 
             if (isThereWall == false)
             {
-                gp = host.GetObstructionOnPosition(nextFieldX, nextFieldY);
+                IGamePlugin gp = host.GetObstructionOnPosition(nextFieldX, nextFieldY);
+
+                if (gp as IFixedElement != null)
+                {
+                    isThereWall = true;
+                }
+                else
+                {
+                    obstructionGp = gp;
+                }
             }
 
             // No wall and no other game object; just move my object
-            if (isThereWall == false && gp == null)
+            if (isThereWall == false && obstructionGp == null)
             {
                 PrepareMovement(ev.when, 0, (IGamePlugin)ev.who, ev.what);
             }
             // No wall and object can be moved
-            else if (isThereWall == false && this.obstructionLevel > gp.ObstructionLevel)
+            else if (isThereWall == false && this.obstructionLevel > ((IMovableElement)obstructionGp).ObstructionLevel)
             {
                 int nextNextX = CoordinationOfMovementDirectionX(nextFieldX, md);
                 int nextNextY = CoordinationOfMovementDirectionY(nextFieldY, md);
 
+                // Cannot move the object because behind the object is border of maze
                 if (this.isThereWall(nextNextX, nextNextY))
                 {
                     host.MakeImmediatePlan("ProcessGoEvent", ev.who, EventType.hitToTheWall); // ev.who = this plugin
@@ -226,10 +244,11 @@ namespace Sokoban.Model.PluginInterface
                 {
                     IGamePlugin gp2 = host.GetObstructionOnPosition(nextNextX, nextNextY);
 
+                    // there's no obstruction behind object obstructionGp
                     if (gp2 == null)
                     {
                         PrepareMovement(ev.when, 0, ev.who, ev.what);
-                        PrepareMovement(ev.when, 0, gp, ev.what);
+                        PrepareMovement(ev.when, 0, obstructionGp, ev.what);
                     }
                     else
                     {
@@ -241,8 +260,7 @@ namespace Sokoban.Model.PluginInterface
             else
             {
                 host.MakeImmediatePlan("ProcessGoEvent", ev.who, EventType.hitToTheWall); // ev.who = this plugin
-            }          
-            
+            }            
         }
 
         #region IMovable Members

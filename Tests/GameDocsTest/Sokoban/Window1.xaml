@@ -4,15 +4,17 @@
 	xmlns:ad="clr-namespace:AvalonDock;assembly=AvalonDock"     
     xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"        
     xmlns:view="clr-namespace:Sokoban.View;assembly=GameDocs"        
-    Title="Window1" Height="300" Width="300" Loaded="Window_Loaded"
+    Title="Window1" Height="450" Width="450" Loaded="Window_Loaded"
     ContentRendered="Window_ContentRendered"
-    PreviewKeyDown="Window_PreviewKeyDown"       
+    PreviewKeyDown="Window_PreviewKeyDown"
     PreviewKeyUp="Window_PreviewKeyUp"
     Closed="Window_Closed">
 
     <ad:DockingManager x:Name="dockingManager">
         <ad:ResizingPanel Orientation="Vertical">
-            <view:GameDocs x:Name="gameManager" view:GameManagerProperties.DockingManager="{Binding ElementName=dockingManager}" diag:PresentationTraceSources.TraceLevel="High" />
+            <view:GameDocs x:Name="gameManager" 
+                           view:GameManagerProperties.DockingManager="{Binding ElementName=dockingManager}" 
+                           diag:PresentationTraceSources.TraceLevel="High" />
         </ad:ResizingPanel>
     </ad:DockingManager>
 </Window>

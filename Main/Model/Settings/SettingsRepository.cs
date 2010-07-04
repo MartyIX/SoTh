@@ -23,14 +23,35 @@ namespace Sokoban.Model.Settings
 
         #region ISettingsRepository Members
 
-        public NameValueCollection Settings
+        public object this[string s]
         {
-            get { return AppConfigManagement.Settings; }
+            get
+            {
+                if (s == "IsSplashEnabled")
+                {
+                    return UserSettingsManagement.IsSplashEnabled;
+                }
+                else
+                {
+                    throw new Exception("Property `" + s + "' is not in user-settings.");
+                }
+            }
+
+            set 
+            {            
+                if (s == "IsSplashEnabled")
+                {
+                    UserSettingsManagement.IsSplashEnabled = (bool)value;
+                } else {
+                    throw new Exception("Property `" + s + "' is not in user-settings.");
+                }
+            }
         }
 
-        public void Save(string key, string value)
+
+        public void Save()
         {
-            AppConfigManagement.EditKeyPair(key, value);
+            UserSettingsManagement.Save();
         }
 
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;

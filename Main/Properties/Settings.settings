@@ -1,5 +1,15 @@
 <?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Sokoban.Properties" GeneratedClassName="Settings">
   <Profiles />
-  <Settings />
+  <Settings>
+    <Setting Name="IsSplashEnabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ConsoleInitialText" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">[Sokoban's console; for help, please type 'help']</Value>
+    </Setting>
+    <Setting Name="ConsoleCommandPrefix" Type="System.String" Scope="User">
+      <Value Profile="(Default)">&gt;</Value>
+    </Setting>
+  </Settings>
 </SettingsFile>

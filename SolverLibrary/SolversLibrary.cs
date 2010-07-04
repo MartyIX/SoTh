@@ -6,6 +6,8 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using System.Windows;
+using System.IO.Pipes;
+using System.Security.AccessControl;
 
 namespace Sokoban.Solvers
 {
@@ -56,6 +58,9 @@ namespace Sokoban.Solvers
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool FreeLibrary(IntPtr hModule);
+
+        [DllImport("msvcr70.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int _fpreset();
     }
 
     public class SolverLibrary
@@ -71,7 +76,7 @@ namespace Sokoban.Solvers
             public uint uiFlags;
             public Int64 i64MovesGenerated;
             public Int64 i64PushesGenerated;
-            public Int64 i64StatesGenerated;
+            public Int64 i64StatesGenerated;            
             public fixed char szStatusText[256];      // char[256] 
             public uint uiPluginTimeMS;      // [out] plugin running time, not necessarily identical to clock time
         }
@@ -146,7 +151,7 @@ namespace Sokoban.Solvers
         private delegate int OptimizeDel(UInt32 uiWidth, UInt32 uiHeight, StringBuilder pcBoard, StringBuilder pcSolution,
             UInt32 uiMovesBufferSize, ref PluginStatus psStatus, IntPtr pc);
 
-        const int solutionBufferSize = 10400;
+        const int solutionBufferSize = 65536;
 
         private IntPtr pDll;
         private bool libraryLoaded;
@@ -166,11 +171,16 @@ namespace Sokoban.Solvers
             this.path = path;
             this.libraryLoaded = false;
             this.parentWindow = parentWindow;
+        }
+
+        public void Load()
+        {
             this.pDll = NativeMethods.LoadLibrary(this.path);
 
-            if ((uint)pDll > 32)
+            if ((uint)this.pDll > 32)
             {
                 libraryLoaded = true;
+                NativeMethods._fpreset();
             }
             else
             {

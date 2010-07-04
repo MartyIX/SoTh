@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="8936c82e-8aa8-44c4-9896-a47bc75caaa5" Name="Sokoban 2.0" Language="1033" Version="2.0.0.0" Manufacturer="Martin Vseticka" UpgradeCode="7d1e38b8-6456-44a3-bda6-444e8b26778a">
+		<Package InstallerVersion="200" Compressed="yes" />
+
+    <PropertyRef Id='NETFRAMEWORK35'/>
+    <PropertyRef Id='NETFRAMEWORK35_SP_LEVEL'/>
+    <Condition Message="Requires Microsoft .NET 3.5 Framework SP1">
+      <![CDATA[Installed OR (NETFRAMEWORK35 AND (NETFRAMEWORK35_SP_LEVEL >= "#1"))]]>      
+    </Condition>
+
+    <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
+
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="INSTALLLOCATION" Name="Sokoban">
+
+          <Component Id="MainExecutable" Guid="1f951674-c4c1-47e6-9938-a3b69cf63f4e">
+
+            <File Id="MyApplicationFile" Name="$(var.Main.TargetFileName)" 
+                  Source="$(var.Main.TargetPath)" DiskId="1" KeyPath="yes">
+            </File>
+            <File Id="MyApplicationConfigFile" Name="$(var.Main.TargetFileName).config"
+                  Source="$(var.Main.TargetPath).config" DiskId="1">
+            </File>
+            <File Id="AvalonDockDLL" Name="AvalonDock.dll" 
+                  Source="$(var.SolutionDir)..\AvalonDock\AvalonDock.dll" DiskId="1">
+            </File>
+            <File Id="WPFToolkitDLL" Name="WPFToolkit.dll" 
+                  Source="C:\Program Files\WPF Toolkit\v3.5.50211.1\WPFToolkit.dll" DiskId="1">
+            </File>
+          </Component>
+          <Component Id="CmpntMainExecutableShortcuts" Guid="74effd34-fe23-472e-834d-cc86e657d35e" >
+            <Shortcut Id="startmenuSokoban20" Directory="ProgramMenuDir" Name="Sokoban 2.0" 
+                      Target="[#MyApplicationFile]" WorkingDirectory='INSTALLLOCATION' 
+                      Icon="MainAppIcon.ico" IconIndex="0" Advertise="no" />
+            <!-- Uninstall shortcut -->
+            <Shortcut Id="UninstallSokoban20"
+                      Name="Uninstall Sokoban 2.0"
+                      Description="Uninstalls Sokoban 2.0"
+                      Directory="ProgramMenuDir"
+                      Target="[System64Folder]msiexec.exe"
+                      Arguments="/x [ProductCode]" />
+            <RegistryValue Root="HKCU" Key="Software\[Manufacturer]\[ProductName]" Name="cmpntMainExShortcuts" Type="integer" Value="1" KeyPath="yes" />
+          </Component>
+
+          <Component Id="CmpntDesktopShortcuts" Guid="45b2e3de-768b-4234-8b4c-2d7d300c56f5">
+            <Shortcut Id="desktopSokoban20" Directory="DesktopFolder" Name="Sokoban 2.0" Target="[#MyApplicationFile]" WorkingDirectory='INSTALLLOCATION' Icon="MainAppIcon.ico" IconIndex="0" Advertise="no" />
+            <RegistryValue Root="HKCU" Key="Software\[Manufacturer]\[ProductName]" Name="cmpntDesktopShortcuts" Type="integer" Value="1" KeyPath="yes" />
+          </Component>
+
+          <Directory Id="SOLVERSLOCATION" Name="Solvers">
+            <Component Id="CmpntSolvers" Guid="13C2AB0B-1AC1-4075-AC75-2716FE37F24A">
+              <File Id="BoxSearch5EXE" Name="BoxSearch5.exe"
+                  Source="$(var.Main.TargetDir)Solvers\BoxSearch5.exe" DiskId="1">
+              </File>
+              <File Id="BoxSearchPluginDLL" Name="BoxSearchPlugin.dll"
+                  Source="$(var.Main.TargetDir)Solvers\BoxSearchPlugin.dll" DiskId="1">
+              </File>
+              <File Id="PocoSolvDLL" Name="PocoSolv.dll"
+                  Source="$(var.Main.TargetDir)Solvers\PocoSolv.dll" DiskId="1">
+              </File>
+              <File Id="RboxSolverStubDLL" Name="RboxSolverStub.dll"
+                  Source="$(var.Main.TargetDir)Solvers\RboxSolverStub.dll" DiskId="1">
+              </File>
+              <File Id="TseSolverStubDLL" Name="TseSolverStub.dll"
+                  Source="$(var.Main.TargetDir)Solvers\TseSolverStub.dll" DiskId="1">
+              </File>
+              <File Id="YassDLL" Name="YASS.dll"
+                  Source="$(var.Main.TargetDir)Solvers\YASS.dll" DiskId="1">
+              </File>
+            </Component>
+          </Directory>
+
+          <Directory Id="PLUGINSLOCATION" Name="Plugins" FileSource="$(var.Main.TargetDir)Plugins">
+            <Component Id="CmpntPlugins" Guid="6B6BDF54-2A49-444E-8214-C856530D3BEB">
+              <CreateFolder/>
+            </Component>
+          </Directory>
+
+        </Directory>
+			</Directory>
+
+
+      <Directory Id="ProgramMenuFolder" Name="Programs">
+        <Directory Id="ProgramMenuDir" Name="Sokoban 2.0">
+          <Component Id="ProgramMenuDir" Guid="674ef915-705f-4608-b90b-6b34be361424">
+            <RemoveFolder Id='ProgramMenuDir' On='uninstall' />
+            <RegistryValue Root='HKCU' Key='Software\[Manufacturer]\[ProductName]' Type='string' Value='' KeyPath='yes' />
+          </Component>
+        </Directory>
+      </Directory>
+
+      <Directory Id="DesktopFolder" Name="Desktop" />
+
+    </Directory>
+
+    <Feature Id='Complete' Title='Sokoban 2.0' Description='The complete package.'
+             Display='expand' Level='1' ConfigurableDirectory='INSTALLLOCATION' Absent='disallow'>
+
+      <Feature Title='Program' Id="FeatureProgram" Description='The main executable' Level="1" Absent="disallow">
+
+        <ComponentRef Id="MainExecutable" />
+        <ComponentRef Id="ProgramMenuDir" />
+        <ComponentRef Id="CmpntSolvers" />
+        <ComponentRef Id="CmpntPlugins" />              
+
+        <Feature Title='Start menu items' Id="FeatureStartMenu" Description='Shortcuts in Start menu' Level="1">
+          <ComponentRef Id='CmpntMainExecutableShortcuts' />
+        </Feature>
+        <Feature Title='Desktop shortcut' Id="FeatureDesktopShortcut" Description='Shortcut on desktop' Level="1">
+          <ComponentRef Id='CmpntDesktopShortcuts' />
+        </Feature>
+        
+        
+
+        <!-- Note: The following ComponentGroupRef is required to pull in generated authoring from project references. -->
+        <ComponentGroupRef Id="Product.Generated" />
+      </Feature>      
+    </Feature>
+
+    <UIRef Id="WixUI_Mondo" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Icon Id="MainAppIcon.ico" SourceFile="$(var.Main.ProjectDir)View\Resources\favicon.ico" />
+	</Product>
+</Wix>

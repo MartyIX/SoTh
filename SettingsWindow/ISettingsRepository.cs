@@ -9,8 +9,14 @@ namespace Sokoban.Model
 {
     public interface ISettingsRepository : IBaseRepository
     {
-        NameValueCollection Settings { get; }
-        void Save(string key, string value);
-        event PropertyChangedEventHandler PropertyChanged;        
+        event PropertyChangedEventHandler PropertyChanged;
+
+        void Save();
+
+        object this[string propertyName]
+        {
+            get;
+            set;
+        }
     }
 }

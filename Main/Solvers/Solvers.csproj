@@ -24,7 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -34,6 +34,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
@@ -48,6 +49,9 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugQuestsControlTest|x86'">
+    <OutputPath>bin\x86\DebugQuestsControlTest\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AvalonDock, Version=1.2.2691.0, Culture=neutral, PublicKeyToken=85a1e0ada7ec13e4, processorArchitecture=MSIL">
@@ -82,7 +86,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="SolversLibrary.cs" />
     <Compile Include="SolversManager.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -104,6 +107,10 @@
     <ProjectReference Include="..\..\Lib\Lib.csproj">
       <Project>{F44E4759-3B19-4E1B-BA4D-6E4F64086190}</Project>
       <Name>Lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SolverLibrary\SolverLibrary.csproj">
+      <Project>{95463E7F-DFD5-488E-8EB0-84E0D0EDEAF1}</Project>
+      <Name>SolverLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

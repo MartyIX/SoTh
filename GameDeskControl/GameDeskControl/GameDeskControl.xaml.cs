@@ -19,6 +19,7 @@ using Sokoban.Model;
 using Sokoban.Model.GameDesk;
 using Sokoban.Lib.Exceptions;
 using Sokoban.Solvers;
+using Sokoban.WPF;
 
 namespace Sokoban.View.GameDocsComponents
 {
@@ -29,7 +30,8 @@ namespace Sokoban.View.GameDocsComponents
     public partial class GameDeskControl : DocumentContent, INotifyPropertyChanged, ISolverProvider
     {
         public event SizeChangedDelegate OnResized; // Fired in Resize(double, double)
-        
+        private IQuest quest = null;
+
         public StackPanel InfoPanel
         {
             get { return infoPanel; }
@@ -59,25 +61,43 @@ namespace Sokoban.View.GameDocsComponents
         {
             InitializeComponent();
             DataContext = this;
+
             this.SizeChanged += new SizeChangedEventHandler(Resize);
+            this.quest = quest;
 
             // Game model
-            game = new Game(quest);            
-            
-            if (game.IsQuestValid(quest))
-            {
-                game.RegisterVisual(this);
-                game.LoadCurrentRound();
-            }
-            else
+            game = new Game(quest);
+
+            this.loadCurrentRound();            
+        }
+
+        public void Reload()
+        {
+            Terminate();
+            loadCurrentRound();
+        }
+
+        private void loadCurrentRound()
+        {
+            game.RegisterVisual(this);
+            game.LoadCurrentRound();
+
+            if (!game.IsQuestValid(this.quest))
             {
                 DebuggerIX.WriteLine("[Game]", "Quest", "Quest is not valid!");
                 throw new NotValidQuestException(game.QuestValidationErrorMessage);
             }
+
+            game.GameRepository.GameStarted +=new VoidChangeDelegate(timeStart);
+            DataContext = this;
+            tbSteps.DataContext = this.Game.GameRepository;           
+            
+            Notify("GameRepository");
         }
 
         public void Terminate()
         {
+            this.timeStop();
             game.Terminate();
         }
 
@@ -116,6 +136,12 @@ namespace Sokoban.View.GameDocsComponents
         public void AddVisual(UIElement c)
         {
             this.gamedeskCanvas.Children.Add(c);
+        }
+
+        public void ClearVisuals()
+        {
+            this.gamedeskCanvas.Children.Clear();
+            this.AddVisual(gamedeskRect);
         }
 
         /// <summary>
@@ -240,14 +266,12 @@ namespace Sokoban.View.GameDocsComponents
         /// <param name="e"></param>
         public void KeyIsDown(object sender, KeyEventArgs e)
         {
-            e.Handled = true;
-            game.MoveRequest(e.Key);            
+            e.Handled = game.MoveRequest(e.Key);            
         }
 
         public void KeyIsUp(object sender, KeyEventArgs e)
         {
-            e.Handled = true;
-            game.StopMove(e.Key);            
+            e.Handled = game.StopMove(e.Key);            
         }
 
 
@@ -300,6 +324,28 @@ namespace Sokoban.View.GameDocsComponents
         }
 
         #endregion
+
+
+        //
+        // Time updates
+        //
+
+        private void timeStart()
+        {
+            BindableTimeCounter timeCounter = this.Resources["timeCounter"] as BindableTimeCounter;            
+            if (timeCounter == null) throw new Exception("Cannot found resource `timeCounte'.");
+            timeCounter.Initialize(DateTime.Now);
+            timeCounter.Start();
+        }
+
+        private void timeStop()
+        {
+            BindableTimeCounter timeCounter = this.Resources["timeCounter"] as BindableTimeCounter;
+
+            if (timeCounter == null) throw new Exception("Cannot found resource `timeCounter'.");
+                
+            timeCounter.Clear();
+        }
     }
 
 

@@ -39,6 +39,9 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugQuestsControlTest|AnyCPU'">
+    <OutputPath>bin\DebugQuestsControlTest\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -53,6 +56,7 @@
   <ItemGroup>
     <Compile Include="Event.cs" />
     <Compile Include="IFixedElement.cs" />
+    <Compile Include="IFixedTile.cs" />
     <Compile Include="IMovableElement.cs" />
     <Compile Include="IControllableByUserInput.cs" />
     <Compile Include="IPosition.cs" />

@@ -137,10 +137,5 @@ namespace PluginBox
             return true;
         }
 
-        public int ObstructionLevel
-        {
-            get { return obstructionLevel; }
-        }
-
     }
 }

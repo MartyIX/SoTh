@@ -63,11 +63,6 @@ namespace Sokoban.Model
         public Game(IQuest quest)
         {
             this.quest = quest;
-            gameRepository = new GameRepository(); // loads also plugins
-
-            gameRepository.GameRealTime = this;
-            gameRepository.DeskSizeChanged += new SetSizeDelegate(gameRepository_DeskSizeChanged);
-            gameRepository.GameObjectsLoaded += new GameObjectsLoadedDelegate(gameRepository_GameObjectsLoaded);
         }
 
         public bool IsQuestValid(IQuest quest)
@@ -110,6 +105,8 @@ namespace Sokoban.Model
         /// <param name="gameObjects"></param>
         private void gameRepository_GameObjectsLoaded(List<IGamePlugin> gameObjects)
         {
+            if (control == null) throw new InvalidStateException("RegisterVisual has to be called prior to loading of a round.");
+
             foreach (IGamePlugin g in gameObjects)
             {
                 control.AddVisual(g.UIElement);
@@ -133,6 +130,20 @@ namespace Sokoban.Model
         private void loadRound(string roundXml)
         {
             bool roundLoaded = true;
+
+            this.removeOldPainter();
+            this.stopRendering();
+            this.clearControlContent();
+
+            if (gameRepository != null) gameRepository.Terminate();
+
+            solversSokobanRef = null;
+            gameRepository = new GameRepository(); // loads also plugins
+
+            gameRepository.GameRealTime = this;
+            gameRepository.DeskSizeChanged += new SetSizeDelegate(gameRepository_DeskSizeChanged);
+            gameRepository.GameObjectsLoaded += new GameObjectsLoadedDelegate(gameRepository_GameObjectsLoaded);
+            
             
             // may raise exception PluginLoadFailedException - it is catched in GameDocs.xaml.cs
             gameRepository.LoadRoundFromXML(roundXml);            
@@ -143,6 +154,13 @@ namespace Sokoban.Model
             }
         }
 
+        private void clearControlContent()
+        {
+            if (control != null)
+            {
+                control.ClearVisuals();
+            }
+        }
 
         private void startGame()
         {
@@ -211,14 +229,14 @@ namespace Sokoban.Model
 
         #endregion
 
-        public void MoveRequest(Key key)
+        public bool MoveRequest(Key key)
         {
-            gameRepository.MoveRequest(key);
+            return gameRepository.MoveRequest(key, this.phaseProp);
         }
 
-        public void StopMove(Key key)
+        public bool StopMove(Key key)
         {
-            gameRepository.StopMove(key);
+            return gameRepository.StopMove(key, this.phaseProp);
         }
 
         public void Terminate()
@@ -272,7 +290,7 @@ namespace Sokoban.Model
 
         private SolverPainter solverPainter;
 
-        private IMovableElement solversSokobanRef = null;
+        private IMovableElement solversSokobanRef;
 
         /// <summary>
         /// 
@@ -322,18 +340,23 @@ namespace Sokoban.Model
                 }
                 else
                 {
-                    // Remove old painte
-                    if (solverPainter != null)
-                    {
-                        SokobanMoved -= solverPainter.Update;
-                        solverPainter.Terminate();
-                    }
+                    // Remove old painter
+                    this.removeOldPainter();
 
                     // New painter
                     solverPainter = new SolverPainter(control.gamedeskCanvas, sokobanX, sokobanY, control.FieldSize, solution);
                     solverPainter.Draw();
                     SokobanMoved += solverPainter.Update;
                 }
+            }
+        }
+
+        private void removeOldPainter()
+        {
+            if (solverPainter != null)
+            {
+                SokobanMoved -= solverPainter.Update;
+                solverPainter.Terminate();
             }
         }
 

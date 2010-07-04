@@ -14,10 +14,9 @@ using System.Windows.Media;
 
 namespace PluginAim
 {
-    public partial class Aim : IGamePlugin, IFixedElement
+    public partial class Aim : IGamePlugin, IFixedTile
     {
         private object syncRoot = new object();
-        protected int obstructionLevel = 0;
         protected int posX;
         protected int posY;
         protected IPluginParent host;
@@ -66,7 +65,6 @@ namespace PluginAim
             // One-based values
             posX = 2;
             posY = 2;
-            obstructionLevel = 0;
 
             // Rectangle
             rect = new System.Windows.Shapes.Rectangle();
@@ -138,11 +136,6 @@ namespace PluginAim
             posY = int.Parse(settings["PosY"].InnerText);
 
             return true;
-        }
-
-        public int ObstructionLevel
-        {
-            get { return obstructionLevel; }
         }
 
         #region IPosition Members

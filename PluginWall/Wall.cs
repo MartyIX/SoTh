@@ -16,7 +16,6 @@ namespace PluginWall
     public partial class Wall : IGamePlugin, IFixedElement
     {
         private object syncRoot = new object();
-        private int obstructionLevel = 20;
         private int posX = 1; // 1-based
         private int posY = 1;
         protected ScaleTransform scale;
@@ -61,7 +60,6 @@ namespace PluginWall
             // One-based values
             posX = 2;
             posY = 2;
-            obstructionLevel = 5;
 
             image = new System.Windows.Controls.Image();
 
@@ -137,12 +135,6 @@ namespace PluginWall
 
             return true;
         }
-
-        public int ObstructionLevel
-        {
-            get { return obstructionLevel; }
-        }
-
 
         #region IPosition Members
 

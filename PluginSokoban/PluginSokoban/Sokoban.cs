@@ -105,7 +105,7 @@ namespace PluginSokoban
             // One-based values
             posX = 1;
             posY = 1;
-            obstructionLevel = 10;
+            ObstructionLevel = 10;
             StepsCount = 0; // we want to notify
 
             image = new System.Windows.Controls.Image();
@@ -141,9 +141,16 @@ namespace PluginSokoban
 
         #region IControllableByUserInput Members
 
-        public void OnKeyDown(Key key, Int64 time, double phase)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="time"></param>
+        /// <param name="phase"></param>
+        /// <returns>Returns if the key was handled</returns>
+        public bool OnKeyDown(Key key, Int64 time, double phase)
         {
-            DebuggerIX.WriteLine("[GR-MoveRequest]", ">>> MoveRequest <<<", "Time = " + time.ToString());
+            DebuggerIX.WriteLine("[GR-MoveRequest]", ">>> MoveRequest <<<", "Time = " + time.ToString() + "; Phase = " + phase.ToString());
 
             EventType ev = EventTypeLib.ConvertFromKey(key);
 
@@ -162,7 +169,7 @@ namespace PluginSokoban
                         moveRequestCancelled = false;
                         // In this moment; events for @time are processed, therefore time + 1
                         //MakePlan("SokStartMov", time + 1, (GameObject)pSokoban, pSokoban.heldKeyEvent);
-                        
+
                         base.MakePlan("SokStartMov", time, (IGamePlugin)this, this.heldKeyEvent);
 
                         host.ProcessAllEvents(false, phase); // We don't want to update time
@@ -173,6 +180,12 @@ namespace PluginSokoban
                         base.MakePlan("SokKeyBuf", timeMovementEnds, (IGamePlugin)this, heldKeyEvent);
                     }
                 }
+
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -180,10 +193,12 @@ namespace PluginSokoban
         /// <summary>
         /// Don't continue with the movement of Sokoban
         /// </summary>
-        public void OnKeyUp(Key key, Int64 time, double phase)
+        public bool OnKeyUp(Key key, Int64 time, double phase)
         {
             this.heldKeyEvent = EventType.none;
             moveRequestCancelled = true;
+
+            return EventTypeLib.ConvertFromKey(key) != EventType.none;
         }
 
         int id = 0;
@@ -232,11 +247,6 @@ namespace PluginSokoban
             posY = int.Parse(settings["PosY"].InnerText);
 
             return true;
-        }
-
-        public int ObstructionLevel
-        {
-            get { return obstructionLevel; }
         }
 
         #endregion

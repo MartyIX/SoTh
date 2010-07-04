@@ -22,5 +22,38 @@ namespace Sokoban.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IsSplashEnabled {
+            get {
+                return ((bool)(this["IsSplashEnabled"]));
+            }
+            set {
+                this["IsSplashEnabled"] = value;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("[Sokoban\'s console; for help, please type \'help\']")]
+        public string ConsoleInitialText {
+            get {
+                return ((string)(this["ConsoleInitialText"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(">")]
+        public string ConsoleCommandPrefix {
+            get {
+                return ((string)(this["ConsoleCommandPrefix"]));
+            }
+            set {
+                this["ConsoleCommandPrefix"] = value;
+            }
+        }
     }
 }

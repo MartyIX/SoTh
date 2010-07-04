@@ -14,7 +14,8 @@ namespace Sokoban.Lib.Exceptions
         {
         }
 
-        public PluginLoadFailedException(string message) : base(message)
+        public PluginLoadFailedException(string message)
+            : base(message)
         {
         }
     }
@@ -63,5 +64,32 @@ namespace Sokoban.Lib.Exceptions
         {
         }
     }
+
+
+    public class InvalidStateException : System.Exception
+    {
+        public InvalidStateException()
+        {
+        }
+
+        public InvalidStateException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    public class UninitializedException : System.Exception
+    {
+        public UninitializedException()
+        {
+        }
+
+        public UninitializedException(string message)
+            : base(message)
+        {
+        }
+    }
+    
+    
 
 }

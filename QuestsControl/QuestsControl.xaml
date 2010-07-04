@@ -1,0 +1,40 @@
+﻿<ad:DockableContent x:Name="questsControlDockableContent" Title="Quests"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ad="clr-namespace:AvalonDock;assembly=AvalonDock"
+    xmlns:local="clr-namespace:Sokoban.View"
+    xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    mc:Ignorable="d" 
+    x:Class="Sokoban.View.QuestsControl"
+    HorizontalAlignment="Stretch" 
+	VerticalAlignment="Stretch" 
+	d:DesignWidth="400.083" d:DesignHeight="197.88">
+
+        <DockPanel LastChildFill="True">
+		<DockPanel DockPanel.Dock="Bottom" LastChildFill="True">
+            <TextBlock DockPanel.Dock="Left" Margin="0,0,5,0">Status:</TextBlock>            
+			<Button DockPanel.Dock="Right" Click="refresh_click">Refresh</Button>
+			<TextBlock x:Name="status" Text="{Binding Status}" HorizontalAlignment="Stretch"></TextBlock>
+		</DockPanel>
+
+        <TreeView ItemsSource="{Binding Path=Categories}"  x:Name="treeView">
+            <TreeView.Resources>
+                <HierarchicalDataTemplate DataType="{x:Type local:Category}" ItemsSource="{Binding Path=Leagues}">
+                    <TextBlock Text="{Binding Path=Name}">                        
+                    </TextBlock>
+                    <HierarchicalDataTemplate.ItemContainerStyle>
+                        <Style TargetType="{x:Type TreeViewItem}">
+                            <EventSetter Event="TreeViewItem.MouseDoubleClick" Handler="trv_MouseDoubleClick" />
+                            <EventSetter Event="TreeViewItem.PreviewMouseRightButtonDown" Handler="trv_PreviewMouseRightButtonDown"/>
+                        </Style>
+                    </HierarchicalDataTemplate.ItemContainerStyle>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type local:League}">
+                    <TextBlock Text="{Binding Path=Name}" />
+                </HierarchicalDataTemplate>
+            </TreeView.Resources>
+        </TreeView>        
+    </DockPanel>
+</ad:DockableContent>    

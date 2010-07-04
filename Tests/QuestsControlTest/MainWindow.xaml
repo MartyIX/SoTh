@@ -1,0 +1,19 @@
+﻿<Window x:Class="QuestsControlTest.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:ad="clr-namespace:AvalonDock;assembly=AvalonDock"     
+    xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase" 
+    xmlns:view="clr-namespace:Sokoban.View;assembly=QuestsControl"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
+    Title="Window1" Height="300" Width="300" Loaded="Window_Loaded">
+
+    <ad:DockingManager x:Name="dockingManager">
+        <ad:ResizingPanel Orientation="Vertical">
+            <ad:DockablePane>
+                <view:QuestsControl x:Name="questsControlPane" diag:PresentationTraceSources.TraceLevel="High" />
+            </ad:DockablePane>
+        </ad:ResizingPanel>
+    </ad:DockingManager>
+</Window>
+

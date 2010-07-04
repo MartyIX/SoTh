@@ -62,22 +62,35 @@ namespace Sokoban.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
-        ///&lt;SokobanQuest xmlns=&quot;&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.martinvseticka.eu http://www.martinvseticka.eu/skola/programovani_v_CSharp/sokoban.xsd&quot;&gt;
+        ///&lt;SokobanQuest xmlns=&quot;http://www.martinvseticka.eu/SoTh&quot;
+        ///              xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+        ///              xsi:schemaLocation=&quot;http://www.martinvseticka.eu http://www.martinvseticka.eu/schemas/SoTh.xsd&quot;&gt;
+        ///
         ///  &lt;Name&gt;DebugQuest&lt;/Name&gt;
-        ///  &lt;Round&gt;
-        ///    &lt;ID&gt;1&lt;/ID&gt;
-        ///    &lt;Name&gt;Easy start&lt;/Name&gt;
+        ///  &lt;Round xmlns=&quot;http://www.martinvseticka.eu/SoTh&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&gt;
+        ///    &lt;Name&gt;Round no. 1&lt;/Name&gt;
         ///    &lt;Dimensions&gt;
-        ///      &lt;width&gt;8&lt;/width&gt;
-        ///      &lt;height&gt;9&lt;/height&gt;
-        ///    &lt;/Dimensions&gt;
-        ///    &lt;Aim&gt;
-        ///      &lt;posX&gt;4&lt;/posX&gt;
-        ///      &lt;posY&gt;3&lt;/posY&gt;
-        ///    &lt;/Aim&gt;
-        ///    &lt;Aim&gt;
-        ///      &lt;posX&gt;4&lt;/posX&gt;
-        ///    [rest of string was truncated]&quot;;.
+        ///      &lt;Width&gt;8&lt;/Width&gt;
+        ///      &lt;Height&gt;8&lt;/Height&gt;        /// [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string SimpleQuest {
+            get {
+                return ResourceManager.GetString("SimpleQuest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+        ///&lt;SokobanQuest xmlns=&quot;http://www.martinvseticka.eu/SoTh&quot;
+        ///              xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+        ///              xsi:schemaLocation=&quot;http://www.martinvseticka.eu http://www.martinvseticka.eu/schemas/SoTh.xsd&quot;&gt;
+        ///
+        ///  &lt;Name&gt;DebugQuest&lt;/Name&gt;
+        ///  &lt;Round xmlns=&quot;http://www.martinvseticka.eu/SoTh&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&gt;
+        ///    &lt;Name&gt;Round no. 1&lt;/Name&gt;
+        ///    &lt;Dimensions&gt;
+        ///      &lt;Width&gt;8&lt;/Width&gt;
+        ///      &lt;Height&gt;8&lt;/Height&gt;        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string TestQuest {
             get {

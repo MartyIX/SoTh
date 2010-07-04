@@ -32,8 +32,13 @@ namespace Sokoban
 
         public MainWindow()
         {
+            // Application initialization (processing cmd-line, splash, ...)
+            ApplicationRepository.Instance.OnStartUp();
+
             InitializeComponent();
-            this.DataContext = this;            
+            this.DataContext = this;
+
+            DebuggerIX.Start(DebuggerMode.File);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -47,10 +52,7 @@ namespace Sokoban
 
         public void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            DebuggerIX.Start(DebuggerMode.File);                        
-            ApplicationRepository.Instance.OnStartUp();
-            solversPane.Initialize(@"D:\Bakalarka\Sokoban\Main\Solvers\Solvers", this.gameManager, this);
-            this.loadQuest();
+                                              
         }        
 
 
@@ -74,7 +76,10 @@ namespace Sokoban
             }
             else
             {
-                gameManager.ActiveGameControl.KeyIsDown(sender, e);
+                if (gameManager != null && gameManager.ActiveGameControl != null)
+                {
+                    gameManager.ActiveGameControl.KeyIsDown(sender, e);
+                }
             }
         }
 
@@ -85,7 +90,12 @@ namespace Sokoban
 
         private void Window_ContentRendered(object sender, EventArgs e)
         {
-            ApplicationRepository.Instance.OnStartUp_PhaseTwo();
+            ApplicationRepository.Instance.OnStartUp_PhaseTwo(); // initialize QuestsControl
+            solversPane.Initialize(this.gameManager, this);
+            questsPane.Initialize(this.gameManager);
+
+            // Load testing quest
+            this.loadQuest();            
         }
 
 
@@ -136,6 +146,11 @@ namespace Sokoban
             SetVisibilityOfMenuItems(solversPane);
         }
 
+        private void MenuItem_Leagues_Click(object sender, RoutedEventArgs e)
+        {
+            SetVisibilityOfMenuItems(questsPane);
+        }
+
         private void MenuItem_Settings_Click(object sender, RoutedEventArgs e)
         {
             ApplicationRepository.Instance.LoadViewSettings();
@@ -166,6 +181,12 @@ namespace Sokoban
         {
             SetVisibilityOfDockableContents(solversPane, state);
         }
+
+        private void questsPane_StateChanged(object sender, DockableContentState state)
+        {
+            SetVisibilityOfDockableContents(questsPane, state);
+        }
+
 
         private void consolePane_StateChanged(object sender, DockableContentState state)
         {

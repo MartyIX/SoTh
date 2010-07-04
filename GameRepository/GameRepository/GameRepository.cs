@@ -16,7 +16,7 @@ namespace Sokoban.Model
 {
     public delegate void TimeDelegate(ref Int64 time);
 
-    public partial class GameRepository : DependencyObject, IBaseRepository, IGameRepository, IPluginParent, INotifyPropertyChanged
+    public partial class GameRepository : IBaseRepository, IGameRepository, IPluginParent, INotifyPropertyChanged
     {        
         // API
         public event TimeDelegate TimeReference;
@@ -40,6 +40,10 @@ namespace Sokoban.Model
         public IGamePlugin[,] fixedElements;
         /// <summary>
         /// 
+        /// </summary>        
+        public IGamePlugin[,] fixedTiles;
+        /// <summary>
+        /// 
         /// </summary>
         public List<IControllableByUserInput> controllableByUserObjects;
 
@@ -52,7 +56,7 @@ namespace Sokoban.Model
 
         public int StepsCount
         {
-            get { return stepsCountGameObject.StepsCount; } 
+            get { return stepsCountGameObject.StepsCount; }
         }
 
         //
@@ -76,9 +80,14 @@ namespace Sokoban.Model
         private string roundName;
         private IControllableByUserInput stepsCountGameObject = null;
         private PluginService pluginService;
-
+        
 
         public GameRepository()
+        {
+            Initialize();
+        }
+
+        public void Initialize()
         {
             dateTime = DateTime.Now.TimeOfDay;
             calendar = new Calendar();
@@ -92,14 +101,6 @@ namespace Sokoban.Model
             time = 0;
 
             pluginService = new PluginService(this);
-
-            // Searching and loading of plugins
-            //PluginService.LoadAllPlugins(@"D:\Bakalarka\Sokoban\Main\Plugins");
-        }
-
-        public void Initialize()
-        {
-
         }
 
         public void FireTimeReferenceEvent()

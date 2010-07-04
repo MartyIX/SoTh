@@ -48,7 +48,7 @@ namespace Sokoban.View.Settings
         /// </summary>
         public void Save()
         {
-            this.repository.Save("IsSplashEnabled", this.view.IsSplashEnabled.ToString());
+            this.repository.Save();
         }        
     }
 }

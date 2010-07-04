@@ -23,13 +23,15 @@ namespace Sokoban.Model.GameDesk
         IEnumerable<IGamePlugin> GetGameObjects { get; }
         
         void LoadRoundFromXML(string xml);
-        event SetSizeDelegate DeskSizeChanged;
-        event GameObjectsLoadedDelegate GameObjectsLoaded;
         void ProcessAllEvents();
-        void MoveRequest(Key key);
-        void StopMove(Key key);
+        bool MoveRequest(Key key, double phase);
+        bool StopMove(Key key, double phase);
         IGameRealTime GameRealTime { get; set; }
         PluginService PluginService { get; }
+
+        event SetSizeDelegate DeskSizeChanged;
+        event GameObjectsLoadedDelegate GameObjectsLoaded;
+        event VoidChangeDelegate GameStarted;
 
         void Terminate();
     }

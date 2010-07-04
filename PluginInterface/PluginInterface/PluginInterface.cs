@@ -55,6 +55,5 @@ namespace Sokoban.Model.PluginInterface
         int ID { get; set; }
 
         UIElement UIElement { get; set; }
-        int ObstructionLevel { get; } // 5 is for Box, 10 is for Sokoban, 20 is for a wall
     }
 }

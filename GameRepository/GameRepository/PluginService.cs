@@ -19,12 +19,35 @@ namespace Sokoban.Model
 
         private IPluginParent pluginHost;
 
+        /// <summary>
+        /// Path that must end with trailing backslash (i.e., "\")
+        /// </summary>
+        private static string pluginsPath = null;
 
         public PluginService(IPluginParent pluginHost)
         {
             this.pluginHost = pluginHost;
         }
 
+        /// <summary>
+        /// Must be called before usage of the class
+        /// </summary>
+        /// <param name="_pluginsPath"></param>
+        public static void Initialize(string _pluginsPath)
+        {
+            if (_pluginsPath.Length == 0)
+            {
+                throw new InvalidStateException("Path to the plugins must be non-empty string.");
+            }
+            else if (_pluginsPath[_pluginsPath.Length - 1] != '\\' || _pluginsPath[_pluginsPath.Length - 1] != '/')
+            {
+                pluginsPath = _pluginsPath + @"\";
+            }
+            else
+            {
+                pluginsPath = _pluginsPath;            
+            }            
+        }
         /// <summary>
         /// Searches the passed Path for Plugins
         /// </summary>
@@ -64,22 +87,24 @@ namespace Sokoban.Model
             }
             else
             {
-                if (LoadPlugin(@"D:\Bakalarka\Sokoban\Main\Plugins\Plugin" + pluginName + ".dll"))
-                {
-                    IGamePlugin gamePlugin = RunPlugin(pluginName);
-                    pluginSchemata[pluginName] = gamePlugin.XmlSchema;
-                    return pluginSchemata[pluginName];
-                }
-                else
-                {
-                    throw new PluginLoadFailedException("Plugin `" + pluginName + "' cannot be loaded.");
-                }
+                if (pluginsPath == null) throw new InvalidStateException("PluginService class was not initialized.");
+
+                LoadPlugin(this.getPluginPath(pluginName));                
+                IGamePlugin gamePlugin = RunPlugin(pluginName);
+                pluginSchemata[pluginName] = gamePlugin.XmlSchema;
+                return pluginSchemata[pluginName];
             }
         }
 
         public IGamePlugin RunPlugin(string pluginName)
         {
             pluginName = pluginName.ToLower();
+                        
+            if (loadedAssemblies.ContainsKey(pluginName) == false)
+            {
+                this.LoadPluginByName(pluginName);
+            }
+
             Assembly assembly = loadedAssemblies[pluginName].Second;
             Type type = loadedAssemblies[pluginName].First;
             Type name = assembly.GetType(type.ToString());
@@ -90,7 +115,22 @@ namespace Sokoban.Model
             return gamePlugin;
         }
 
-        public bool LoadPlugin(string fileName)
+        private string getPluginPath(string pluginName)
+        {
+            return pluginsPath + "Plugin" + pluginName + ".dll";
+        }
+
+        public void LoadPluginByName(string pluginName)
+        {
+            LoadPlugin(this.getPluginPath(pluginName));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fileName">Absolute path to the plugin</param>
+        /// <returns></returns>
+        public void LoadPlugin(string fileName)
         {
             bool succesfullyLoaded = false;
             Assembly pluginAssembly = null;
@@ -145,7 +185,11 @@ namespace Sokoban.Model
                 succesfullyLoaded = true;
             }
 
-            return succesfullyLoaded;
+
+            if (succesfullyLoaded == false)
+            {
+                throw new PluginLoadFailedException("Cannot load plugin `" + fileName + "' cannot be loaded.");
+            }
         }
 
         public void Terminate()

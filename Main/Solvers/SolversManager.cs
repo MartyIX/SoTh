@@ -7,6 +7,9 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using Sokoban.Lib.Exceptions;
 using System.ComponentModel;
+using System.Reflection;
+using System.Runtime.Remoting;
+using System.Runtime.InteropServices;
 
 namespace Sokoban.Solvers
 {
@@ -28,27 +31,50 @@ namespace Sokoban.Solvers
 
         // Private Fields
         private Dictionary<string, SolverLibrary> solversDictionary;
+        
         //private Dictionary<string, string> solversDictionary;
         private Window parentWindow;
         private string currentSolver = null;
         private ISolverProvider solverProvider;
         private BackgroundWorker solvingThread = new BackgroundWorker();
+        private static string solversPath = null;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="solversPath"></param>
         /// <param name="parentWindow"></param>
-        public SolversManager(string solversPath, ISolverProvider solverProvider, Window parentWindow)
+        public SolversManager(ISolverProvider solverProvider, Window parentWindow)
         {
+            if (solversPath == null) throw new InvalidStateException("Function Initialize must be called before creating an instance of SolversManager.");
+            
             solversDictionary = new Dictionary<string, SolverLibrary>();
-            //solversDictionary = new Dictionary<string, string>();
             this.parentWindow = parentWindow;
             this.solverProvider = solverProvider;
             loadSolverPlugins(solversPath);
-
+           
             solvingThread.DoWork += new DoWorkEventHandler(solvingThread_DoWork);
             solvingThread.RunWorkerCompleted += new RunWorkerCompletedEventHandler(solvingThread_RunWorkerCompleted);
+        }
+
+        /// <summary>
+        /// Must be called before creating an instance of SolversManager!
+        /// </summary>
+        /// <param name="solversPath"></param>
+        public static void Initialize(string _solversPath)
+        {
+            if (_solversPath.Length == 0)
+            {
+                throw new InvalidStateException("Path to the solvers must be non-empty string.");
+            }
+            else if (_solversPath[_solversPath.Length - 1] != '\\' || _solversPath[_solversPath.Length - 1] != '/')
+            {
+                solversPath = _solversPath + @"\";
+            }
+            else
+            {
+                solversPath = _solversPath;
+            }                        
         }
 
         /// <summary>
@@ -56,7 +82,7 @@ namespace Sokoban.Solvers
         /// </summary>
         /// <param name="path">Path where the solvers are stored (as dll libraries)</param>
         private void loadSolverPlugins(string path)
-        {
+        {            
             Solvers = new List<string>();
 
             foreach (string fileOn in Directory.GetFiles(path))
@@ -66,7 +92,11 @@ namespace Sokoban.Solvers
                 if (file.Extension.Equals(".dll"))
                 {
                     string solverName = System.IO.Path.GetFileNameWithoutExtension(file.FullName);
-                    SolverLibrary lib = new SolverLibrary(file.FullName, this.parentWindow);                    
+
+                    SolverLibrary lib = new SolverLibrary(file.FullName, this.parentWindow);
+
+                    lib.Load();
+
                     Solvers.Add(solverName);
                     solversDictionary.Add(solverName, lib);
 
@@ -86,7 +116,10 @@ namespace Sokoban.Solvers
         {
             foreach (KeyValuePair<string, SolverLibrary> pair in solversDictionary)
             {
-                pair.Value.StatusCallback += callback;
+                if (pair.Value != null)
+                {
+                    pair.Value.StatusCallback += callback;
+                }
             }
         }
 
@@ -98,18 +131,22 @@ namespace Sokoban.Solvers
         {
             foreach (KeyValuePair<string, SolverLibrary> pair in solversDictionary)
             {
-                pair.Value.StatusCallback -= callback;
+                if (pair.Value != null)
+                {
+                    pair.Value.StatusCallback -= callback;
+                }
             }
         }
+
+
 
         /// <summary>
         /// Solve currrent round (available via SolverProvide in constructor)
         /// </summary>
         /// <returns>If the solution was found then non-empty string is returned otherwise empty one</returns>
         public void SolveRound(SolverWorkCompletedDel solverWorkCompleteDelegate)
-        {
-            SolverLibrary lib = solversDictionary[currentSolver];
-
+        {            
+            SolverLibrary lib = this.getLib(currentSolver);            
             uint[] constraints = lib.GetConstraints();
 
             uint width = solverProvider.GetMazeWidth();
@@ -147,16 +184,23 @@ namespace Sokoban.Solvers
 
             SolvingThreadParameterObject param = new SolvingThreadParameterObject
             {
+                SolverName = currentSolver,
                 MazeID = mazeID,
-                Lib = lib,
                 Height = height,
                 Width = width,
                 Maze = maze,
                 SolverWorkCompleteDel = solverWorkCompleteDelegate
             };
-            
-            solvingThread.RunWorkerAsync(param);                          
+
+            solvingThread.RunWorkerAsync(param);
         }
+
+        private SolverLibrary getLib(string solverName)
+        {
+            return solversDictionary[solverName];            
+        }
+
+
 
         /// <summary>
         /// BackgroundWorker thread: Method is run in a new thread
@@ -168,17 +212,22 @@ namespace Sokoban.Solvers
             SolvingThreadParameterObject param = e.Argument as SolvingThreadParameterObject;
 
             // TODO REMOVE
-            System.Threading.Thread.Sleep(5000); // For debugging purposes
+            //System.Threading.Thread.Sleep(5000); // For debugging purposes
+           
+            SolverLibrary lib = this.getLib(param.SolverName);
+            SOKOBAN_PLUGIN_RESULT res = lib.SolveEx(param.Width, param.Height, param.Maze);
+            string solution = lib.LastSolution;
 
-            if (param.Lib.SolveEx(param.Width, param.Height, param.Maze) == SOKOBAN_PLUGIN_RESULT.SUCCESS)
+            if (res == SOKOBAN_PLUGIN_RESULT.SUCCESS)
             {
                 e.Result = new SolvingThreadResultObject 
                 {                     
+                     SolverName = param.SolverName,
                      MazeID = param.MazeID,
                      Height = param.Height,
                      Width = param.Width,
                      Maze = param.Maze,
-                     Solution = param.Lib.LastSolution,
+                     Solution = solution,
                      SolverWorkCompleteDel = param.SolverWorkCompleteDel,
                 } ;
             }
@@ -186,6 +235,7 @@ namespace Sokoban.Solvers
             {
                 e.Result = new SolvingThreadResultObject
                 {
+                    SolverName = param.SolverName,
                     MazeID = param.MazeID,
                     Height = param.Height,
                     Width = param.Width,
@@ -197,7 +247,7 @@ namespace Sokoban.Solvers
         }
 
         private void solvingThread_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
+        {            
             SolvingThreadResultObject result = e.Result as SolvingThreadResultObject;
             result.SolverWorkCompleteDel(result.MazeID, result.Width, result.Height, result.Maze, result.Solution);
         }
@@ -205,14 +255,12 @@ namespace Sokoban.Solvers
 
         public void ShowAbout()
         {
-            SolverLibrary lib = solversDictionary[currentSolver];
-            lib.ShowAbout();
+            this.getLib(currentSolver).ShowAbout();
         }
 
         public void ShowConfigure()
         {
-            SolverLibrary lib = solversDictionary[currentSolver];
-            lib.Configure();
+            this.getLib(currentSolver).Configure();
         }
 
         /// <summary>
@@ -220,8 +268,7 @@ namespace Sokoban.Solvers
         /// </summary>
         public void TerminateSolver()
         {
-            SolverLibrary lib = solversDictionary[currentSolver];
-            lib.Terminate();
+            this.getLib(currentSolver).Terminate();
         }
 
         public void Terminate()
@@ -230,7 +277,10 @@ namespace Sokoban.Solvers
 
             foreach (string solverName in Solvers)
             {
-                solversDictionary[solverName].Unload();
+                if (solversDictionary[solverName] != null)
+                {
+                    solversDictionary[solverName].Unload();
+                }
             }
 
             solversDictionary.Clear();
@@ -241,7 +291,7 @@ namespace Sokoban.Solvers
         /// </summary>
         private class SolvingThreadParameterObject
         {
-            public SolverLibrary Lib { get; set; }
+            public string SolverName { get; set; }
             public object MazeID { get; set; }
             public uint Width { get; set; }
             public uint Height { get; set; }
@@ -255,6 +305,7 @@ namespace Sokoban.Solvers
         /// </summary>
         private class SolvingThreadResultObject
         {
+            public string SolverName { get; set; }
             public object MazeID { get; set; }
             public uint Width { get; set; }
             public uint Height { get; set; }

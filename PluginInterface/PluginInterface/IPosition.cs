@@ -7,7 +7,13 @@ namespace Sokoban.Model.PluginInterface
 {
     public interface IPosition
     {
+        /// <summary>
+        /// One-based x-coord
+        /// </summary>
         int PosX { get; set; }
+        /// <summary>
+        /// One-based y-coord
+        /// </summary>
         int PosY { get; set; }
     }
 }

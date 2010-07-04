@@ -24,10 +24,13 @@ namespace Sokoban.Model
         /// <param name="xml"></param>
         public void LoadRoundFromXML(string xml)
         {
+            
+            
             // Initialization of fields
             gameObjects = new List<IGamePlugin>();
             movableElements = new List<IGamePlugin>();
             fixedElements = new IGamePlugin[fieldsX, fieldsY];
+            fixedTiles = new IGamePlugin[fieldsX, fieldsY];
             controllableByUserObjects = new List<IControllableByUserInput>();
             gameIndicators = new List<IGamePlugin>();
 
@@ -62,21 +65,20 @@ namespace Sokoban.Model
         {
             IGamePlugin gamePlugin = pluginService.RunPlugin(pluginName);
 
+            // Plugin bootstrap
+            //try
+            //{
+            gamePlugin.Load();
+            gamePlugin.ProcessXmlInitialization(this.fieldsX, this.fieldsY, node);
+            //}
+            //catch (Exception e)
+            //{
+            //   throw new PluginLoadFailedException("Plugin " + pluginName + " failed to load. Error: " + e.Message);
+            //}
+
+
             // Find out plugin properties according to interfaces it implements
-            if (this.integratePlugin(gamePlugin) == true)
-            {
-                // Plugin bootstrap
-                //try
-                //{
-                    gamePlugin.Load();
-                    gamePlugin.ProcessXmlInitialization(this.fieldsX, this.fieldsY, node);
-                //}
-                //catch (Exception e)
-                //{
-                //   throw new PluginLoadFailedException("Plugin " + pluginName + " failed to load. Error: " + e.Message);
-                //}
-            }
-            else
+            if (this.integratePlugin(gamePlugin) == false)
             {
                 throw new PluginLoadFailedException("Error in plugin `" + pluginName +"': Plugin must be either a tile or an object.");
             }
@@ -111,13 +113,23 @@ namespace Sokoban.Model
 
             bool isElement = false;
 
-            // Tiles
+            
             IFixedElement fixedElement = gamePlugin as IFixedElement;
 
             if (fixedElement != null)
             {
                 isElement = true;
-                fixedElements[fixedElement.PosX, fixedElement.PosY] = gamePlugin;
+                fixedElements[fixedElement.PosX - 1, fixedElement.PosY - 1] = gamePlugin;
+                gameObjects.Add(gamePlugin);
+            }
+
+            // Tiles
+            IFixedTile fixedTile = gamePlugin as IFixedTile;
+
+            if (fixedTile != null)
+            {
+                isElement = true;
+                fixedTiles[fixedTile.PosX - 1, fixedTile.PosY - 1] = gamePlugin;
                 gameObjects.Add(gamePlugin);
             }
 
