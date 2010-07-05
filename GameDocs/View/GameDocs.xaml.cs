@@ -50,6 +50,7 @@ namespace Sokoban.View
             prop.AddValueChanged(this, OnDockingManagerChanged);
            
             GamesDocumentPane.SizeChanged += new SizeChangedEventHandler(GamesDocumentPane_SizeChanged);
+            
             this.DataContext = this;            
         }
 
@@ -69,7 +70,8 @@ namespace Sokoban.View
         private void OnDockingManagerChanged(object sender, EventArgs e)
         {
             dm = GameManagerProperties.GetDockingManager((DependencyObject)this);
-            dm.RequestDocumentClose += new EventHandler<RequestDocumentCloseEventArgs>(dm_RequestDocumentClose);
+            //dm.RequestDocumentClose += new EventHandler<RequestDocumentCloseEventArgs>(dm_RequestDocumentClose);                       
+
             dm.Loaded += new RoutedEventHandler(dm_Loaded);
             //dm.SizeChanged += new SizeChangedEventHandler(dm_SizeChanged);
             dm.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(dm_PropertyChanged);
@@ -78,6 +80,11 @@ namespace Sokoban.View
             Binding myBinding = new Binding("GameViews");
             myBinding.Source = this;
             dm.SetBinding(DockingManager.DocumentsSourceProperty, myBinding);
+        }
+
+        void dm_DocumentClosing(object sender, CancelEventArgs e)
+        {
+            
         }
 
         void GamesDocumentPane_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -175,8 +182,8 @@ namespace Sokoban.View
                 doc.Closed += new EventHandler(doc_Closed);
                 doc.InfoPanel.SizeChanged += new SizeChangedEventHandler(doc.ResizeInfoPanel);
                 GameViews.Add(doc);
-                doc.Resize(GamesDocumentPane.ActualWidth, GamesDocumentPane.ActualHeight);
-                
+                doc.Resize(GamesDocumentPane.ActualWidth, GamesDocumentPane.ActualHeight);                    
+
                 this.SetActiveGameChanged(doc);
             //}
             /*

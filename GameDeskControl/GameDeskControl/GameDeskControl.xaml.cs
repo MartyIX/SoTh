@@ -32,6 +32,22 @@ namespace Sokoban.View.GameDocsComponents
         public event SizeChangedDelegate OnResized; // Fired in Resize(double, double)
         private IQuest quest = null;
 
+
+        /// <summary>
+        /// For Designer to display the control; do not use!
+        /// </summary>
+        public GameDeskControl()
+        {
+            InitializeComponent();
+            DataContext = this;
+            //this.SizeChanged += new SizeChangedEventHandler(Resize);            
+        }
+        
+
+        //
+        // Graphics components
+        //
+        
         public StackPanel InfoPanel
         {
             get { return infoPanel; }
@@ -47,14 +63,11 @@ namespace Sokoban.View.GameDocsComponents
             get { return game; }
         }
 
-        /// <summary>
-        /// For Designer to display the control; do not use!
-        /// </summary>
-        public GameDeskControl()
+
+        protected override void OnContentLoaded()
         {
-            InitializeComponent();
-            DataContext = this;
-            //this.SizeChanged += new SizeChangedEventHandler(Resize);
+            base.OnContentLoaded();
+            Resize(this.availableWidth, this.availableHeight - 25); // the 25 is just workaroud! TODO FIX
         }
 
         public GameDeskControl(IQuest quest)
@@ -67,7 +80,6 @@ namespace Sokoban.View.GameDocsComponents
 
             // Game model
             game = new Game(quest);
-
             this.loadCurrentRound();            
         }
 
@@ -127,8 +139,8 @@ namespace Sokoban.View.GameDocsComponents
         /// </summary>
         public void Resize()
         {
-            double availableWidth = this.availableWidth;
-            double availableHeight = this.availableHeight;
+            double availableWidth = this.availableWidth - this.BorderThickness.Left - this.BorderThickness.Right;
+            double availableHeight = this.availableHeight - this.BorderThickness.Bottom - this.BorderThickness.Top;
 
             Resize(availableWidth, availableHeight);
         }

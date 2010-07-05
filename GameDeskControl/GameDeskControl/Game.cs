@@ -25,7 +25,7 @@ namespace Sokoban.Model
     public class Game : IGame, IGameRealTime, ISolverProvider, INotifyPropertyChanged, ISolverPainter
     {
         // SETTINGS
-        const int PHASE_CONST = 75;
+        const int PHASE_CONST = 30;
 
         // API
         public string QuestValidationErrorMessage
@@ -184,7 +184,9 @@ namespace Sokoban.Model
             }
         }
 
-
+        //
+        // Rendering
+        //
         private void OnRender(object sender, EventArgs e)
         {
             if (stopwatch.ElapsedMilliseconds >= PHASE_CONST)
@@ -195,8 +197,11 @@ namespace Sokoban.Model
             }
 
             foreach (IGamePlugin g in gameRepository.GetGameObjects)
-        	{               
-                g.Draw(control.gamedeskCanvas, control.FieldSize, gameRepository.Time, phaseProp);
+        	{
+                if (phaseProp < 1)
+                {
+                    g.Draw(control.gamedeskCanvas, control.FieldSize, gameRepository.Time, phaseProp);
+                }
 	        }
 
             if (solverPainter != null)

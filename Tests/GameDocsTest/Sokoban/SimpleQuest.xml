@@ -16,6 +16,11 @@
         <PosY>7</PosY>
         <FirstState>wait</FirstState>
       </Sokoban>
+      <Box>
+        <PosX>4</PosX>
+        <PosY>7</PosY>
+      </Box>
+
     </GameObjects>
   </Round>
 

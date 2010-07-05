@@ -15,7 +15,7 @@ namespace PluginSokoban
 {
     public partial class Sokoban : MovableEssentials, IGamePlugin, IMovableElement, IControllableByUserInput, INotifyPropertyChanged
     {
-        const int MAX_EVENTS_IN_KB = 3; 
+        const int MAX_EVENTS_IN_KB = 2; 
 
         private EventType heldKeyEvent;
         private object syncRoot = new object();
@@ -78,13 +78,16 @@ namespace PluginSokoban
                 case EventType.wentDown:
 
                     #region wentXXX
+                   
+                    movementEventsInBuffer--;
+                    DebuggerIX.WriteLine("SokKeyBuf", "Key buffer: " + movementEventsInBuffer.ToString() +
+                        " / " + MAX_EVENTS_IN_KB.ToString());
 
-
-                    if (heldKeyEvent != EventType.none && movementEventsInBuffer == 0 && timeMovementEnds <= time)
+                    if (heldKeyEvent != EventType.none && movementEventsInBuffer == 0 && timeWholeMovementEnds <= time)
                     {
                         EventType newEvent = heldKeyEvent;
                         DebuggerIX.WriteLine("SokRepMvmt", "Raised from EventID = " + ev.EventID.ToString());
-                        base.MakeImmediatePlan("SokRepMvmt", ev.who, newEvent);
+                        base.MakePlan("SokRepMvmt", ev.when, ev.who, newEvent);
                     }
 
                     returnValue = true;
@@ -150,7 +153,8 @@ namespace PluginSokoban
         /// <returns>Returns if the key was handled</returns>
         public bool OnKeyDown(Key key, Int64 time, double phase)
         {
-            DebuggerIX.WriteLine("[GR-MoveRequest]", ">>> MoveRequest <<<", "Time = " + time.ToString() + "; Phase = " + phase.ToString());
+            DebuggerIX.WriteLine("[GR-MoveRequest]", ">>> MoveRequest <<<", "Time = " + time.ToString() + 
+                "; Phase = " + phase.ToString() + "; Key = " + key.ToString());
 
             EventType ev = EventTypeLib.ConvertFromKey(key);
 
@@ -160,24 +164,30 @@ namespace PluginSokoban
                 {
                     this.heldKeyEvent = ev;
 
-                    if (this.TimeMovementEnds <= time)
+                    if (this.MovementEventsInBuffer < MAX_EVENTS_IN_KB)
                     {
-                        DebuggerIX.WriteLine("[GR-MoveRequest]", "Time is: " + time.ToString()
-                            + "; phase = " + phase.ToString()
-                            + "; Movement is not in progress.");
+                        if (this.TimeWholeMovementEnds <= time)
+                        {
+                            DebuggerIX.WriteLine("[GR-MoveRequest]", "Movement is not in progress. Movement starts at time: " +
+                                time.ToString());
 
-                        moveRequestCancelled = false;
-                        // In this moment; events for @time are processed, therefore time + 1
-                        //MakePlan("SokStartMov", time + 1, (GameObject)pSokoban, pSokoban.heldKeyEvent);
+                            moveRequestCancelled = false;
+                            // In this moment; events for @time are processed, therefore time + 1
+                            //MakePlan("SokStartMov", time + 1, (GameObject)pSokoban, pSokoban.heldKeyEvent);
 
-                        base.MakePlan("SokStartMov", time, (IGamePlugin)this, this.heldKeyEvent);
+                            base.MakePlan("SokStartMov", time, (IGamePlugin)this, this.heldKeyEvent);
 
-                        host.ProcessAllEvents(false, phase); // We don't want to update time
+                            host.ProcessAllEvents(false, phase); // We don't want to update time
+                        }
+                        else 
+                        {                        
+                            base.MakePlan("SokKeyBuf", timeWholeMovementEnds, (IGamePlugin)this, heldKeyEvent);
+                            DebuggerIX.WriteLine("[GR-MoveRequest]", "Request is buffered. Movement start at time: " + (this.TimeWholeMovementEnds).ToString());
+                        }
                     }
-                    else if (this.MovementEventsInBuffer < MAX_EVENTS_IN_KB)
+                    else
                     {
-                        DebuggerIX.WriteLine("[GR-MoveRequest]", "MakePlan for move in time: " + (this.TimeMovementEnds).ToString());
-                        base.MakePlan("SokKeyBuf", timeMovementEnds, (IGamePlugin)this, heldKeyEvent);
+                        DebuggerIX.WriteLine("[GR-MoveRequest]", "Ignored; Buffer is full: " + this.MovementEventsInBuffer.ToString());
                     }
                 }
 
@@ -237,7 +247,7 @@ namespace PluginSokoban
 
         public bool ProcessXmlInitialization(int mazeWidth, int mazeHeight, XmlNode settings)
         {
-            this.Speed = 3;
+            this.Speed = 6;
             this.fieldsX = mazeWidth;
             this.fieldsY = mazeHeight;
 

@@ -89,7 +89,18 @@ namespace Sokoban.Lib.Exceptions
         {
         }
     }
-    
+
+    public class NetworkTransferException : System.Exception
+    {
+        public NetworkTransferException()
+        {
+        }
+
+        public NetworkTransferException(string message)
+            : base(message)
+        {
+        }
+    }
     
 
 }

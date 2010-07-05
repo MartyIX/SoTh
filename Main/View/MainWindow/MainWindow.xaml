@@ -4,6 +4,7 @@
 	xmlns:ad="clr-namespace:AvalonDock;assembly=AvalonDock"
     xmlns:local="clr-namespace:Sokoban"    
     xmlns:view="clr-namespace:Sokoban.View;assembly=GameDocs"    
+    xmlns:opponent="clr-namespace:Sokoban.View.GameDocsComponents;assembly=GameDeskControl"
     xmlns:solvers="clr-namespace:Sokoban.View;assembly=Solvers"    
     xmlns:console="clr-namespace:Sokoban.View;assembly=Console"    
     xmlns:quests="clr-namespace:Sokoban.View;assembly=QuestsControl"    
@@ -44,6 +45,12 @@
                     </MenuItem>
                 </MenuItem>
                 <MenuItem Header="_View">
+                    <MenuItem Header="_Game window" IsCheckable="true">
+                        <MenuItem.IsChecked>
+                            <Binding ElementName="gameManager" Path="Visibility" Converter="{StaticResource avalonDockVisibilityConverter}" Mode="TwoWay" />
+                        </MenuItem.IsChecked>
+                    </MenuItem>
+
                     <MenuItem Header="_Console" IsCheckable="true" Click="MenuItem_Console_Click">
                         <MenuItem.IsChecked>
                             <Binding ElementName="consolePane" Path="Visibility" Converter="{StaticResource avalonDockVisibilityConverter}" Mode="TwoWay" />
@@ -60,10 +67,6 @@
                         </MenuItem.IsChecked>
                     </MenuItem>
                 </MenuItem>
-                <MenuItem Header="_Tools">
-                    <MenuItem Header="_Console">
-                    </MenuItem>
-                </MenuItem>                
             </Menu>
             <Menu DockPanel.Dock="Right" Background="{x:Null}">
                 <MenuItem Header="{Binding Source={x:Static model:ProfileRepository.Instance}, Path=Username}" Name="miUser" HorizontalAlignment="Right">
@@ -78,17 +81,18 @@
         <ad:DockingManager x:Name="dockingManager">
         <ad:ResizingPanel Orientation="Vertical">
                 <ad:ResizingPanel Orientation="Horizontal">
-                    <view:GameDocs x:Name="gameManager" view:GameManagerProperties.DockingManager="{Binding ElementName=dockingManager}" diag:PresentationTraceSources.TraceLevel="High" />
+                    <view:GameDocs Visibility="Visible" x:Name="gameManager" view:GameManagerProperties.DockingManager="{Binding ElementName=dockingManager}" diag:PresentationTraceSources.TraceLevel="High" />
                     <ad:DocumentPaneResizingPanel Name="Splitter1"></ad:DocumentPaneResizingPanel>
                     
                     <ad:DockablePane>
-                        <quests:QuestsControl StateChanged="questsPane_StateChanged" x:Name="questsPane" diag:PresentationTraceSources.TraceLevel="High" HideOnClose="True" />
+                        <quests:QuestsControl x:Name="questsPane" diag:PresentationTraceSources.TraceLevel="High" HideOnClose="True" />
+                        <opponent:GameDeskControl  x:Name="opponentPane" HideOnClose="True" />
                     </ad:DockablePane>                
             </ad:ResizingPanel>   
             <ad:DocumentPaneResizingPanel Name="Splitter2"></ad:DocumentPaneResizingPanel>
                         
             <ad:DockablePane>
-                    <console:ConsoleControl x:Name="consolePane" Title="Console" StateChanged="consolePane_StateChanged" diag:PresentationTraceSources.TraceLevel="High" HideOnClose="True"  />
+                    <console:ConsoleControl x:Name="consolePane" Title="Console" diag:PresentationTraceSources.TraceLevel="High" HideOnClose="True"  />
                     <solvers:Solvers StateChanged="solversPane_StateChanged" x:Name="solversPane" diag:PresentationTraceSources.TraceLevel="High" HideOnClose="True" />
             </ad:DockablePane>
         </ad:ResizingPanel>

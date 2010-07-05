@@ -58,6 +58,7 @@ namespace PluginBox
             posX = 2;
             posY = 2;
             obstructionLevel = 5;
+            Speed = 0;
 
             image = new System.Windows.Controls.Image();
 

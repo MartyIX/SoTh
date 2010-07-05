@@ -46,7 +46,13 @@ namespace Sokoban.Model.PluginInterface
             this.host = host;            
         }
 
+
         public virtual void PrepareMovement(Int64 goTime, double phase, IGamePlugin who, EventType ev)
+        {
+            PrepareMovement(goTime, phase, who, ev, ((IMovableElement)who).Speed);
+        }
+
+        public void PrepareMovement(Int64 goTime, double phase, IGamePlugin who, EventType ev, int speed)
         {
             IMovableElement gamePlugin = who as IMovableElement;
 
@@ -56,16 +62,10 @@ namespace Sokoban.Model.PluginInterface
                 gamePlugin.MakeMove((MovementDirection)ev);
                 gamePlugin.MovementStartTime = goTime;
                 gamePlugin.MovementStartTimePhase = phase;
-                gamePlugin.MovementEndTime = goTime + gamePlugin.Speed;
+                gamePlugin.MovementEndTime = goTime + speed;
                 gamePlugin.LastMovementEvent = ev;
 
-                if (EventTypeLib.IsEventOfType(ev, EventCategory.goXXX))
-                {
-                    gamePlugin.MovementEventsInBuffer += 1;
-                    gamePlugin.TimeMovementEnds = goTime + gamePlugin.Speed;
-                }
-            
-                host.MakePlan("PrepMovWentXXX", gamePlugin.MovementEndTime, who, (EventType)((int)ev + 10)); // goXXX -> wentXXX
+                MakePlan("PrepMovWentXXX", gamePlugin.MovementEndTime, who, (EventType)((int)ev + 10)); // goXXX -> wentXXX
             }
         }
 
@@ -115,7 +115,9 @@ namespace Sokoban.Model.PluginInterface
             {
                 double startTime = (double)movementStartTime + movementStartTimePhase;
                 double timePassed = ((double)time + phase - startTime);
-                double progress = timePassed / (double)(this.Speed - movementStartTimePhase);
+                
+                // this.Speed may be negative and it means that speed is lent to the Element by Element that moves with it
+                double progress = timePassed / (double)(Math.Abs(this.Speed) - movementStartTimePhase);
                 double step = squareSize * progress;
 
                 x = (this.lastPosX - 1) * squareSize + (posX - lastPosX) * step;
@@ -131,7 +133,7 @@ namespace Sokoban.Model.PluginInterface
                     + "; Time = " + time.ToString() + phase.ToString(".0000")
                     + "; progress = " + progress.ToString("0.000")
                     + "; step = " + step.ToString()
-                    + "; TimeMovementEnd = " + movementEndTime.ToString());
+                    + "; MovementEnd = " + movementEndTime.ToString());
 
             }
 
@@ -141,8 +143,7 @@ namespace Sokoban.Model.PluginInterface
 
             if (direction == MovementDirection.goLeft)
             {
-                scaleX = (-1) * scaleX; // flip image
-                
+                scaleX = (-1) * scaleX; // flip image                
             }
 
             if (scale == null || (scale.ScaleX != scaleX || scale.ScaleY != scaleY))
@@ -182,6 +183,20 @@ namespace Sokoban.Model.PluginInterface
                     returnValue = true;
                     break;
 
+                case EventType.wentRight:
+                case EventType.wentLeft:
+                case EventType.wentUp:
+                case EventType.wentDown:
+
+                    #region wentXXX
+
+                    movementEventsInBuffer--;
+
+                    returnValue = true;
+                    break;
+
+                    #endregion wentXXX
+
                 default:
                     returnValue = false;
                     break;
@@ -198,8 +213,6 @@ namespace Sokoban.Model.PluginInterface
         public void ProcessGoEvent(Int64 time, Event ev)
         {            
             // TODO: It's not possible to move object if there's something behind it
-
-            this.MovementEventsInBuffer -= 1;
 
             MovementDirection md = EventType2MovementDirection(ev.what);
 
@@ -238,7 +251,7 @@ namespace Sokoban.Model.PluginInterface
                 // Cannot move the object because behind the object is border of maze
                 if (this.isThereWall(nextNextX, nextNextY))
                 {
-                    host.MakeImmediatePlan("ProcessGoEvent", ev.who, EventType.hitToTheWall); // ev.who = this plugin
+                    planHittingWall("PGE-WallBehindObj", ev.when, ev.who); // ev.who = this plugin
                 }
                 else
                 {
@@ -248,20 +261,36 @@ namespace Sokoban.Model.PluginInterface
                     if (gp2 == null)
                     {
                         PrepareMovement(ev.when, 0, ev.who, ev.what);
-                        PrepareMovement(ev.when, 0, obstructionGp, ev.what);
+
+                        int speed = ((IMovableElement)obstructionGp).Speed;
+                        // Lend obstructionGp speed of ev.who
+                        if (speed <= 0)
+                        {
+                            speed = ((IMovableElement)ev.who).Speed;
+                            ((IMovableElement)obstructionGp).Speed = -speed;
+                        }
+                        PrepareMovement(ev.when, 0, obstructionGp, ev.what, speed);
                     }
                     else
                     {
-                        host.MakeImmediatePlan("ProcessGoEvent", ev.who, EventType.hitToTheWall); // ev.who = this plugin
+                        planHittingWall("PGE-ObstrBehindObj", ev.when, ev.who); // ev.who = this plugin
                     }
                 }
             }
             // Is there wall or object cannot be moved
             else
             {
-                host.MakeImmediatePlan("ProcessGoEvent", ev.who, EventType.hitToTheWall); // ev.who = this plugin
+                planHittingWall("PGE-Wall", ev.when, ev.who);
             }            
         }
+
+        private void planHittingWall(string debugMessage, Int64 when, IGamePlugin who)
+        {
+            timeWholeMovementEnds -= this.speed;
+            movementEventsInBuffer--;
+            MakePlan(debugMessage, when, who, EventType.hitToTheWall); // ev.who = this plugin
+        }
+
 
         #region IMovable Members
 
@@ -429,11 +458,11 @@ namespace Sokoban.Model.PluginInterface
             set { movementEventsInBuffer = value; }
         }
 
-        protected Int64 timeMovementEnds = 0; 
+        protected Int64 timeWholeMovementEnds = 0; 
 
-        public Int64 TimeMovementEnds { 
-            get { return timeMovementEnds; }
-            set { timeMovementEnds = value; } 
+        public Int64 TimeWholeMovementEnds { 
+            get { return timeWholeMovementEnds; }
+            set { timeWholeMovementEnds = value; } 
         }
 
         public int PosX
@@ -480,7 +509,7 @@ namespace Sokoban.Model.PluginInterface
             }
             else
             {
-                throw new Exception("Unknonw movement direction: " + e.ToString());
+                throw new Exception("Unknown movement direction: " + e.ToString());
             }
         }
 
@@ -501,20 +530,21 @@ namespace Sokoban.Model.PluginInterface
         {
             if (EventTypeLib.IsEventOfType(eventType, EventCategory.goXXX))
             {
+                if (movementEventsInBuffer == 0)
+                {
+                    timeWholeMovementEnds = time + this.speed;
+                }
+                else
+                {
+                    timeWholeMovementEnds += this.speed;
+                }
+
                 movementEventsInBuffer++;
+
+                DebuggerIX.WriteLine("[KeyBuf]", "Buffer is now: " + this.MovementEventsInBuffer.ToString());
             }
 
             host.MakePlan(debug, time, iGamePlugin, eventType);
-        }
-
-        public void MakeImmediatePlan(string debugMessage, IGamePlugin iGamePlugin, EventType eventType)
-        {
-            if (EventTypeLib.IsEventOfType(eventType, EventCategory.goXXX))
-            {
-                movementEventsInBuffer++;
-            }
-            
-            host.MakeImmediatePlan(debugMessage, iGamePlugin, eventType);
         }
 
         public int StepsCount

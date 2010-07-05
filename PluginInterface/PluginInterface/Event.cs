@@ -80,7 +80,7 @@ namespace Sokoban.Model.PluginInterface
                 + "; Ev = " + what.ToString().PadRight(15)
                 + (obj != null ?
                         "; Pos = " + obj.PosX.ToString().PadLeft(2) + "x" + obj.PosY.ToString()
-                    + "; TME = " + obj.TimeMovementEnds.ToString() : ""
+                    + "; TME = " + obj.TimeWholeMovementEnds.ToString() : ""
                     );
         }
     }

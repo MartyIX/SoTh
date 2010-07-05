@@ -52,7 +52,7 @@ namespace Sokoban
 
         public void Window_Loaded(object sender, RoutedEventArgs e)
         {
-                                              
+                                 
         }        
 
 
@@ -95,7 +95,7 @@ namespace Sokoban
             questsPane.Initialize(this.gameManager);
 
             // Load testing quest
-            this.loadQuest();            
+            this.loadQuest();                  
         }
 
 
@@ -136,6 +136,7 @@ namespace Sokoban
         // MENU CLICKS HANDLERS
         //
 
+
         private void MenuItem_Console_Click(object sender, RoutedEventArgs e)
         {
             SetVisibilityOfMenuItems(consolePane);
@@ -158,14 +159,16 @@ namespace Sokoban
 
 
         private void SetVisibilityOfMenuItems(DockableContent dc)
-        {
+        {            
             if (dc.Visibility == Visibility.Visible) // the value is set in ConvertBack of AvalonDockVisibilityConverter!!!
             {
-                dockingManager.Show(dc);
+                //dockingManager.Show(dc);
+                dc.Show();
             }
             else
             {
-                dockingManager.Hide(dc);
+                //dockingManager.Hide(dc);
+                dc.Hide();
             }
         }
 
@@ -177,11 +180,29 @@ namespace Sokoban
             }
         }
 
+        private void solversPane_StateChanged(object sender, System.Windows.RoutedEventArgs e)
+        {
+            SetVisibilityOfDockableContents(solversPane, solversPane.State);
+        }
+
+        private void questsPane_StateChanged(object sender, System.Windows.RoutedEventArgs e)
+        {
+            SetVisibilityOfDockableContents(questsPane, questsPane.State);
+        }
+
+
+        private void consolePane_StateChanged(object sender, System.Windows.RoutedEventArgs e)
+        {
+            SetVisibilityOfDockableContents(consolePane, consolePane.State);
+        }
+        /*
+        
+        // AvalonDock 1.2
         private void solversPane_StateChanged(object sender, DockableContentState state)
         {
             SetVisibilityOfDockableContents(solversPane, state);
         }
-
+        
         private void questsPane_StateChanged(object sender, DockableContentState state)
         {
             SetVisibilityOfDockableContents(questsPane, state);
@@ -191,7 +212,7 @@ namespace Sokoban
         private void consolePane_StateChanged(object sender, DockableContentState state)
         {
             SetVisibilityOfDockableContents(consolePane, state);
-        }
+        }*/
 
     }
 
