@@ -61,6 +61,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="class.Coordinate.cs" />
+    <Compile Include="GraphicsControl.cs" />
+    <Compile Include="IGraphicsControl.cs" />
     <Compile Include="SolverPainter.cs" />
     <Compile Include="Delegates.cs" />
     <Compile Include="Game.cs" />

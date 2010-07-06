@@ -15,6 +15,7 @@ using System.Data;
 using Sokoban.Lib.Exceptions;
 using System.Windows.Threading;
 using System.Threading;
+using Sokoban.Interfaces;
 
 namespace Sokoban.View
 {
@@ -73,8 +74,9 @@ namespace Sokoban.View
         /// </summary>
         /// <param name="path">Absolute path to the directory with solvers</param>
         /// <param name="parentWindow">We need to display dialogs and the dialogs need to be bound to a window; main window reference is expected</param>
-        public void Initialize(ISolverProvider solverProvider, Window parentWindow)
+        public void Initialize(ISolverProvider solverProvider, Window parentWindow, IErrorMessagesPresenter errorPresenter)
         {
+            this.errorPresenter = errorPresenter;
             solversManager = new SolversManager(solverProvider, parentWindow);
             // Register callback
             solversManager.RegisterStatusChangeCallback(solverStatusChange);
@@ -99,7 +101,8 @@ namespace Sokoban.View
         private string solverStatus = "No action is in progress";
         private SolversManager solversManager;
         private ObservableCollection<string> solversList = new ObservableCollection<string>();
-        
+        private IErrorMessagesPresenter errorPresenter;
+
         // Initialized in method Initialize from ISolverProvider -- it's a hack actually because we expect that the object implements
         // ISolverPainter and ISolverProvider at the same time. But we save a parameter..
         private ISolverPainter solverPainter;
@@ -296,6 +299,13 @@ namespace Sokoban.View
             solversManager.ShowAbout();
         }
 
+        private void errorMessage(ErrorMessageSeverity ems, string message)
+        {
+            if (errorPresenter != null)
+            {
+                errorPresenter.ErrorMessage(ems, "Solvers", message);
+            }
+        }
     }
 
     public class MessagesLogItemData

@@ -52,9 +52,9 @@
         
         <!--Docking Manager AvalonDock-->
         <ad:DockingManager x:Name="DockManager" Grid.Row="1" Margin="0,4,0,0" Loaded="DockManager_Loaded">
-            <ad:ResizingPanel Orientation="Vertical" >
+            <ad:ResizingPanel Orientation="Horizontal" >
                 <ad:DocumentPane/>
-                <ad:DockablePane>
+                <ad:DockablePane ad:ResizingPanel.ResizeWidth="0.5*">
                     <ad:DockableContent x:Name="logPane" Title="Log" DockableStyle="DockableToBorders" IsCloseable="False" ad:ResizingPanel.ResizeHeight="120">
                         <!--Text property must be bound to an application level source like Application.Current to
                         correctly work when content is dragged in another window!-->

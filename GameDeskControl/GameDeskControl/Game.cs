@@ -38,22 +38,19 @@ namespace Sokoban.Model
             get { return gameRepository.RoundName; }
         }
 
-        /*public int StepsCount
-        {
-            get { return gameRepository.StepsCount; }
-        }*/
-
         public IGameRepository GameRepository {
             get { return gameRepository; }
         }
 
         // Private fields
-        private GameDeskControl control; // assigned via RegisterVisual()
+        private IGraphicsControl control; // assigned via RegisterVisual()
         private IQuest quest;
         private IGameRepository gameRepository;
         private Stopwatch stopwatch = new Stopwatch();
         private List<string> pluginSchemata = new List<string>();
         private string questValidationErrorMessage;
+
+
 
         private double phaseProp
         {
@@ -118,7 +115,7 @@ namespace Sokoban.Model
             // We don't want a code that is dependent on graphics
             if (control != null)
             {
-                control.SetSize(fieldsX, fieldsY);
+                control.SetGameDeskSize(fieldsX, fieldsY);
             }
         }
 
@@ -200,7 +197,7 @@ namespace Sokoban.Model
         	{
                 if (phaseProp < 1)
                 {
-                    g.Draw(control.gamedeskCanvas, control.FieldSize, gameRepository.Time, phaseProp);
+                    g.Draw(control.Canvas, control.FieldSize, gameRepository.Time, phaseProp);
                 }
 	        }
 
@@ -221,15 +218,9 @@ namespace Sokoban.Model
             get { return this.phaseProp; }
         }
 
-        public void RegisterVisual(GameDeskControl gameDeskControl)
+        public void RegisterVisual(IGraphicsControl graphicsControl)
         {
-            this.control = gameDeskControl;
-            this.control.OnResized += control_OnResized;
-        }
-
-        void control_OnResized(double width, double height, double fieldSize)
-        {
-            
+            this.control = graphicsControl;
         }
 
         #endregion
@@ -349,7 +340,7 @@ namespace Sokoban.Model
                     this.removeOldPainter();
 
                     // New painter
-                    solverPainter = new SolverPainter(control.gamedeskCanvas, sokobanX, sokobanY, control.FieldSize, solution);
+                    solverPainter = new SolverPainter(control.Canvas, sokobanX, sokobanY, control.FieldSize, solution);
                     solverPainter.Draw();
                     SokobanMoved += solverPainter.Update;
                 }

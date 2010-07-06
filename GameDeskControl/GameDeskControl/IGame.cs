@@ -9,7 +9,7 @@ namespace Sokoban.Model.GameDesk
 {
     public interface IGame : ISolverPainter
     {
-        void RegisterVisual(GameDeskControl gameDeskControl);
+        void RegisterVisual(IGraphicsControl graphicsControl);
         IQuest Quest { get; }
         //int StepsCount { get; }
         string RoundName { get; }

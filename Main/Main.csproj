@@ -176,8 +176,6 @@
     <Compile Include="Application\Management\BringToFront.cs" />
     <Compile Include="Application\Management\ApplicationParameters.cs" />
     <Compile Include="Application\ApplicationRepository.cs" />
-    <Compile Include="Model\AvailableGames\AvailableGamesRepository.cs" />
-    <Compile Include="Model\Console\ConsoleRepository.cs" />
     <Compile Include="Model\Profile\GameServers.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -278,10 +276,7 @@
       <Name>Solvers</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="View\AvailableGames\" />
-    <Folder Include="View\Console\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="TestQuest.xml">
       <SubType>Designer</SubType>

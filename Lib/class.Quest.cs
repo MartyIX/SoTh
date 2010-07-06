@@ -43,6 +43,20 @@ namespace Sokoban.Model.GameDesk
             get { return rounds[actRound].OuterXml; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="n">One based</param>
+        public void SetCurrentRound(int n)
+        {
+            if (rounds.Count < n)
+            {
+                throw new Exception("Quest contains only " + rounds.Count.ToString() +  " rounds.");
+            }
+
+            actRound = n - 1;
+        }
+
         public void MoveCurrentToNext()
         {
             if (IsLast())

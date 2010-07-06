@@ -59,24 +59,5 @@ namespace Sokoban.GameDocs.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
-        ///&lt;xs:schema id=&quot;XSDSchemaTest&quot; xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot; elementFormDefault=&quot;qualified&quot; attributeFormDefault=&quot;unqualified&quot;&gt;
-        ///
-        ///  &lt;!-- definition of simple elements --&gt;
-        ///  &lt;xs:element name=&quot;ID&quot; type=&quot;xs:integer&quot;/&gt;
-        ///  &lt;xs:element name=&quot;Name&quot; type=&quot;xs:string&quot;/&gt;
-        ///  &lt;xs:element name=&quot;width&quot; type=&quot;xs:integer&quot;/&gt;
-        ///  &lt;xs:element name=&quot;height&quot; type=&quot;xs:integer&quot;/&gt;
-        ///  &lt;xs:element name=&quot;posX&quot; type=&quot;xs:integer&quot;/&gt;
-        ///  &lt;xs:element name=&quot;posY&quot; type=&quot;xs:integer&quot;/&gt;
-        ///  &lt; [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string QuestSchema {
-            get {
-                return ResourceManager.GetString("QuestSchema", resourceCulture);
-            }
-        }
     }
 }

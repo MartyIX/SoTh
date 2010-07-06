@@ -9,7 +9,7 @@
       <Value Profile="(Default)">[Sokoban's console; for help, please type 'help']</Value>
     </Setting>
     <Setting Name="ConsoleCommandPrefix" Type="System.String" Scope="User">
-      <Value Profile="(Default)">&gt;</Value>
+      <Value Profile="(Default)">&gt; </Value>
     </Setting>
   </Settings>
 </SettingsFile>

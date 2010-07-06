@@ -74,6 +74,20 @@ namespace Sokoban
                 loadQuest();
                 e.Handled = true;
             }
+            else if (e.Key == Key.R)
+            {
+                if (gameManager != null && gameManager.ActiveGameControl != null)
+                {
+                    gameManager.ActiveGameControl.Reload();
+                }
+            }
+            else if (e.Key == Key.T)
+            {
+                if (gameManager != null && gameManager.ActiveGameControl != null)
+                {
+                    gameManager.ActiveGameControl.DisplayBothDesks = !gameManager.ActiveGameControl.DisplayBothDesks;
+                }
+            }
             else
             {
                 if (gameManager != null && gameManager.ActiveGameControl != null)
@@ -91,8 +105,8 @@ namespace Sokoban
         private void Window_ContentRendered(object sender, EventArgs e)
         {
             ApplicationRepository.Instance.OnStartUp_PhaseTwo(); // initialize QuestsControl
-            solversPane.Initialize(this.gameManager, this);
-            questsPane.Initialize(this.gameManager);
+            solversPane.Initialize(this.gameManager, this, consolePane );
+            questsPane.Initialize(this.gameManager, consolePane);
 
             // Load testing quest
             this.loadQuest();                  

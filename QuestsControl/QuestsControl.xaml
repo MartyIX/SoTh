@@ -22,12 +22,28 @@
         <TreeView ItemsSource="{Binding Path=Categories}"  x:Name="treeView">
             <TreeView.Resources>
                 <HierarchicalDataTemplate DataType="{x:Type local:Category}" ItemsSource="{Binding Path=Leagues}">
-                    <TextBlock Text="{Binding Path=Name}">                        
-                    </TextBlock>
+                    <TextBlock Text="{Binding Path=Name}"/>
+                    
                     <HierarchicalDataTemplate.ItemContainerStyle>
                         <Style TargetType="{x:Type TreeViewItem}">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type TreeViewItem}">
+                                        <TextBlock Text="{Binding Path=Name}">
+                                          <TextBlock.ContextMenu>
+                                           <ContextMenu>
+                                            <MenuItem Header="Play league" Name="cmPlayLeague" Click="cmPlayLeague_Click" 
+                                                      DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}"/>
+                                             <MenuItem Header="Play over network" Name="cmPlayOverNetwork" Click="cmPlayOverNetwork_Click" 
+                                                      DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}"/>  
+                                           </ContextMenu>
+                                          </TextBlock.ContextMenu>
+                                        </TextBlock>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
                             <EventSetter Event="TreeViewItem.MouseDoubleClick" Handler="trv_MouseDoubleClick" />
-                            <EventSetter Event="TreeViewItem.PreviewMouseRightButtonDown" Handler="trv_PreviewMouseRightButtonDown"/>
+                            <!--<EventSetter Event="TreeViewItem.PreviewMouseRightButtonDown" Handler="trv_PreviewMouseRightButtonDown"/>-->
                         </Style>
                     </HierarchicalDataTemplate.ItemContainerStyle>
                 </HierarchicalDataTemplate>

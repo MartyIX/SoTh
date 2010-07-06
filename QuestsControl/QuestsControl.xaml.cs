@@ -17,6 +17,7 @@ using System.Windows.Input;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Sokoban.Model.Quests;
+using Sokoban.Interfaces;
 
 namespace Sokoban.View
 {
@@ -40,6 +41,7 @@ namespace Sokoban.View
         private string _status;
         private static string server;
         private IQuestHandler questHandler = null;
+        private IErrorMessagesPresenter errorPresenter = null;
 		
         /// <summary>
         /// Shutdown
@@ -66,10 +68,10 @@ namespace Sokoban.View
         /// <summary>
         /// 
         /// </summary>
-        public void Initialize(IQuestHandler questHandler)
+        public void Initialize(IQuestHandler questHandler, IErrorMessagesPresenter errorPresenter)
         {
             this.questHandler = questHandler;
-
+            this.errorPresenter = errorPresenter;
             this.refresh();
         }
 
@@ -123,13 +125,14 @@ namespace Sokoban.View
             catch (WebException e)
             {
                 output = "error";
-                this.Status = "Error in communication with the server. Please try again in a while.\n" +
-                              "Additional information: " + e.Message;
+                this.Status = "Error in communication with the server. Please try again in a while.";
+                errorMessage(ErrorMessageSeverity.Medium, "Error in communication with the server. Additional information: " + e.Message);
             }
             catch (Exception e)
             {
                 output = "error";
-                this.Status = "Unknow error occured.\nAdditional information: " + e.Message;
+                this.Status = "Unknown error occured. Please try again in a while.";
+                errorMessage(ErrorMessageSeverity.High, "Unknown error in communication with the server. Additional information: " + e.Message);
             }
 
             return output;
@@ -137,30 +140,45 @@ namespace Sokoban.View
 
         private void trv_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            Debug.WriteLine("test");
-
             TreeViewItem tvi = sender as TreeViewItem;
             League league = tvi.Header as League;
 
+            openLeague(league, GameMode.SinglePlayer);
+        }
+
+        private void cmPlayLeague_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem menu = sender as MenuItem;
+            TreeViewItem tvi = menu.DataContext as TreeViewItem;
+            League league = tvi.Header as League;
+
+            openLeague(league, GameMode.SinglePlayer);
+        }
+
+        private void cmPlayOverNetwork_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem menu = sender as MenuItem;
+            TreeViewItem tvi = menu.DataContext as TreeViewItem;
+            League league = tvi.Header as League;
+
+            openLeague(league, GameMode.TwoPlayers);
+        }
+
+
+        private void openLeague(League league, GameMode gameMode)
+        {            
             if (questHandler != null)
             {
                 int id = league.ID;
-                
+
                 string questXml = this.getRequestOnServer("/remote/GetLeague/" + id.ToString());
 
                 if (questXml != "error" && questXml != "")
                 {
                     Quest q = new Quest(questXml);
-                    questHandler.QuestSelected(q);
+                    questHandler.QuestSelected(q, gameMode);
                 }
             }
-        }
-
-        private void trv_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            Trace.WriteLine("Preview MouseRightButtonDown");
-
-            e.Handled = true;
         }
 
         #region INotifyPropertyChanged Members
@@ -176,6 +194,14 @@ namespace Sokoban.View
         }
 
         #endregion
+
+        private void errorMessage(ErrorMessageSeverity ems, string message)
+        {
+            if (errorPresenter != null)
+            {
+                errorPresenter.ErrorMessage(ems, "Quests", message);
+            }
+        }
 
     }
 }

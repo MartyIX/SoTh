@@ -14,6 +14,8 @@ using System.Windows.Shapes;
 using Sokoban.Model.Quests;
 using System.Diagnostics;
 using Sokoban.View;
+using Sokoban.Interfaces;
+using Sokoban.Lib;
 
 namespace QuestsControlTest
 {
@@ -22,20 +24,34 @@ namespace QuestsControlTest
     /// </summary>
     public partial class MainWindow : Window
     {
+        private ErrorMessagePresenter errorMessagePresenter = new ErrorMessagePresenter();   
+
         public MainWindow()
         {
             InitializeComponent();
             this.DataContext = this;
 
-            QuestsControl.Initialize("http://127.0.0.1/");
+            QuestsControl.Initialize("http://127.0.0.1/www/");
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             IQuestHandler iquestHandler = new QuestHandler();
-
-            questsControlPane.Initialize(iquestHandler);
+            questsControlPane.Initialize(iquestHandler, errorMessagePresenter);
         }
+    }
+
+    public class ErrorMessagePresenter : IErrorMessagesPresenter
+    {
+        #region IErrorMessagesPresenter Members
+
+        public void ErrorMessage(ErrorMessageSeverity ems, string originModule, string message)
+        {
+            Debug.WriteLine(string.Format(">> {0} Application error occured in module `{1}':\n >> Severity: {2}\n >> {3}\n",
+                DateTime.Now.ToShortTimeString(), originModule, ems, message));
+        }
+
+        #endregion
     }
 
     public class QuestHandler : IQuestHandler
@@ -44,9 +60,11 @@ namespace QuestsControlTest
 
         #region IQuestHandler Members
 
-        public void QuestSelected(Sokoban.Model.GameDesk.IQuest quest)
+        public void QuestSelected(Sokoban.Model.GameDesk.IQuest quest, GameMode gameMode)
         {
+            Debug.WriteLine("Selected game mode: " + gameMode.ToString());
             Debug.WriteLine(quest.WholeQuestXml);
+
         }
 
         #endregion

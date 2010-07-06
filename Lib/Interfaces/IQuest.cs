@@ -11,6 +11,7 @@ namespace Sokoban.Model.GameDesk
         string ActualRoundXML {get;}
         string WholeQuestXml { get; }
         void MoveCurrentToNext();
+        void SetCurrentRound(int n);
         bool IsLast();
     }
 }

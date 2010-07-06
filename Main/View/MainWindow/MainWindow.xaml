@@ -4,7 +4,6 @@
 	xmlns:ad="clr-namespace:AvalonDock;assembly=AvalonDock"
     xmlns:local="clr-namespace:Sokoban"    
     xmlns:view="clr-namespace:Sokoban.View;assembly=GameDocs"    
-    xmlns:opponent="clr-namespace:Sokoban.View.GameDocsComponents;assembly=GameDeskControl"
     xmlns:solvers="clr-namespace:Sokoban.View;assembly=Solvers"    
     xmlns:console="clr-namespace:Sokoban.View;assembly=Console"    
     xmlns:quests="clr-namespace:Sokoban.View;assembly=QuestsControl"    
@@ -86,7 +85,6 @@
                     
                     <ad:DockablePane>
                         <quests:QuestsControl x:Name="questsPane" diag:PresentationTraceSources.TraceLevel="High" HideOnClose="True" />
-                        <opponent:GameDeskControl  x:Name="opponentPane" HideOnClose="True" />
                     </ad:DockablePane>                
             </ad:ResizingPanel>   
             <ad:DocumentPaneResizingPanel Name="Splitter2"></ad:DocumentPaneResizingPanel>

@@ -96,6 +96,7 @@
     <Compile Include="Http\HttpReq.cs" />
     <Compile Include="Interfaces\IBaseRepository.cs" />
     <Compile Include="Interfaces\IBaseView.cs" />
+    <Compile Include="Interfaces\IErrorMessagesPresenter.cs" />
     <Compile Include="Interfaces\IQuest.cs" />
     <Compile Include="Interfaces\IQuestHandler.cs" />
     <Compile Include="Solvers\ISolverPainter.cs" />

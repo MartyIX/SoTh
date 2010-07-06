@@ -36,12 +36,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AvalonDock, Version=1.2.2691.0, Culture=neutral, PublicKeyToken=85a1e0ada7ec13e4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\AvalonDock.dll</HintPath>
+    <Reference Include="AvalonDock">
+      <HintPath>..\AvalonDock\bin\Release\v35\AvalonDock.dll</HintPath>
     </Reference>
     <Reference Include="AvalonDock.Themes">
-      <HintPath>..\AvalonDock.Themes.dll</HintPath>
+      <HintPath>..\AvalonDock.Themes\bin\Release\v35\AvalonDock.Themes.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

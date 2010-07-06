@@ -10,6 +10,7 @@
     <Width>8</Width>
     <Height>8</Height>
   </Dimensions>
+  <Variant>Ordinary</Variant>  
   <GameObjects>
     <Wall>
       <PosX>1</PosX>

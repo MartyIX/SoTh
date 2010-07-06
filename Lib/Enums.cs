@@ -2,6 +2,18 @@
 namespace Sokoban.Lib
 {
 
+    public enum GameMode
+    {
+        SinglePlayer,
+        TwoPlayers
+    }
+    
+    public enum PlayingMode
+    {
+        League,
+        Round
+    }
+
     public enum EventCategory
     {
         goXXX = 0, // goLeft, goUp, goRight, goDown

@@ -43,6 +43,7 @@
       <xs:sequence>
         <xs:element name="Name" type="xs:string" minOccurs="1" maxOccurs="1" />
         <xs:element ref="Dimensions" />
+        <xs:element name="Variant" type="xs:string" minOccurs="1" maxOccurs="1" />
         <xs:element ref="GameObjects" minOccurs="1" maxOccurs="1" />
       </xs:sequence>
     </xs:complexType>

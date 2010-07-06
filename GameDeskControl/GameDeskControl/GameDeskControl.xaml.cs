@@ -29,20 +29,105 @@ namespace Sokoban.View.GameDocsComponents
     /// </summary>
     public partial class GameDeskControl : DocumentContent, INotifyPropertyChanged, ISolverProvider
     {
+        //
+        // Public fields and properties
+        //
+        
         public event SizeChangedDelegate OnResized; // Fired in Resize(double, double)
-        private IQuest quest = null;
+        public bool IsChanged { get; set; }
+        public static readonly RoutedCommand ViewCommand = new RoutedCommand();
+        public int fieldsX = 8;
+        public int fieldsY = 8;
 
+
+        public bool DisplayBothDesks
+        {
+            get { return displayBothDesks; }
+            set
+            {
+                displayBothDesks = value;
+                this.Resize();
+            }
+        }
+
+        // 
+        // Private fields
+        // 
+
+        private double availableWidth = 200;
+        private double availableHeight = 200;
+        private Game game;
+        private Game gameOpponent = null;
+
+        private IGraphicsControl graphicsControl;
+        private IGraphicsControl graphicsControlOpponent;
+
+        private GameMode gameMode; 
+        private double fieldSize = 25;
+        private double time = 0;
+        private PlayingMode playingMode = PlayingMode.League;
+        private IQuest quest = null;
+        private bool displayBothDesks = false;
+
+        //
+        // Constructors
+        //
 
         /// <summary>
         /// For Designer to display the control; do not use!
         /// </summary>
         public GameDeskControl()
         {
-            InitializeComponent();
-            DataContext = this;
+            constructorInitialization();
             //this.SizeChanged += new SizeChangedEventHandler(Resize);            
         }
-        
+
+        public GameDeskControl(IQuest quest, GameMode gameMode)
+        {
+            constructorInitialization();
+
+            this.playingMode = PlayingMode.League;
+            this.gameMode = gameMode;
+            this.SizeChanged += new SizeChangedEventHandler(Resize);
+            this.quest = quest;
+
+            // Game model for first player
+            game = new Game(quest);
+            this.loadCurrentRound(game);
+
+            if (gameMode == GameMode.TwoPlayers)
+            {
+                gameOpponent = new Game(quest);
+                this.loadCurrentRound(gameOpponent);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="quest"></param>
+        /// <param name="roundID">One-based</param>
+        public GameDeskControl(IQuest quest, GameMode gameMode, int roundID)
+        {
+            constructorInitialization();
+            playingMode = PlayingMode.Round;
+
+            // Game model for first player
+
+            quest.SetCurrentRound(roundID);
+            game = new Game(quest);
+            this.loadCurrentRound(game);
+        }
+
+
+        private void constructorInitialization()
+        {
+            InitializeComponent();
+            DataContext = this;
+
+            graphicsControl = new GraphicsControl(this, gamedeskCanvas, gamedeskRect);
+            graphicsControlOpponent = new GraphicsControl(this, gamedeskOpponentCanvas, gamedeskOpponentRect);
+        }
 
         //
         // Graphics components
@@ -70,28 +155,23 @@ namespace Sokoban.View.GameDocsComponents
             Resize(this.availableWidth, this.availableHeight - 25); // the 25 is just workaroud! TODO FIX
         }
 
-        public GameDeskControl(IQuest quest)
-        {
-            InitializeComponent();
-            DataContext = this;
-
-            this.SizeChanged += new SizeChangedEventHandler(Resize);
-            this.quest = quest;
-
-            // Game model
-            game = new Game(quest);
-            this.loadCurrentRound();            
-        }
-
         public void Reload()
         {
             Terminate();
-            loadCurrentRound();
+            loadCurrentRound(game);
         }
 
-        private void loadCurrentRound()
+        private void loadCurrentRound(Game game)
         {
-            game.RegisterVisual(this);
+            if (game == this.game)
+            {
+                game.RegisterVisual(this.graphicsControl);
+            }
+            else
+            {
+                game.RegisterVisual(this.graphicsControlOpponent);
+            }
+            
             game.LoadCurrentRound();
 
             if (!game.IsQuestValid(this.quest))
@@ -100,11 +180,13 @@ namespace Sokoban.View.GameDocsComponents
                 throw new NotValidQuestException(game.QuestValidationErrorMessage);
             }
 
-            game.GameRepository.GameStarted +=new VoidChangeDelegate(timeStart);
-            DataContext = this;
-            tbSteps.DataContext = this.Game.GameRepository;           
-            
-            Notify("GameRepository");
+            if (game == this.game)
+            {
+                game.GameRepository.GameStarted += new VoidChangeDelegate(timeStart);
+                DataContext = this;
+                tbSteps.DataContext = this.Game.GameRepository;
+                Notify("GameRepository");
+            }
         }
 
         public void Terminate()
@@ -145,17 +227,6 @@ namespace Sokoban.View.GameDocsComponents
             Resize(availableWidth, availableHeight);
         }
 
-        public void AddVisual(UIElement c)
-        {
-            this.gamedeskCanvas.Children.Add(c);
-        }
-
-        public void ClearVisuals()
-        {
-            this.gamedeskCanvas.Children.Clear();
-            this.AddVisual(gamedeskRect);
-        }
-
         /// <summary>
         /// Available width/height for whole GameDeskControl!!
         /// </summary>
@@ -167,20 +238,53 @@ namespace Sokoban.View.GameDocsComponents
             this.availableWidth = availableWidth;
             this.availableHeight = availableHeight;
 
-            // Compute sizes of gamedesk
-            availableWidth = availableWidth - infoPanel.ActualWidth - 10 /* margin */;
-            availableWidth = (availableWidth < 0) ? 0 : availableWidth;
-            availableHeight = (availableHeight < 0) ? 0 : availableHeight;
-        
-            double fieldX = Math.Floor(availableWidth / (double)fieldsX);
-            double fieldY = Math.Floor(availableHeight / (double)fieldsY);
-            FieldSize = Math.Min(fieldX, fieldY); // We want to notify
+            double width = 0;
+            double height = 0;
 
-            double width = FieldSize * fieldsX;
-            double height = FieldSize * fieldsY;
+            if (this.displayBothDesks == false)
+            {
+                this.gamedeskOpponentCanvas.Visibility = System.Windows.Visibility.Collapsed;
                 
-            this.gamedeskRect.Width = width;
-            this.gamedeskRect.Height = height;
+                // Compute sizes of gamedesk
+                availableWidth = availableWidth - infoPanel.ActualWidth /* margin */;
+                availableWidth = (availableWidth < 0) ? 0 : availableWidth;
+                availableHeight = (availableHeight < 0) ? 0 : availableHeight;
+
+                double fieldX = Math.Floor(availableWidth / (double)fieldsX);
+                double fieldY = Math.Floor(availableHeight / (double)fieldsY);
+                FieldSize = Math.Min(fieldX, fieldY); // We want to notify
+
+                width = FieldSize * fieldsX;
+                height = FieldSize * fieldsY;
+
+                this.gamedeskRect.Width = width;
+                this.gamedeskRect.Height = height;
+            }
+            else
+            {
+                this.gamedeskOpponentCanvas.Visibility = System.Windows.Visibility.Visible;
+
+                // Compute sizes of gamedesk; 10 = margin; dividing by two is because we need place for two desks
+                availableWidth = (availableWidth - infoPanel.ActualWidth) / 2; 
+                availableWidth = (availableWidth < 0) ? 0 : availableWidth;
+                availableHeight = (availableHeight < 0) ? 0 : availableHeight;
+
+                double fieldX = Math.Floor(availableWidth / (double)fieldsX);
+                double fieldY = Math.Floor(availableHeight / (double)fieldsY);
+                FieldSize = Math.Min(fieldX, fieldY); // We want to notify
+
+                width = FieldSize * fieldsX;
+                height = FieldSize * fieldsY;
+
+                this.gamedeskRect.Width = width;
+                this.gamedeskRect.Height = height;
+
+                this.gamedeskOpponentRect.Width = width;
+                this.gamedeskOpponentRect.Height = height;
+
+                /*this.gamedeskOpponentCanvas.Height = height;
+                this.gamedeskCanvas.Height = height;*/
+            }
 
             if (OnResized != null)
             {
@@ -214,35 +318,11 @@ namespace Sokoban.View.GameDocsComponents
             Resize(this.availableWidth, this.availableHeight);
         }
 
-        /// <summary>
-        /// Changes control appearance
-        /// </summary>
-        /// <param name="fieldsX"></param>
-        /// <param name="fieldsY"></param>
-        public void SetSize(int fieldsX, int fieldsY)
-        {
-            this.fieldsX = fieldsX;
-            this.fieldsY = fieldsY;
-
-            Resize();
-        }
 
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
         }
-
-        public bool IsChanged { get; set; }
-
-        public static readonly RoutedCommand ViewCommand = new RoutedCommand();
-
-        private double availableWidth = 200;
-        private double availableHeight = 200;
-        private Game game;
-        private int fieldsX = 8;
-        private int fieldsY = 8;
-        private double fieldSize = 25;
-        private double time = 0;
 
         private void OnCanClose(object sender, CanExecuteRoutedEventArgs e)
         {

@@ -8,7 +8,7 @@
     mc:Ignorable="d" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-	Height="336" Width="352">
+	Height="336" Width="800">
     <ad:DocumentContent.Resources>
 
         <wpf:BindableTimeCounter x:Key="timeCounter" />
@@ -44,47 +44,63 @@
     <!-- view -->
 
     <DockPanel LastChildFill="True" Background="white"> <!-- TODO Remove background -->
-        <Canvas Name="gamedeskCanvas" DockPanel.Dock="Left" Width="{Binding ElementName=gamedeskRect, Path=Width}">
-          <Rectangle HorizontalAlignment="Left" Width="229" Height="300" 
+
+
+        <DockPanel DockPanel.Dock="Left" x:Name="leftGameDesk" Background="Red" VerticalAlignment="Center">
+        <Canvas Background="Green" Name="gamedeskCanvas" Width="{Binding ElementName=gamedeskRect, Path=Width}" 
+				Height="{Binding ElementName=gamedeskRect, Path=Height}" 
+		        VerticalAlignment="Stretch">
+		  <Rectangle HorizontalAlignment="Left" Width="229" Height="300" 
         	  x:Name="gamedeskRect" Style="{DynamicResource GameDesk}" />
         </Canvas>
-		
-		  <Viewbox
-		      Margin="4"
-		      VerticalAlignment="Stretch"
-		      Height="Auto">
+        </DockPanel>
 
-		<StackPanel Name="infoPanel" DockPanel.Dock="Right" 
-			VerticalAlignment="Center" Margin="10,0,0,0"
-			Orientation="Horizontal">        
-		    <Grid HorizontalAlignment="Left" >
-                <Grid.Resources>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="Margin" Value="5,3" />
-                    </Style>
-                    <Style x:Key="LeftColumnTitles" TargetType="TextBlock">
-                        <Setter Property="FontWeight" Value="Bold" />
-                        <Setter Property="Margin" Value="5,3" />
-                    </Style>
-                </Grid.Resources>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <TextBlock Style="{StaticResource LeftColumnTitles}" Grid.Row="0" Grid.Column="0" Text="Round:" />
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding RoundName}" />
-                <TextBlock Style="{StaticResource LeftColumnTitles}" Grid.Row="1" Grid.Column="0" Text="Time:"></TextBlock>
-                    <TextBlock x:Name="tbTime" Grid.Row="1" Grid.Column="1" 
-                               Text="{Binding Source={StaticResource timeCounter}, Path=FormattedTime}" />                
-                <TextBlock Style="{StaticResource LeftColumnTitles}" Grid.Row="2" Grid.Column="0" Text="Steps:" />
-                <TextBlock x:Name="tbSteps" Grid.Row="2" Grid.Column="1" Text="{Binding Path=StepsCount, FallbackValue='NA'}" />
-            </Grid>
+        <StackPanel DockPanel.Dock="Right" x:Name="rightGameDesk" VerticalAlignment="Center">
+            <Canvas x:Name="gamedeskOpponentCanvas" VerticalAlignment="Stretch"
+                 Visibility="Collapsed" Width="{Binding ElementName=gamedeskOpponentRect, Path=Width}"
+				 Height="{Binding ElementName=gamedeskRect, Path=Height}">
+                <Rectangle HorizontalAlignment="Left" Width="229" Height="300" 
+	     	  x:Name="gamedeskOpponentRect" Style="{DynamicResource GameDesk}" />
+            </Canvas>
         </StackPanel>
-	</Viewbox>        
+
+        <Viewbox DockPanel.Dock="Right"
+		      Margin="4"
+		      VerticalAlignment="Stretch"  Width="{Binding ElementName=infoPanel, Path=Width}"
+		      Height="Auto" MinWidth="150" MaxWidth="250">
+
+            <StackPanel x:Name="infoPanel"  MinWidth="150" MaxWidth="250"
+			    VerticalAlignment="Center" Margin="10,0,0,0"
+			    Orientation="Horizontal">        
+		        <Grid HorizontalAlignment="Left" >
+                    <Grid.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Margin" Value="5,3" />
+                        </Style>
+                        <Style x:Key="LeftColumnTitles" TargetType="TextBlock">
+                            <Setter Property="FontWeight" Value="Bold" />
+                            <Setter Property="Margin" Value="5,3" />
+                        </Style>
+                    </Grid.Resources>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Style="{StaticResource LeftColumnTitles}" Grid.Row="0" Grid.Column="0" Text="Round:" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding RoundName}" />
+                    <TextBlock Style="{StaticResource LeftColumnTitles}" Grid.Row="1" Grid.Column="0" Text="Time:"></TextBlock>
+                        <TextBlock x:Name="tbTime" Grid.Row="1" Grid.Column="1" 
+                                    Text="{Binding Source={StaticResource timeCounter}, Path=FormattedTime}" />                
+                    <TextBlock Style="{StaticResource LeftColumnTitles}" Grid.Row="2" Grid.Column="0" Text="Steps:" />
+                    <TextBlock x:Name="tbSteps" Grid.Row="2" Grid.Column="1" Text="{Binding Path=StepsCount, FallbackValue='NA'}" />
+                </Grid>
+            </StackPanel>
+    	</Viewbox>       
+
     </DockPanel>
 </ad:DocumentContent>

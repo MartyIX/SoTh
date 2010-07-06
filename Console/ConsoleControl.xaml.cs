@@ -13,13 +13,14 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AvalonDock;
 using System.ComponentModel;
+using Sokoban.Interfaces;
 
 namespace Sokoban.View
 {
     /// <summary>
     /// Interaction logic for ConsoleControl.xaml
     /// </summary>
-    public partial class ConsoleControl : DockableContent, INotifyPropertyChanged
+    public partial class ConsoleControl : DockableContent, INotifyPropertyChanged, IErrorMessagesPresenter
     {
         private static string consoleCommandPrefix = "> ";
         private static string consoleInitialText = "";
@@ -84,5 +85,15 @@ namespace Sokoban.View
 
         #endregion
 
+
+        #region IErrorMessagesPresenter Members
+
+        public void ErrorMessage(ErrorMessageSeverity ems, string originModule, string message)
+        {
+            this.appendText( string.Format(">> {0} Application error occured in module `{1}':\n >> Severity: {2}\n >> {3}\n",
+                DateTime.Now.ToShortTimeString(), originModule, ems, message));
+        }
+        
+        #endregion
     }
 }
