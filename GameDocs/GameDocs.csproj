@@ -89,7 +89,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="View\GameDocs.xaml">
+    <Page Include="GameDocs.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -97,10 +97,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="View\GameDocs.xaml.cs">
+    <Compile Include="GameDocs.xaml.cs">
       <DependentUpon>GameDocs.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\class.GameDocsProperties.cs" />
+    <Compile Include="class.GameDocsProperties.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

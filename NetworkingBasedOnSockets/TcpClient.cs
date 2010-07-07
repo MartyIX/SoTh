@@ -14,8 +14,6 @@ namespace Sokoban.Networking
     {
         private string ipAddress;
         private int port;
-        private string role = "Client";
-        private IAsyncResult currentAsyncResult = null;
 
         public NetworkClient(string ipAddress, int port) : base("Client")
         {
@@ -49,7 +47,6 @@ namespace Sokoban.Networking
             IPEndPoint serverEndPoint = new IPEndPoint(ipAddress, this.port);
 
             //  Connect the socket to server on specified  port
-            /*
             try
             {
                 client.Connect(serverEndPoint);
@@ -60,14 +57,7 @@ namespace Sokoban.Networking
             catch (Exception e)
             {
                 DebuggerIX.WriteLine("[Net]", "[ClientInitConnection]", "Failed: " + e.Message);                
-            }*/
-
-            currentAsyncResult = client.BeginConnect(serverEndPoint, new AsyncCallback(acceptConnect), null);
-
-            // Wait until the operation completes.
-            waitHandle(currentAsyncResult, 5000);
-
-
+            }
         }
 
         public override void CloseConnection()
@@ -76,36 +66,5 @@ namespace Sokoban.Networking
         }
         
         #endregion
-
-        private void acceptConnect(IAsyncResult asyn)
-        {
-            if (currentAsyncResult != asyn) return; // http://rajputyh.blogspot.com/2010/04/solve-exception-message-iasyncresult.html
-            
-            try
-            {
-                client.EndConnect(asyn);
-                isInitialized = true;
-                isClosed = false;
-            }
-            catch (ObjectDisposedException)
-            {
-                DebuggerIX.WriteLine("[Net]", role, "Socket has been closed.");
-                isInitialized = false;
-            }
-            catch (SocketException se)
-            {
-                DebuggerIX.WriteLine("[Net]", role, "Exception: " + se.Message);
-                isInitialized = false;
-            }
-
-            if (isInitialized)
-            {
-                DebuggerIX.WriteLine("[Net]", role, "OK; Handling  client  at  " +
-                    client.RemoteEndPoint.AddressFamily);
-            }
-
-
-            //initializeWaitHandle.Set();
-        }
     }
 }

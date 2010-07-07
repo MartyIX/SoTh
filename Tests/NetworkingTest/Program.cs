@@ -11,8 +11,8 @@ namespace NetworkingTest
     class Program
     {
         private static ManualResetEvent[] resetEvents;
-        private static NetworkServer ns = new NetworkServer(51000);
-        private static NetworkClient nc = new NetworkClient("10.0.0.5", 51000);
+        private static NetworkServer ns = new NetworkServer(56728);
+        private static NetworkClient nc = new NetworkClient("10.0.0.5", 56728);
 
         static void Main(string[] args)
         {                        
@@ -31,6 +31,7 @@ namespace NetworkingTest
             WaitHandle.WaitAny(resetEvents);
             
             nc.CloseConnection();
+            ns.CloseConnection();
             
             Console.WriteLine("Finished");
 
@@ -46,19 +47,21 @@ namespace NetworkingTest
             while (ns.IsInitialized == false && tries < 3)
             {
                 ns.InitializeConnection();
+                DebuggerIX.WriteLine("[Net]", "Producer", "After initialization. IsInitialized=" + ns.IsInitialized.ToString());
                 tries++;
             }
 
+            
+            
             if (ns.IsInitialized != false)
             {
                 DebuggerIX.WriteLine("[Net]", "Producer", "Adding events");
                 ns.AddEventToBuffer(1, 1, EventType.none, 1, 1);
                 ns.AddEventToBuffer(2, 2, EventType.none, 2, 2);
                 DebuggerIX.WriteLine("[Net]", "Producer", "Sending");
-                ns.Send(NetworkMessageType.ListOfEvents);
+                ns.SendAsync(NetworkMessageType.ListOfEvents);
                 DebuggerIX.WriteLine("[Net]", "Producer", "Sent");
-            }
-            ns.CloseConnection();
+            }            
         }
 
         public static void RunConsument(object a)
@@ -78,7 +81,7 @@ namespace NetworkingTest
             if (nc.IsInitialized != false)
             {
                 DebuggerIX.WriteLine("[Net]", "Consument", "Receiving");
-                nc.Receive();
+                nc.ReceiveSync();
                 DebuggerIX.WriteLine("[Net]", "Consument", "Received");
             }
 

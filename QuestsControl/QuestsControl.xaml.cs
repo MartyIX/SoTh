@@ -202,6 +202,5 @@ namespace Sokoban.View
                 errorPresenter.ErrorMessage(ems, "Quests", message);
             }
         }
-
     }
 }

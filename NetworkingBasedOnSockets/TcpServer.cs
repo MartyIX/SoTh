@@ -16,8 +16,8 @@ namespace Sokoban.Networking
         private Socket socketMe = null;
         private string ipAddress;
         private int port;
+        private EventWaitHandle initializeWaitHandle;
         private string role = "Server";
-        private IAsyncResult currentAsyncResult = null;
 
         public int Backlog
         {
@@ -51,10 +51,6 @@ namespace Sokoban.Networking
                     {                        
                         //  Create  a  socket  to  accept  client  connections
                         socketMe = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
-                        // Linger option
-                        socketMe.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
-                        
                         socketMe.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                         socketMe.Bind(new IPEndPoint(IPAddress.Any, this.port));
                     }
@@ -83,12 +79,14 @@ namespace Sokoban.Networking
                 //{
                 //client = socketMe.Accept();  //  Get  client  connection                
                 
-                currentAsyncResult = socketMe.BeginAccept(new AsyncCallback(acceptFinished), null);
+                initializeWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
+                
+                IAsyncResult result = socketMe.BeginAccept(new AsyncCallback(acceptFinished), null);
 
                 // Wait until the operation completes.
 
-                waitHandle(currentAsyncResult, 5000);
-                
+                initializeWaitHandle.WaitOne();
+
                 DebuggerIX.WriteLine("[Net]", role, "Initialization succesfully left");
 
                 // now we have variable @client set!
@@ -101,12 +99,9 @@ namespace Sokoban.Networking
             }
         }
 
-
         // This is the call back function, which will be invoked when a client is connected
         private void acceptFinished(IAsyncResult asyn)
         {
-            if (currentAsyncResult != asyn) return;
-
             try
             {
                 // Here we complete/end the BeginAccept() asynchronous call
@@ -125,11 +120,14 @@ namespace Sokoban.Networking
                 DebuggerIX.WriteLine("[Net]", role, "Exception: " + se.Message);
             }
 
-            if (client.Connected == true && isInitialized)
+            if (isInitialized)
             {
                 DebuggerIX.WriteLine("[Net]", role, "OK; Handling  client  at  " + 
                     client.RemoteEndPoint.AddressFamily);
             }
+
+
+            initializeWaitHandle.Set();
         }
 
         public override void CloseConnection()

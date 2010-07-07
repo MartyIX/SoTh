@@ -18,6 +18,10 @@ using Sokoban.View.ChooseConnection;
 using System.Diagnostics;
 using Sokoban.Lib;
 using Sokoban.Configuration;
+using Sokoban.Model.Quests;
+using Sokoban.Model.GameDesk;
+using Sokoban.Lib.Exceptions;
+using Sokoban.Interfaces;
 
 
 namespace Sokoban
@@ -26,7 +30,7 @@ namespace Sokoban
     /// Interaction logic for MainWindow.xaml
     /// </summary>
 
-    public partial class MainWindow : System.Windows.Window
+    public partial class MainWindow : System.Windows.Window, IQuestHandler
     {
         public ReadOnlyObservableCollection<string> MyProperty { get; set; }
 
@@ -106,7 +110,7 @@ namespace Sokoban
         {
             ApplicationRepository.Instance.OnStartUp_PhaseTwo(); // initialize QuestsControl
             solversPane.Initialize(this.gameManager, this, consolePane );
-            questsPane.Initialize(this.gameManager, consolePane);
+            questsPane.Initialize(gameManager, consolePane);
 
             // Load testing quest
             this.loadQuest();                  
@@ -176,12 +180,10 @@ namespace Sokoban
         {            
             if (dc.Visibility == Visibility.Visible) // the value is set in ConvertBack of AvalonDockVisibilityConverter!!!
             {
-                //dockingManager.Show(dc);
                 dc.Show();
             }
             else
             {
-                //dockingManager.Hide(dc);
                 dc.Hide();
             }
         }
@@ -209,25 +211,27 @@ namespace Sokoban
         {
             SetVisibilityOfDockableContents(consolePane, consolePane.State);
         }
-        /*
-        
-        // AvalonDock 1.2
-        private void solversPane_StateChanged(object sender, DockableContentState state)
+
+        #region IQuestHandler Members
+
+        public void QuestSelected(IQuest quest, GameMode gameMode)
         {
-            SetVisibilityOfDockableContents(solversPane, state);
+            try
+            {
+                this.gameManager.QuestSelected(quest, gameMode);
+
+
+
+            }
+            catch (NotValidQuestException e)
+            {
+                MessageBox.Show("The league you've chosen cannot be run. More information in Console.");
+                consolePane.ErrorMessage(ErrorMessageSeverity.Medium,
+                    "GameManager", "The league you've chosen cannot be run. Additional message: " + e.Message);
+            }
         }
-        
-        private void questsPane_StateChanged(object sender, DockableContentState state)
-        {
-            SetVisibilityOfDockableContents(questsPane, state);
-        }
 
-
-        private void consolePane_StateChanged(object sender, DockableContentState state)
-        {
-            SetVisibilityOfDockableContents(consolePane, state);
-        }*/
-
+        #endregion
     }
 
     [ValueConversion(/* sourceType */ typeof(System.Windows.Visibility), /* targetType */ typeof(bool))]

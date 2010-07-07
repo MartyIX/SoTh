@@ -97,6 +97,7 @@ namespace Sokoban.View.GameDocsComponents
 
             if (gameMode == GameMode.TwoPlayers)
             {
+                this.DisplayBothDesks = true;
                 gameOpponent = new Game(quest);
                 this.loadCurrentRound(gameOpponent);
             }
@@ -192,7 +193,8 @@ namespace Sokoban.View.GameDocsComponents
         public void Terminate()
         {
             this.timeStop();
-            game.Terminate();
+            game.Terminate();            
+            if (gameOpponent != null) gameOpponent.Terminate();
         }
 
         public string RoundName

@@ -174,32 +174,10 @@ namespace Sokoban.Networking
             //Socket handler = (Socket)ar.AsyncState;
             Socket handler = client;
             AsyncState asyncState = (AsyncState)ar.AsyncState;
-            int bytesSent = 0;
 
-            try
-            {
-                // Complete sending the data to the remote device.
-                bytesSent = handler.EndSend(ar);
 
-            }
-            catch (NullReferenceException e)
-            {
-                if (isClosed == false)
-                {
-                    DebuggerIX.WriteLine("[Net]", role, e.Message);
-                }
-
-                return;
-            }
-            catch (SocketException e)
-            {
-                if (isClosed == false)
-                {
-                    DebuggerIX.WriteLine("[Net]", role, e.Message);
-                }
-
-                return;
-            }
+            // Complete sending the data to the remote device.
+            int bytesSent = handler.EndSend(ar);
 
             //Triple<int, int, byte[]> t = sendBuffer.Dequeue();
 
@@ -497,10 +475,8 @@ namespace Sokoban.Networking
                 if (client.Connected)
                 {
                     disconnectDoneHandle.Reset();
-                    DebuggerIX.WriteLine("[Net]", role, "Connection Shutdown");
                     client.Shutdown(SocketShutdown.Both);
-                    DebuggerIX.WriteLine("[Net]", role, "Beginning disconnect");
-                    client.BeginDisconnect(true, new AsyncCallback(DisconnectCallback), client);
+                    client.BeginDisconnect(false, new AsyncCallback(DisconnectCallback), client);
 
                     // Wait for the disconnect to complete.
                     disconnectDoneHandle.WaitOne();
@@ -512,15 +488,7 @@ namespace Sokoban.Networking
         {
             // Complete the disconnect request.
             Socket client = (Socket)ar.AsyncState;
-            DebuggerIX.WriteLine("[Net]", role, "Disconnected.");
             client.EndDisconnect(ar);
-
-            if (client.Connected)
-            {
-                DebuggerIX.WriteLine("[Net]", role, 
-                    "Winsock error: " + Convert.ToString(System.Runtime.InteropServices.Marshal.GetLastWin32Error()));
-            }
-
             isInitialized = false;
 
             // Signal that the disconnect is complete.
@@ -554,24 +522,6 @@ namespace Sokoban.Networking
 
             return isAvailable;
         }
-
-
-        //
-        // Waiting methods
-        //        
-
-        protected void waitHandle(IAsyncResult asyncResult)
-        {
-            waitHandle(asyncResult, -1); // -1 = indefinitely
-        }
-
-        protected void waitHandle(IAsyncResult asyncResult, int timeoutMilliseconds)
-        {
-            if (!asyncResult.AsyncWaitHandle.WaitOne(timeoutMilliseconds))
-            {
-                throw new TimeoutException();
-            }
-        }        
     }
 
     class AsyncState
