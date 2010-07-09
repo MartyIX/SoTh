@@ -39,6 +39,8 @@ namespace Sokoban.Model
         /// </summary>
         public bool isUserAutenticated = false;
 
+        public string SessionID { get; set; }
+
         private string server = "";
         /// <summary>
         /// Player's name
@@ -60,6 +62,14 @@ namespace Sokoban.Model
         }
 
 
+        private string password = "";
+
+        public string Password
+        {
+            get { return password; }
+            set { password = value; Notify("Username"); }
+        }
+
         private string username = "";
 
         /// <summary>
@@ -78,11 +88,7 @@ namespace Sokoban.Model
                     return "Anonymous";
                 }
             }
-            set 
-            { 
-                username = value;                
-                Notify("Username");
-            }
+            set { username = value; Notify("Username"); }
         }
 
 
@@ -193,7 +199,9 @@ namespace Sokoban.Model
                 this.LoginMessage = "Login was successful.";
                 this.isUserAutenticated = true;
                 this.Username = username;
+                this.Password = password;
                 this.Server = server;
+                this.SessionID = response.SessionID;
 
                 return true;
             }

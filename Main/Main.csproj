@@ -259,6 +259,14 @@
       <Project>{F44E4759-3B19-4E1B-BA4D-6E4F64086190}</Project>
       <Name>Lib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Networking\Networking.csproj">
+      <Project>{72836426-37F3-472E-927D-EA899591FAEF}</Project>
+      <Name>Networking</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PendingGames\PendingGames.csproj">
+      <Project>{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}</Project>
+      <Name>PendingGames</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PluginInterface\PluginInterface\PluginInterface.csproj">
       <Project>{E1357F87-0BE7-4FF7-84B4-D4CC4CD1788E}</Project>
       <Name>PluginInterface</Name>

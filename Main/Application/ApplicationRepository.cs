@@ -45,7 +45,7 @@ namespace Sokoban.Model
         /// <summary>
         /// Main window reference
         /// </summary>
-        public Window MainWindow;
+        public MainWindow MainWindow;
 
         #region Fields (20)
         /// <summary>
@@ -202,24 +202,7 @@ namespace Sokoban.Model
         /// </summary>
         public void OnStartUp_PhaseThree()
         {
-            QuestsControl.Initialize(profileRepository.Server);
-        }
-
-        public static bool ContentFileExists(string file)
-        {
-            return File.Exists(ApplicationRepository.GetAppPath() + "/Content/" + file);
-        }
-
-        public static string GetAppPath()
-        {
-            if (File.Exists(Application.StartupPath + "/Sokoban.exe"))
-            {
-                return Application.StartupPath;
-            }
-            else
-            {
-                return @"D:\Skola\Rocnikovy projekt - specifikace\Program\SokobanMVP_source\ModelViewPresenter\bin\Release";
-            }
+            MainWindow.OnStartUp_PhaseThree();
         }
 
         public void Close()

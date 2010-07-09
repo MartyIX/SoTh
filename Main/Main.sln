@@ -70,6 +70,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Networking", "..\Networking
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameDocsNetworkTest", "..\Tests\GameDocsNetworkTest\Sokoban\GameDocsNetworkTest.csproj", "{97470338-623C-45C9-8EE3-417D333C8653}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PendingGames", "..\PendingGames\PendingGames.csproj", "{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -857,6 +859,7 @@ Global
 		{72836426-37F3-472E-927D-EA899591FAEF}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{72836426-37F3-472E-927D-EA899591FAEF}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{72836426-37F3-472E-927D-EA899591FAEF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{72836426-37F3-472E-927D-EA899591FAEF}.Debug|x86.Build.0 = Debug|Any CPU
 		{72836426-37F3-472E-927D-EA899591FAEF}.DebugGameDocsNetworkTest|Any CPU.ActiveCfg = Debug|Any CPU
 		{72836426-37F3-472E-927D-EA899591FAEF}.DebugGameDocsNetworkTest|Any CPU.Build.0 = Debug|Any CPU
 		{72836426-37F3-472E-927D-EA899591FAEF}.DebugGameDocsNetworkTest|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -915,6 +918,37 @@ Global
 		{97470338-623C-45C9-8EE3-417D333C8653}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{97470338-623C-45C9-8EE3-417D333C8653}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{97470338-623C-45C9-8EE3-417D333C8653}.Release|x86.ActiveCfg = Release|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.Debug|x86.Build.0 = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.DebugGameDocsNetworkTest|Any CPU.ActiveCfg = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.DebugGameDocsNetworkTest|Any CPU.Build.0 = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.DebugGameDocsNetworkTest|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.DebugGameDocsNetworkTest|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.DebugGameDocsNetworkTest|x86.ActiveCfg = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.DebugGameDocsTest|Any CPU.ActiveCfg = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.DebugGameDocsTest|Any CPU.Build.0 = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.DebugGameDocsTest|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.DebugGameDocsTest|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.DebugGameDocsTest|x86.ActiveCfg = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.DebugNetworkingTest|Any CPU.ActiveCfg = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.DebugNetworkingTest|Any CPU.Build.0 = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.DebugNetworkingTest|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.DebugNetworkingTest|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.DebugNetworkingTest|x86.ActiveCfg = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.DebugQuestsControlTest|Any CPU.ActiveCfg = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.DebugQuestsControlTest|Any CPU.Build.0 = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.DebugQuestsControlTest|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.DebugQuestsControlTest|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.DebugQuestsControlTest|x86.ActiveCfg = Debug|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

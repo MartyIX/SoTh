@@ -22,6 +22,7 @@ using Sokoban.Model.Quests;
 using Sokoban.Model.GameDesk;
 using Sokoban.Lib.Exceptions;
 using Sokoban.Interfaces;
+using Sokoban.View.SetupNetwork;
 
 
 namespace Sokoban
@@ -45,8 +46,18 @@ namespace Sokoban
             DebuggerIX.Start(DebuggerMode.File);
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        //
+        // Window events
+        //
+
+
+        /// <summary>
+        /// After the user is logged in (or he/she skips the dialog window)
+        /// </summary>
+        public void OnStartUp_PhaseThree()
         {
+            questsPane.Initialize(this, consolePane, ProfileRepository.Instance);
+            pendingGamesPane.Initialize(consolePane, ProfileRepository.Instance);
         }
 
         protected override void OnClosed(EventArgs e)
@@ -109,18 +120,12 @@ namespace Sokoban
         private void Window_ContentRendered(object sender, EventArgs e)
         {
             ApplicationRepository.Instance.OnStartUp_PhaseTwo(); // initialize QuestsControl
-            solversPane.Initialize(this.gameManager, this, consolePane );
-            questsPane.Initialize(gameManager, consolePane);
+            solversPane.Initialize(this.gameManager, this, consolePane );            
 
             // Load testing quest
             this.loadQuest();                  
         }
 
-
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
 
         /// <summary>
         /// Correctly terminates everything in the main window that needs it
@@ -154,6 +159,11 @@ namespace Sokoban
         // MENU CLICKS HANDLERS
         //
 
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
 
         private void MenuItem_Console_Click(object sender, RoutedEventArgs e)
         {
@@ -174,6 +184,12 @@ namespace Sokoban
         {
             ApplicationRepository.Instance.LoadViewSettings();
         }
+
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
 
 
         private void SetVisibilityOfMenuItems(DockableContent dc)
@@ -214,20 +230,27 @@ namespace Sokoban
 
         #region IQuestHandler Members
 
-        public void QuestSelected(IQuest quest, GameMode gameMode)
+        public void QuestSelected(int leaguesID, int roundsID, IQuest quest, GameMode gameMode)
         {
+            bool wasOpened = true;
+
             try
             {
-                this.gameManager.QuestSelected(quest, gameMode);
-
-
-
+                this.gameManager.QuestSelected(leaguesID, roundsID, quest, gameMode);
             }
             catch (NotValidQuestException e)
             {
                 MessageBox.Show("The league you've chosen cannot be run. More information in Console.");
                 consolePane.ErrorMessage(ErrorMessageSeverity.Medium,
                     "GameManager", "The league you've chosen cannot be run. Additional message: " + e.Message);
+
+                wasOpened = false;
+            }
+
+            if (wasOpened == true && gameMode == GameMode.TwoPlayers)
+            {
+                InitConnection ic = new InitConnection(leaguesID, roundsID, ProfileRepository.Instance, consolePane);
+                ic.Show();
             }
         }
 

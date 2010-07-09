@@ -16,7 +16,7 @@ namespace Sokoban.Cryptography
         /// <returns>SHA1 hash</returns>
         public static string CalculateSHA1(string text, Encoding enc)
         {
-            byte[] buffer = enc.GetBytes(text);
+            byte[] buffer = Encoding.ASCII.GetBytes(text);
             SHA1CryptoServiceProvider cryptoTransformSHA1 = new SHA1CryptoServiceProvider();
             string hash = BitConverter.ToString(cryptoTransformSHA1.ComputeHash(buffer)).Replace("-", "");
 

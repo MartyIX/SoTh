@@ -294,8 +294,9 @@ namespace Sokoban.View
 
         #region IQuestHandler Members
 
-        public void QuestSelected(IQuest quest, GameMode gameMode)
+        public void QuestSelected(int leaguesID, int roundsID, IQuest quest, GameMode gameMode)
         {
+            // TODO add params
             this.Add(quest, gameMode);
         }
 

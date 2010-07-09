@@ -12,10 +12,21 @@ namespace Sokoban.Model.Profile
     public class ProfileXmlServerResponse
     {
         private bool isLoggedIn = false;
+        private string sessionID = null;
 
 
         public ProfileXmlServerResponse()
         {
+        }
+
+        public string SessionID
+        {
+            get { return sessionID; }
+        }
+
+        public bool IsLoggedIn
+        {
+            get { return isLoggedIn; }
         }
 
         public void Parse(string response)
@@ -31,6 +42,8 @@ namespace Sokoban.Model.Profile
             {
                 XmlNode login = (xml.GetElementsByTagName("Login"))[0];
                 isLoggedIn = (login["Successful"].InnerText == "1");
+               
+                sessionID = login["SessionID"].InnerText;
             }
             catch
             {
@@ -39,9 +52,6 @@ namespace Sokoban.Model.Profile
             }
         }
 
-        public bool IsLoggedIn
-        {
-            get { return isLoggedIn; }
-        }
+        
     }
 }

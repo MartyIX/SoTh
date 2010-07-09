@@ -62,7 +62,6 @@
     </Compile>
     <Compile Include="ChooseConnectionPresenter.cs" />
     <Compile Include="IChooseConnectionView.cs" />
-    <Compile Include="IProfileRepository.cs" />
     <Compile Include="PasswordBox.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
