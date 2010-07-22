@@ -9,15 +9,19 @@ namespace Sokoban.View
     {
         public int ID { get; set; }
         public string RoundName { get; set; }
+        public int RoundsID { get; set; }
         public string Username { get; set; }
         public string IPAddress { get; set; }
+        public int Port { get; set; }
 
-        public OfferItemData(int id, string roundName, string username, string ipAddress)
+        public OfferItemData(int id, string roundName, int roundsID, string username, string ipAddress, int port)
         {
             this.ID = id;
+            this.RoundsID = roundsID;
             this.RoundName = roundName;
             this.Username = username;
             this.IPAddress = ipAddress;
+            this.Port = port;
         }
     }
 

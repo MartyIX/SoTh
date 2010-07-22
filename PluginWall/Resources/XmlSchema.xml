@@ -23,3 +23,5 @@
   <xs:element name="Wall" substitutionGroup="GameObject" type="WallType" />
 
 </xs:schema>
+
+

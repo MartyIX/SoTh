@@ -23,6 +23,8 @@ using Sokoban.Model.Xml;
 using Microsoft.Windows.Controls;
 using Microsoft.Windows.Controls.Primitives;
 using System.Reflection;
+using Sokoban.View.SetupNetwork;
+using Sokoban.Lib;
 
 namespace Sokoban.View
 {
@@ -48,8 +50,10 @@ namespace Sokoban.View
         private string status = "";
         private ObservableCollection<OfferItemData> dataGridItemsSource = null;
         private IProfileRepository profile;
-        private IErrorMessagesPresenter errorPresenter = null;       
-
+        private IErrorMessagesPresenter errorPresenter = null;
+        private IProfileRepository profileRepository = null;
+        private IConnectionRelayer connectionRelayer = null;
+        private IConnectionDialogPresenter connectionDialogPresenter = null;
 
         public PendingGamesControl()
         {
@@ -57,10 +61,15 @@ namespace Sokoban.View
             this.DataContext = this;
         }
 
-        public void Initialize(IErrorMessagesPresenter errorPresenter, IProfileRepository profileRepository)
+        public void Initialize(IErrorMessagesPresenter errorPresenter, 
+            IProfileRepository profileRepository, IConnectionRelayer connectionRelayer, 
+            IConnectionDialogPresenter connectionDialogPresenter)
         {
             this.profile = profileRepository;
+            this.profileRepository = profileRepository;
             this.errorPresenter = errorPresenter;
+            this.connectionRelayer = connectionRelayer;
+            this.connectionDialogPresenter = connectionDialogPresenter;
             this.refresh();
         }
 
@@ -182,8 +191,19 @@ namespace Sokoban.View
             {
                 DataGridCell cell = DataGridHelper.GetCell(MyDataGrid.SelectedCells[0]);
                 int rowIndex = DataGridHelper.GetRowIndex(cell);
-                
-                //MyDataGrid.Items[rowIndex]
+
+                OfferItemData o = MyDataGrid.Items[rowIndex] as OfferItemData;
+
+                if (connectionDialogPresenter != null)
+                {
+                    connectionDialogPresenter.Show(o.IPAddress, o.Port, -1, o.RoundsID,
+                        this.profileRepository, this.errorPresenter, this.connectionRelayer, null);
+                }
+                else
+                {
+                    MessageBox.Show("Error: Cannot show 'Connection dialog'.");
+                    DebuggerIX.WriteLine("[PendingGamesControl]", "MouseDoubleClick", "ERROR: connectionDialogPresenter is NULL");
+                }
             }
         }
     }

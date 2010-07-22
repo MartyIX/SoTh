@@ -124,9 +124,18 @@ namespace PluginBox
             get { return PluginBox.Properties.Resources.XmlSchema; }
         }
 
-
-        public bool ProcessXmlInitialization(int mazeWidth, int mazeHeight, XmlNode settings)
+        public void MessageReceived(object message, IGamePlugin p)
         {
+
+        }
+
+        public bool ProcessXmlInitialization(string gameVariant, int mazeWidth, int mazeHeight, XmlNode settings)
+        {
+            if (gameVariant.ToLower() != "ordinary" && gameVariant.ToLower() != "soth")
+            {
+                throw new Exception("Plugin Aim doesn't support game variant: " + gameVariant);
+            }
+
             this.fieldsX = mazeWidth;
             this.fieldsY = mazeHeight;
 

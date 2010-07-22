@@ -72,7 +72,7 @@ namespace Sokoban.Networking
                     "The error is unrecoverable. Error: " + e.Message);
             }
 
-            while (q.Count > 0)
+            while (q != null && q.Count > 0)
 	        {
                 NetworkEvent ne = q.Dequeue();
                 inBuffer.Enqueue(ne);

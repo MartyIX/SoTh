@@ -16,7 +16,7 @@ namespace Sokoban.Networking
 
         public const int MESSAGE_DESCRIPTOR_LENGTH = 4 + 4;
         protected byte[] outByteDescriptor = new byte[MESSAGE_DESCRIPTOR_LENGTH];
-        protected Socket client;
+        protected Socket clientSocket;
         protected bool isInitialized = false;
         protected bool isClosed = false;
         private string role;
@@ -83,13 +83,19 @@ namespace Sokoban.Networking
         /// <param name="nmt"></param>
         public void SendAsync(NetworkMessageType nmt)
         {
+            SendAsync(nmt, null);
+        }
+
+        public void SendAsync(NetworkMessageType nmt, object data)
+        {
+
             if (nmt == NetworkMessageType.ListOfEvents)
             {
                 this.SendBufferedEvents();
             }
             else if (nmt == NetworkMessageType.Authentication)
             {
-                this.SendAutentizationInfo();
+                this.SendAutentizationInfo((Authentication)data);
             }
             else if (nmt == NetworkMessageType.DisconnectRequest)
             {
@@ -98,6 +104,10 @@ namespace Sokoban.Networking
             else if (nmt == NetworkMessageType.DisconnectRequestConfirmation)
             {
                 this.SendDisconnectRequestConfirmation();
+            }
+            else if (nmt == NetworkMessageType.StartGame)
+            {
+                this.SendStartGame();
             }
         }
 
@@ -131,6 +141,12 @@ namespace Sokoban.Networking
             this.sendRawData(NetworkMessageType.ListOfEvents, outBuffer);
         }
 
+        private void SendStartGame()
+        {
+            StartGame startGame = new StartGame(DateTime.Now);
+            this.sendRawData(NetworkMessageType.StartGame, startGame);
+        }
+
         private void SendDisconnectRequest()
         {
             DisconnectRequest disconnectRequest = new DisconnectRequest(DateTime.Now);
@@ -144,10 +160,9 @@ namespace Sokoban.Networking
         }
 
 
-        private void SendAutentizationInfo()
+        private void SendAutentizationInfo(Authentication auth)
         {
-            Autentization autentization = new Autentization("Marty", "127.0.0.1");
-            this.sendRawData(NetworkMessageType.Authentication, autentization);
+            this.sendRawData(NetworkMessageType.Authentication, auth);
         }
 
         //
@@ -172,7 +187,7 @@ namespace Sokoban.Networking
             //{
             // Retrieve the socket from the state object.
             //Socket handler = (Socket)ar.AsyncState;
-            Socket handler = client;
+            Socket handler = clientSocket;
             AsyncState asyncState = (AsyncState)ar.AsyncState;
             int bytesSent = 0;
 
@@ -225,7 +240,14 @@ namespace Sokoban.Networking
                 isSending = true;
                 Triple<int, int, byte[]> t = sendBuffer.Dequeue();
                 AsyncState asyncState = new AsyncState(t.First, t.Second);
-                client.BeginSend(t.Third, 0, t.Second, SocketFlags.None, new AsyncCallback(SendAsyncCallback), asyncState);
+                try
+                {
+                    clientSocket.BeginSend(t.Third, 0, t.Second, SocketFlags.None, new AsyncCallback(SendAsyncCallback), asyncState);
+                }
+                catch (SocketException e)
+                {
+                    DebuggerIX.WriteLine("[Net]", role, "ProcessSendingQueue, SocketException: " + e.Message);
+                }
             }
             else
             {
@@ -323,17 +345,13 @@ namespace Sokoban.Networking
                 Pair<NetworkMessageType, byte[]> message = rcvdBuffer.Dequeue();
                 MemoryStream stream = new MemoryStream(message.Second, 0, message.Second.Length);
 
-                if (message.First == NetworkMessageType.Authentication)
+                if (message.First == NetworkMessageType.Authentication ||
+                    message.First == NetworkMessageType.DisconnectRequest ||
+                    message.First == NetworkMessageType.DisconnectRequestConfirmation ||
+                    message.First == NetworkMessageType.ListOfEvents ||
+                    message.First == NetworkMessageType.StartGame)
                 {
-                    return (Autentization)binaryFormatter.Deserialize(stream);
-                }
-                else if (message.First == NetworkMessageType.DisconnectRequest)
-                {
-                    return (DisconnectRequest)binaryFormatter.Deserialize(stream);
-                }
-                else if (message.First == NetworkMessageType.DisconnectRequestConfirmation)
-                {
-                    return (DisconnectRequestConfirmation)binaryFormatter.Deserialize(stream);
+                    return binaryFormatter.Deserialize(stream);
                 }
                 else
                 {
@@ -344,7 +362,6 @@ namespace Sokoban.Networking
 
         private void receiveAsyncProcessing()
         {
-
             isReceiving = true;
 
             if (rcvdMode == receivingMode.descriptorReceived)
@@ -387,7 +404,7 @@ namespace Sokoban.Networking
             AsyncState asyncState = new AsyncState(receivingOrder, MESSAGE_DESCRIPTOR_LENGTH);
             try
             {
-                client.BeginReceive(rcvdByteBuffer, 0, MESSAGE_DESCRIPTOR_LENGTH, 0,
+                clientSocket.BeginReceive(rcvdByteBuffer, 0, MESSAGE_DESCRIPTOR_LENGTH, 0,
                     new AsyncCallback(ReadCallback), asyncState);
             }
             catch (SocketException e)
@@ -405,7 +422,14 @@ namespace Sokoban.Networking
             if (length > rcvdByteBuffer.Length) rcvdByteBuffer = new byte[length];
 
             AsyncState asyncState = new AsyncState(receivingOrder, length);
-            client.BeginReceive(rcvdByteBuffer, 0, length, 0, new AsyncCallback(ReadCallback), asyncState);
+            try
+            {
+                clientSocket.BeginReceive(rcvdByteBuffer, 0, length, 0, new AsyncCallback(ReadCallback), asyncState);
+            }
+            catch (SocketException se)
+            {
+                DebuggerIX.WriteLine("[Net]", role, "SocketException: " + se.Message);
+            }
         }
 
         public void ReadCallback(IAsyncResult ar)
@@ -415,10 +439,37 @@ namespace Sokoban.Networking
             // from the asynchronous state object.
             AsyncState asyncState = (AsyncState)ar.AsyncState;
 
-
-            if (isClosed == true) return;
             // Read data from the client socket. 
-            int received = client.EndReceive(ar);
+            int received = 0;
+
+            try
+            {
+                received = clientSocket.EndReceive(ar);
+            }
+            catch (ObjectDisposedException)
+            {
+                DebuggerIX.WriteLine("[Net]", role, "ReadCallback: Socket has been closed\n");
+                return;
+            }
+            catch (ArgumentException e)
+            {
+                DebuggerIX.WriteLine("[Net]", role, "ReadCallback: Called from wrong AsyncResult\n");
+                return;
+            }
+            catch (SocketException se)
+            {
+                if (se.ErrorCode == 10054) // Error code for Connection reset by peer
+                {
+                    DebuggerIX.WriteLine("[Net]", role, "Client  Disconnected");
+                    return;
+                }
+                else
+                {
+                    DebuggerIX.WriteLine("[Net]", role, se.Message);
+                    return;
+                }
+            }
+
             rcvdBufferLength += received;
             rcvdBufferOffset += rcvdBufferLength;
 
@@ -438,7 +489,7 @@ namespace Sokoban.Networking
                 }
                 else if (rcvdMode == receivingMode.receivingMessage)
                 {
-                    DebuggerIX.WriteLine("[Net]", role, 
+                    DebuggerIX.WriteLine("[Net]", role,
                         "Message #" + asyncState.Order + " received. Total bytes: " + rcvdBufferLength);
                     rcvdMode = receivingMode.messageReceived;
                 }
@@ -452,7 +503,7 @@ namespace Sokoban.Networking
                 // Not all data received. Get more.
                 try
                 {
-                    client.BeginReceive(rcvdByteBuffer, rcvdBufferOffset, (asyncState.Length - received), SocketFlags.None,
+                    clientSocket.BeginReceive(rcvdByteBuffer, rcvdBufferOffset, (asyncState.Length - received), SocketFlags.None,
                         new AsyncCallback(ReadCallback), asyncState);
                 }
                 catch (SocketException e)
@@ -486,47 +537,46 @@ namespace Sokoban.Networking
 
         public virtual void CloseConnection()
         {
-            this.CloseConnection(this.client);
+            this.CloseConnection(this.clientSocket);
         }
 
-        public virtual void CloseConnection(Socket client)
+        public virtual void CloseConnection(Socket clientSocket)
         {
-            if (client != null)
+            if (clientSocket != null)
             {
                 isClosed = true;
-                if (client.Connected)
+                if (clientSocket.Connected)
                 {
-                    disconnectDoneHandle.Reset();
                     DebuggerIX.WriteLine("[Net]", role, "Connection Shutdown");
-                    client.Shutdown(SocketShutdown.Both);
+                    clientSocket.Shutdown(SocketShutdown.Both);
                     DebuggerIX.WriteLine("[Net]", role, "Beginning disconnect");
-                    client.BeginDisconnect(true, new AsyncCallback(DisconnectCallback), client);
+                    clientSocket.Disconnect(true);  // 10 second timeout
 
-                    // Wait for the disconnect to complete.
-                    disconnectDoneHandle.WaitOne();
+                    if (clientSocket.Connected)
+                    {
+                        DebuggerIX.WriteLine("[Net]", role, "We're still connnected");
+                        isInitialized = true;
+                    }
+                    else
+                    {
+                        DebuggerIX.WriteLine("[Net]", role, "We're disconnected");
+                        isInitialized = false;
+                    }
+
+                    clientSocket = null;
+                }
+                else
+                {
+                    isInitialized = false;
+                    DebuggerIX.WriteLine("[Net]", role, "Already closed.");
                 }
             }
-        }
-
-        private void DisconnectCallback(IAsyncResult ar)
-        {
-            // Complete the disconnect request.
-            Socket client = (Socket)ar.AsyncState;
-            DebuggerIX.WriteLine("[Net]", role, "Disconnected.");
-            client.EndDisconnect(ar);
-
-            if (client.Connected)
+            else
             {
-                DebuggerIX.WriteLine("[Net]", role, 
-                    "Winsock error: " + Convert.ToString(System.Runtime.InteropServices.Marshal.GetLastWin32Error()));
+                isInitialized = false;
+                DebuggerIX.WriteLine("[Net]", role, "Already closed.");
             }
-
-            isInitialized = false;
-
-            // Signal that the disconnect is complete.
-            disconnectDoneHandle.Set();
         }
-
 
         //
         // Other useful functions
@@ -571,7 +621,16 @@ namespace Sokoban.Networking
             {
                 throw new TimeoutException();
             }
-        }        
+        }
+
+        protected void waitHandle(ManualResetEvent manualResetEvent, int timeoutMilliseconds)
+        {
+            if (!manualResetEvent.WaitOne(timeoutMilliseconds))
+            {
+                throw new TimeoutException();
+            }
+        }
+
     }
 
     class AsyncState

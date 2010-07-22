@@ -7,11 +7,13 @@ using Sokoban.Lib;
 using Sokoban.Model.PluginInterface;
 using System.Windows.Input;
 using Sokoban.Solvers;
+using System.Windows.Controls;
 
 namespace Sokoban.Model.GameDesk
 {
     public delegate void GameObjectsLoadedDelegate(List<IGamePlugin> gameObjects);
     public delegate void SetSizeDelegate(int fieldsX, int fieldsY);
+    public delegate void NewMediaElementDelegate(MediaElement me);
 
     public interface IGameRepository : ISolverProvider
     {
@@ -32,6 +34,7 @@ namespace Sokoban.Model.GameDesk
         event SetSizeDelegate DeskSizeChanged;
         event GameObjectsLoadedDelegate GameObjectsLoaded;
         event VoidChangeDelegate GameStarted;
+        event NewMediaElementDelegate MediaElementAdded;
 
         void Terminate();
     }

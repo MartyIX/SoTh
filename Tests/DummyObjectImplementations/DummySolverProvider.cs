@@ -84,5 +84,15 @@ namespace DummyObjectImplementations
         public event Sokoban.Lib.GameObjectMovedDel SokobanMoved;
 
         #endregion
+
+        #region ISolverProvider Members
+
+
+        public object GetIdentifier()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }

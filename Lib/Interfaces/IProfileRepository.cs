@@ -18,5 +18,7 @@ namespace Sokoban.Model
         string Username { get; }
         string Password { get; }
         string SessionID { get; }
+
+        string IPAddress { get; set; }
     }
 }

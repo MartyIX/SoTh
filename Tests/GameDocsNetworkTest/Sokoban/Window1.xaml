@@ -9,12 +9,14 @@
     PreviewKeyDown="Window_PreviewKeyDown"
     PreviewKeyUp="Window_PreviewKeyUp"
     Closed="Window_Closed">
-
     <ad:DockingManager x:Name="dockingManager">
         <ad:ResizingPanel Orientation="Vertical">
             <view:GameDocs x:Name="gameManager" 
                            view:GameManagerProperties.DockingManager="{Binding ElementName=dockingManager}" 
                            diag:PresentationTraceSources.TraceLevel="High" />
+			<Button Click="btnStartServer_Click">Start server</Button>
+            <Button Click="btnStartClient_Click">Start client</Button>
         </ad:ResizingPanel>
     </ad:DockingManager>
+	
 </Window>

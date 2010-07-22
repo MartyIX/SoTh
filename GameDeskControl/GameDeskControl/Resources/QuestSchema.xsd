@@ -5,17 +5,17 @@
            elementFormDefault="qualified"
            attributeFormDefault="unqualified">
 
-  <!-- Game objects -->
-  <xs:element name="GameObject" abstract="true" type="GameObjectType" />
+<!-- Game objects -->
+<xs:element name="GameObject" abstract="true" type="GameObjectType" />
 
-  <xs:complexType name="GameObjectType">
-    <xs:sequence>
-      <xs:element name="Version" type="xs:string" minOccurs="0" maxOccurs="1" />
-      <xs:element name="PosX" type="xs:integer" />
-      <xs:element name="PosY" type="xs:integer" />
-      <xs:element name="InitializeMessage" type="xs:string" minOccurs="0" maxOccurs="1"/>
-    </xs:sequence>
-  </xs:complexType>
+<xs:complexType name="GameObjectType">
+  <xs:sequence>
+    <xs:element name="Version" type="xs:string" minOccurs="0" maxOccurs="1" />
+    <xs:element name="PosX" type="xs:integer" />
+    <xs:element name="PosY" type="xs:integer" />
+    <xs:element name="InitializeMessage" type="xs:string" minOccurs="0" maxOccurs="1"/>
+  </xs:sequence>
+</xs:complexType>
 
   <xs:element name="Dimensions">
     <xs:complexType>
@@ -36,8 +36,6 @@
   </xs:element>
 
   <!-- One game round-->
-
-  <!-- TODO: add support for custom game objects -->
   <xs:element name="Round">
     <xs:complexType>
       <xs:sequence>
@@ -62,3 +60,4 @@
   </xs:element>
 
 </xs:schema>
+

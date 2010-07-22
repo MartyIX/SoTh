@@ -22,21 +22,30 @@ using Sokoban.Lib;
 using System.Globalization;
 using System.Threading;
 using Sokoban.View.SetupNetwork;
+using Sokoban.Networking;
+using Sokoban.Lib.Exceptions;
+using DummyObjectImplementations;
+using Sokoban.Interfaces;
+using Sokoban.Model.PluginInterface;
 
 namespace Sokoban
 {
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>
-    public partial class Window1 : Window
+    public partial class Window1 : Window, IConnectionRelayer
     {
         private InitConnection initConnectionDialog;
-        
+        private ConnectionDialog connectionDialog;
+
+        private IConnection conn1 = null;
+        private IConnection conn2 = null;
+
         public Window1()
         {
             Initialize();
             InitializeComponent();
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US", false); 
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US", false);
             DataContext = this;
         }
 
@@ -45,25 +54,39 @@ namespace Sokoban
             PluginService.Initialize(@"D:\Bakalarka\Sokoban\Main\Plugins");
         }
 
-        private void testList()
+        private void btnStartServer_Click(object sender, RoutedEventArgs e)
         {
+
             if (initConnectionDialog != null)
             {
-                initConnectionDialog.Cancel();
+                initConnectionDialog.Terminate();
                 initConnectionDialog.Close();
             }
 
-            initConnectionDialog = new InitConnection();
-            initConnectionDialog.Start();
+            initConnectionDialog = new InitConnection(1, 1, new DummyProfileRepository(), null, this, null);
             initConnectionDialog.Show();
-            Thread.Sleep(500);
-            initConnectionDialog.RunConsument();
+
+        }
+
+        private void btnStartClient_Click(object sender, RoutedEventArgs e)
+        {
+            if (connectionDialog != null)
+            {
+                connectionDialog.Terminate();
+                connectionDialog.Close();
+            }
+
+            DummyProfileRepository profile2 = new DummyProfileRepository();
+            profile2.username = "Tester";
+
+            connectionDialog = new ConnectionDialog("10.0.0.5", 56726, 1, 1, profile2, null, this, null);
+            connectionDialog.Show();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            DebuggerIX.Start(DebuggerMode.OutputWindow);
-            loadQuest();            
+            DebuggerIX.Start(DebuggerMode.File);
+            loadQuest();
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -91,7 +114,7 @@ namespace Sokoban
             }
             else if (e.Key == Key.D)
             {
-                testList();
+
             }
             else
             {
@@ -112,6 +135,76 @@ namespace Sokoban
             //testList();
         }
 
+        #region IConnectionRelayer Members
+
+        public void Connect(IConnection connection, IGameMatch gameMatch, Authentication autentization, int leaguesID, int roundsID)
+        {
+            DebuggerIX.WriteLine("Connected", "Auth", autentization.Name + " " + autentization.IP);
+            DebuggerIX.WriteLine("Connected", "Game", "LeaguesID: " + leaguesID + "; RoundsID: " + roundsID);
+
+            if (conn1 == null)
+            {
+                conn1 = connection;
+            }
+            else
+            {
+                conn2 = connection;
+                runTests();
+            }
+
+        }
+
+        #endregion
+
+
+        public void runTests()
+        {
+            runTest01();
+
+        }
+
+        public void runTest01()
+        {
+            List<Event> list = new List<Event>();
+
+            for (int i = 1; i <= 100; i++)
+            {
+                conn1.AddEventToBuffer(i, i, EventType.wentDown, 1, 1);
+            }
+
+            conn1.SendAsync(NetworkMessageType.ListOfEvents);
+            conn1.AllSentHandle.WaitOne();
+
+            NetworkMessageType messageType = NetworkMessageType.StartGame;
+
+            while (messageType != NetworkMessageType.None)
+            {
+                conn2.ReceiveAsync();
+                conn2.ReceivedMessageHandle.WaitOne();
+
+                messageType = conn2.GetReceivedMessageType();
+
+                if (messageType == NetworkMessageType.ListOfEvents)
+                {
+                    object obj = conn2.GetReceivedMessageFromQueue();
+
+                    Queue<NetworkEvent> l = obj as Queue<NetworkEvent>;
+
+                    if (l != null)
+                    {
+                        DebuggerIX.WriteLine("[Net]", "runTest01", "List was received");
+                    }
+                    else
+                    {
+                        DebuggerIX.WriteLine("[Net]", "runTest01", "Error: list was not received");
+                    }
+                }
+                else
+                {
+                    conn2.GetReceivedMessageFromQueue();
+                }
+            }               
+        }
 
     }
 }

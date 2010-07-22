@@ -8,16 +8,20 @@ using Sokoban.Lib;
 using System.Threading;
 using System.Net.NetworkInformation;
 using Sokoban.Lib.Exceptions;
+using System.Windows;
 
 namespace Sokoban.Networking
 {
     public class NetworkServer : TcpConnection, IConnection
     {
-        private Socket socketMe = null;
-        private string ipAddress;
+        private Socket mainSocket = null;
+        private string ipAddress = null;
         private int port;
         private string role = "Server";
         private IAsyncResult currentAsyncResult = null;
+        private int clientCount = 0;
+        private Socket[] workerSocket = new Socket[10];
+        private ManualResetEvent initializationWaitHandle;
 
         public int Backlog
         {
@@ -40,102 +44,96 @@ namespace Sokoban.Networking
         {
             receivingInit();
             sendingInit();
-            
-            if (isInitialized == false)
+            isInitialized = false;
+
+            try
             {
-                isClosed = true;
-
-                if (socketMe == null)
-                {
-                    try
-                    {                        
-                        //  Create  a  socket  to  accept  client  connections
-                        socketMe = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
-                        // Linger option
-                        socketMe.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
-                        
-                        socketMe.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-                        socketMe.Bind(new IPEndPoint(IPAddress.Any, this.port));
-                    }
-                    catch (SocketException se)
-                    {
-                        DebuggerIX.WriteLine("[Net]", role, se.ErrorCode + ":  " + se.Message);
-                        return;
-                    }
-
-                    try
-                    {
-                        socketMe.Listen(this.Backlog);
-                    }
-                    catch (SocketException se)
-                    {
-                        DebuggerIX.WriteLine("[Net]", role, se.ErrorCode + ":  " + se.Message);
-                        return;
-                    }                
-
-                }
-
-
-                client = null;
-
-                //try
-                //{
-                //client = socketMe.Accept();  //  Get  client  connection                
+                IPAddress _ip = (this.ipAddress == null || this.ipAddress == "Automatic") 
+                    ? IPAddress.Any 
+                    : IPAddress.Parse(this.ipAddress);
                 
-                currentAsyncResult = socketMe.BeginAccept(new AsyncCallback(acceptFinished), null);
-
-                // Wait until the operation completes.
-
-                waitHandle(currentAsyncResult, 5000);
+                // Create the listening socket...
+                mainSocket = new Socket(AddressFamily.InterNetwork,
+                                          SocketType.Stream,
+                                          ProtocolType.Tcp);
+                IPEndPoint ipLocal = new IPEndPoint(IPAddress.Any, port);
+                // Bind to local IP Address...
+                mainSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                DebuggerIX.WriteLine("[Net]", role, "Binding");
+                mainSocket.Bind(ipLocal);
+                DebuggerIX.WriteLine("[Net]", role, Thread.CurrentThread.Name + "; Start listening..");
+                mainSocket.Listen(4);
+                DebuggerIX.WriteLine("[Net]", role, "BeginAccept for clients");
+                currentAsyncResult = mainSocket.BeginAccept(new AsyncCallback(onClientConnect), null);
+                DebuggerIX.WriteLine("[Net]", role, "Waiting on a client");
                 
-                DebuggerIX.WriteLine("[Net]", role, "Initialization succesfully left");
-
-                // now we have variable @client set!
-                //}
-                //catch (Exception e)
-                //{
-                //    DebuggerIX.WriteLine("[Net]", "[InitializeConnection]", "Exception: " + e.Message);
-                //    this.CloseConnection();
-                //}
+                initializationWaitHandle = new ManualResetEvent(false);
+                waitHandle(initializationWaitHandle, 5000);
+                DebuggerIX.WriteLine("[Net]", role, "Waiting done; IsConnected:" + mainSocket.Connected);
+            }
+            catch (SocketException se)
+            {
+                DebuggerIX.WriteLine("[Net]", role, se.ErrorCode + ":  " + se.Message);                
             }
         }
 
 
         // This is the call back function, which will be invoked when a client is connected
-        private void acceptFinished(IAsyncResult asyn)
+        private void onClientConnect(IAsyncResult asyn)
         {
-            if (currentAsyncResult != asyn) return;
+            if (currentAsyncResult != asyn)
+            {
+                DebuggerIX.WriteLine("[Net]", role, "OnClientConnect: Called with wrong AsyncResult.");
+                return;
+            }
 
             try
             {
                 // Here we complete/end the BeginAccept() asynchronous call
                 // by calling EndAccept() - which returns the reference to
                 // a new Socket object
-                client = socketMe.EndAccept(asyn);
+                clientSocket = mainSocket.EndAccept(asyn);
+
                 isInitialized = true;
-                isClosed = false;
             }
             catch (ObjectDisposedException)
             {
                 DebuggerIX.WriteLine("[Net]", role, "Socket has been closed.");
+                isInitialized = false;
             }
             catch (SocketException se)
             {
-                DebuggerIX.WriteLine("[Net]", role, "Exception: " + se.Message);
+                DebuggerIX.WriteLine("[Net]", role, "SocketException: " + se.Message);
+                isInitialized = false;
+            }
+            catch (ArgumentException e)
+            {
+                DebuggerIX.WriteLine("[Net]", role, "ArgumentException: " + e.Message);
+                isInitialized = false;
             }
 
-            if (client.Connected == true && isInitialized)
+            if (clientSocket != null && clientSocket.Connected)
             {
-                DebuggerIX.WriteLine("[Net]", role, "OK; Handling  client  at  " + 
-                    client.RemoteEndPoint.AddressFamily);
+                isInitialized = true;
+                DebuggerIX.WriteLine("[Net]", role, "OK; Handling  client  at  " +
+                    clientSocket.RemoteEndPoint.AddressFamily);
             }
+            else
+            {
+                DebuggerIX.WriteLine("[Net]", role, "OnClientConnect: Connection failure");
+            }
+
+            initializationWaitHandle.Set();
         }
 
         public override void CloseConnection()
         {
+            if (mainSocket != null)
+            {
+                mainSocket.Close();
+            }
+            
             base.CloseConnection();
-            //base.CloseConnection(socketMe);    
         }
 
     }

@@ -17,7 +17,7 @@ using System.Xml.Schema;
 
 namespace Sokoban.Lib
 {
-    public delegate void RoundPropertiesDelegate(string roundName, int fieldsX, int fieldsY);
+    public delegate void RoundPropertiesDelegate(string gameVariant, string roundName, int fieldsX, int fieldsY);
     public delegate void GameObjectPropertiesDelegate(string pluginName, XmlNode node);
 
 
@@ -61,6 +61,7 @@ namespace Sokoban.Lib
             if (RoundPropertiesRead != null)
             {
                 RoundPropertiesRead(
+                    round["Variant"].InnerXml,
                     round["Name"].InnerXml,
                     int.Parse(round["Dimensions"]["Width"].InnerXml),
                     int.Parse(round["Dimensions"]["Height"].InnerXml)

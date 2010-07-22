@@ -128,14 +128,24 @@ namespace PluginAim
         }
 
 
-        public bool ProcessXmlInitialization(int mazeWidth, int mazeHeight, XmlNode settings)
+        public bool ProcessXmlInitialization(string gameVariant, int mazeWidth, int mazeHeight, XmlNode settings)
         {
+            if (gameVariant.ToLower() != "ordinary" && gameVariant.ToLower() != "soth")
+            {
+                throw new Exception("Plugin Aim doesn't support game variant: " + gameVariant);
+            }
+            
             DebuggerIX.WriteLine("[Plugin]", this.Name, "ProcessXmlInitialization, settings: " + settings.InnerXml);
 
             posX = int.Parse(settings["PosX"].InnerText);
             posY = int.Parse(settings["PosY"].InnerText);
 
             return true;
+        }
+
+        public void MessageReceived(object message, IGamePlugin p)
+        {
+
         }
 
         #region IPosition Members
@@ -167,7 +177,6 @@ namespace PluginAim
         #endregion
 
         #region IGamePlugin Members
-
 
         public void Draw(System.Windows.Controls.Canvas canvas, double squareSize, long time, double phase)
         {

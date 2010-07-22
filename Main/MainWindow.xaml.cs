@@ -23,6 +23,7 @@ using Sokoban.Model.GameDesk;
 using Sokoban.Lib.Exceptions;
 using Sokoban.Interfaces;
 using Sokoban.View.SetupNetwork;
+using Sokoban.Networking;
 
 
 namespace Sokoban
@@ -31,7 +32,7 @@ namespace Sokoban
     /// Interaction logic for MainWindow.xaml
     /// </summary>
 
-    public partial class MainWindow : System.Windows.Window, IQuestHandler
+    public partial class MainWindow : System.Windows.Window, IQuestHandler, IConnectionRelayer, IConnectionDialogPresenter
     {
         public ReadOnlyObservableCollection<string> MyProperty { get; set; }
 
@@ -57,7 +58,7 @@ namespace Sokoban
         public void OnStartUp_PhaseThree()
         {
             questsPane.Initialize(this, consolePane, ProfileRepository.Instance);
-            pendingGamesPane.Initialize(consolePane, ProfileRepository.Instance);
+            pendingGamesPane.Initialize(consolePane, ProfileRepository.Instance, this, this);
         }
 
         protected override void OnClosed(EventArgs e)
@@ -222,7 +223,6 @@ namespace Sokoban
             SetVisibilityOfDockableContents(questsPane, questsPane.State);
         }
 
-
         private void consolePane_StateChanged(object sender, System.Windows.RoutedEventArgs e)
         {
             SetVisibilityOfDockableContents(consolePane, consolePane.State);
@@ -230,13 +230,14 @@ namespace Sokoban
 
         #region IQuestHandler Members
 
-        public void QuestSelected(int leaguesID, int roundsID, IQuest quest, GameMode gameMode)
+        public IGameMatch QuestSelected(int leaguesID, int roundsID, IQuest quest, GameMode gameMode)
         {
             bool wasOpened = true;
+            IGameMatch gameMatch = null;
 
             try
             {
-                this.gameManager.QuestSelected(leaguesID, roundsID, quest, gameMode);
+                gameMatch = this.gameManager.QuestSelected(leaguesID, roundsID, quest, gameMode);
             }
             catch (NotValidQuestException e)
             {
@@ -249,9 +250,84 @@ namespace Sokoban
 
             if (wasOpened == true && gameMode == GameMode.TwoPlayers)
             {
-                InitConnection ic = new InitConnection(leaguesID, roundsID, ProfileRepository.Instance, consolePane);
+                InitConnection ic = new InitConnection(leaguesID, roundsID, ProfileRepository.Instance, consolePane, this, gameMatch);
+                ic.Owner = this;
                 ic.Show();
+
+                return gameMatch;
             }
+            else
+            {
+                return null;
+            }
+        }
+
+        #endregion
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="request">i.e., "/remote/GetInitLeagues/"</param>
+        /// <returns>Response of the server</returns>
+        private string getRequestOnServer(string request)
+        {
+            string output = ApplicationHttpReq.GetRequestOnServer(request, ProfileRepository.Instance, "MainProgram", consolePane);
+
+            if (ApplicationHttpReq.LastError != String.Empty)
+            {
+                MessageBox.Show(ApplicationHttpReq.LastError);
+                return String.Empty;
+            }
+            else
+            {
+                return output;
+            }
+        }
+
+        #region IConnectionRelayer Members
+
+        public void Connect(IConnection connection, IGameMatch gameMatch, Authentication autentization, int leaguesID, int roundsID)
+        {
+            if (gameMatch != null) // gameMatch is returned from "server"
+            {
+                gameMatch.SetNetworkConnection(connection);
+            }
+            else // "client" doesn't have GameDeskControl opened by default
+            {
+                string questXml = this.getRequestOnServer("/remote/GetLeague/" + leaguesID.ToString());
+
+                if (questXml != "error" && questXml != "")
+                {
+                    Quest q = new Quest(questXml);
+                    IGameMatch gm = QuestSelected(leaguesID, roundsID, null, GameMode.TwoPlayers);
+                    gm.SetNetworkConnection(connection);
+                }
+                else
+                {
+                    consolePane.ErrorMessage(ErrorMessageSeverity.Medium, "MainProgram", "Server returned empty response. The problem is propably at server-side.");
+                    MessageBox.Show("The league cannot be opened. A problem is probably on the side of server.");
+                }                
+            }
+        }
+
+        #endregion
+
+        #region IConnectionDialogPresenter Members
+
+        private ConnectionDialog connectionDialog = null;
+
+        public void Show(string ipAddress, int port, int leaguesID, int roundsID, IProfileRepository profileRepository, IErrorMessagesPresenter errorPresenter, IConnectionRelayer connectionRelayer, IGameMatch gameMatch)
+        {
+            if (connectionDialog != null)
+            {
+                connectionDialog.Close();
+            }
+
+            connectionDialog = new ConnectionDialog(ipAddress, port, leaguesID, roundsID,
+                    ProfileRepository.Instance, consolePane, this, null);
+            connectionDialog.Owner = this;
+            connectionDialog.Show();
         }
 
         #endregion

@@ -1,4 +1,4 @@
-﻿#define DebugDraw
+﻿//#define DebugDraw
 
 using System;
 using System.Collections.Generic;
@@ -26,6 +26,7 @@ namespace Sokoban.Model.PluginInterface
         protected int posY;
         protected Image image;
         protected int obstructionLevel = 0;
+        protected DateTime lastPositionChange = DateTime.Now;
 
         public int ObstructionLevel
         {
@@ -44,6 +45,7 @@ namespace Sokoban.Model.PluginInterface
         public MovableEssentials(IPluginParent host)
         {
             this.host = host;            
+
         }
 
 
@@ -197,6 +199,11 @@ namespace Sokoban.Model.PluginInterface
 
                     #endregion wentXXX
 
+
+                case EventType.hitToTheWall:
+
+                    return false;
+
                 default:
                     returnValue = false;
                     break;
@@ -204,6 +211,7 @@ namespace Sokoban.Model.PluginInterface
 
             return returnValue;
         }
+
 
         /// <summary>
         /// 
@@ -288,7 +296,18 @@ namespace Sokoban.Model.PluginInterface
         {
             timeWholeMovementEnds -= this.speed;
             movementEventsInBuffer--;
-            MakePlan(debugMessage, when, who, EventType.hitToTheWall); // ev.who = this plugin
+
+            double diff = DateTime.Now.Subtract(lastPositionChange).TotalMilliseconds;
+
+            if (diff > 400)
+            {
+                DebuggerIX.WriteLine("[MovableEssentials]", "planHittingWall", "True; Diff = " + diff);
+                MakePlan(debugMessage, when, who, EventType.hitToTheWall); // ev.who = this plugin
+            }
+            else
+            {
+                DebuggerIX.WriteLine("[MovableEssentials]", "planHittingWall", "False; Diff = " + diff);
+            }
         }
 
 
@@ -339,6 +358,7 @@ namespace Sokoban.Model.PluginInterface
             }
 
             StepsCount++;
+            lastPositionChange = DateTime.Now;
 
             // Fire event
             if (ElementMoved != null)

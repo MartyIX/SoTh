@@ -47,12 +47,18 @@ namespace Sokoban.Model
         /// </summary>
         public List<IControllableByUserInput> controllableByUserObjects;
 
+        
         public string RoundName
         {
             get { return roundName; }
             set { roundName = value; Notify("RoundName"); }
         }
 
+        public string GameVariant
+        {
+            get;
+            set;
+        }
 
         public int StepsCount
         {
@@ -102,12 +108,7 @@ namespace Sokoban.Model
 
             pluginService = new PluginService(this);
         }
-
-        public void FireTimeReferenceEvent()
-        {
-            if (TimeReference != null) TimeReference(ref time);
-        }
-
+       
         /// <summary>
         /// Adds event to the calendar of model
         /// </summary>
@@ -303,7 +304,7 @@ namespace Sokoban.Model
         }
 
 
-        public void Message(string message, IGamePlugin plugin)
+        public void Message(object message, IGamePlugin plugin)
         {
 
         }

@@ -43,8 +43,7 @@
     </ad:DocumentContent.Resources>
     <!-- view -->
 
-    <DockPanel LastChildFill="True" Background="white"> <!-- TODO Remove background -->
-
+    <DockPanel LastChildFill="True" Background="white"> <!-- TODO Remove background -->        
 
         <DockPanel DockPanel.Dock="Left" x:Name="leftGameDesk" Background="Red" VerticalAlignment="Center">
         <Canvas Background="Green" Name="gamedeskCanvas" Width="{Binding ElementName=gamedeskRect, Path=Width}" 
@@ -101,6 +100,8 @@
                 </Grid>
             </StackPanel>
     	</Viewbox>       
-
+        <DockPanel x:Name="visualSoundsContainer">
+            
+        </DockPanel>
     </DockPanel>
 </ad:DocumentContent>

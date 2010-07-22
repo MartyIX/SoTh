@@ -97,11 +97,19 @@
     <Compile Include="Http\HttpReq.cs" />
     <Compile Include="Interfaces\IBaseRepository.cs" />
     <Compile Include="Interfaces\IBaseView.cs" />
+    <Compile Include="Interfaces\IConnection.cs" />
+    <Compile Include="Interfaces\IConnectionDialogPresenter.cs" />
     <Compile Include="Interfaces\IConnectionProvider.cs" />
     <Compile Include="Interfaces\IErrorMessagesPresenter.cs" />
+    <Compile Include="Interfaces\IGameMatch.cs" />
     <Compile Include="Interfaces\IProfileRepository.cs" />
     <Compile Include="Interfaces\IQuest.cs" />
     <Compile Include="Interfaces\IQuestHandler.cs" />
+    <Compile Include="Networking\ApplicationHttpReq.cs" />
+    <Compile Include="Networking\Autentization.cs" />
+    <Compile Include="Networking\Enums.cs" />
+    <Compile Include="Networking\NetworkEvent.cs" />
+    <Compile Include="ProfileXmlServerResponse.cs" />
     <Compile Include="Solvers\ISolverPainter.cs" />
     <Compile Include="Solvers\ISolverProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -151,9 +159,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Networking\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

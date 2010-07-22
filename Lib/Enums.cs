@@ -7,7 +7,14 @@ namespace Sokoban.Lib
         SinglePlayer,
         TwoPlayers
     }
-    
+
+    public enum GameStatus
+    {
+        Unstarted,
+        Running,
+        Paused
+    }   
+
     public enum PlayingMode
     {
         League,
@@ -119,6 +126,16 @@ namespace Sokoban.Lib
         setLeftOrientation,
         setRightOrientation,
         sokobanWasKilled,
-        restartRound
+        restartRound,
+        customEvent01,
+        customEvent02,
+        customEvent03,
+        customEvent04,
+        customEvent05,
+        customEvent06,
+        customEvent07,
+        customEvent08,
+        customEvent09,
+        customEvent10
     }
 }

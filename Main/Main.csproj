@@ -142,7 +142,6 @@
     </Compile>
     <Compile Include="Application\Management\AppConfigManagement.cs" />
     <Compile Include="Application\Management\UserSettings.cs" />
-    <Compile Include="Model\Profile\ProfileXmlServerResponse.cs" />
     <Compile Include="Model\Settings\SettingsRepository.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -267,9 +266,29 @@
       <Project>{D87242DF-7377-49BF-BF86-3C0BA2A5D9C6}</Project>
       <Name>PendingGames</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PluginAim\PluginAim.csproj">
+      <Project>{3BAFA179-5F2E-4DC5-9AC2-DB689688793C}</Project>
+      <Name>PluginAim</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\PluginBox\PluginBox\PluginBox.csproj">
+      <Project>{8B6A12B7-0A9C-499A-A162-EF06203A24E2}</Project>
+      <Name>PluginBox</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\PluginInterface\PluginInterface\PluginInterface.csproj">
       <Project>{E1357F87-0BE7-4FF7-84B4-D4CC4CD1788E}</Project>
       <Name>PluginInterface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PluginSokoban\PluginSokoban\PluginSokoban.csproj">
+      <Project>{CDEC8CB2-A57E-49E9-91C7-06A8F7AF8355}</Project>
+      <Name>PluginSokoban</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\PluginWall\PluginWall.csproj">
+      <Project>{A74B8493-59F1-44B7-BFC0-9C41F4F238EF}</Project>
+      <Name>PluginWall</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\QuestsControl\QuestsControl.csproj">
       <Project>{B2653A3F-A6EE-4212-BFE5-FDA3C6C18D2F}</Project>
@@ -304,6 +323,7 @@
   <PropertyGroup>
     <PostBuildEvent>copy "$(ProjectDir)Solvers\Solvers" "$(TargetDir)Solvers" /Y
 copy "$(ProjectDir)Plugins" "$(TargetDir)Plugins" /Y
+copy "$(ProjectDir)Plugins\Sounds" "$(TargetDir)Plugins/Sounds" /Y
 copy "$(ProjectDir)..\SolverLibrary\msvcr70.dll" "$(TargetDir)" /Y</PostBuildEvent>
   </PropertyGroup>
 </Project>

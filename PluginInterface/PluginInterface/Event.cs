@@ -13,22 +13,22 @@ namespace Sokoban.Model.PluginInterface
     /// <summary>
     /// Event for calendar in discrete simulation of round
     /// </summary>
-    public struct Event
-    {
-        /// <summary>
-        /// When to process the event
-        /// </summary>
-        public Int64 when;
+public struct Event
+{
+    /// <summary>
+    /// When to process the event
+    /// </summary>
+    public Int64 when;
 
-        /// <summary>
-        /// Which object should process the event
-        /// </summary>
-        public IGamePlugin who;
+    /// <summary>
+    /// Which object should process the event
+    /// </summary>
+    public IGamePlugin who;
 
-        /// <summary>
-        /// Type of event
-        /// </summary>
-        public EventType what;
+    /// <summary>
+    /// Type of event
+    /// </summary>
+    public EventType what;
 
         /// <summary>
         /// For synchronization (in single player it's not necessary)

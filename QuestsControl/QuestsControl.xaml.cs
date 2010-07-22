@@ -18,6 +18,8 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using Sokoban.Model.Quests;
 using Sokoban.Interfaces;
+using Sokoban.Model;
+using Sokoban.Networking;
 
 namespace Sokoban.View
 {
@@ -39,9 +41,9 @@ namespace Sokoban.View
         // Private fields
         //
         private string _status;
-        private static string server;
         private IQuestHandler questHandler = null;
         private IErrorMessagesPresenter errorPresenter = null;
+        private IProfileRepository profile = null;
 		
         /// <summary>
         /// Shutdown
@@ -57,19 +59,11 @@ namespace Sokoban.View
         }
 
         /// <summary>
-        /// Should be initialized before creating instance of object
-        /// </summary>
-        /// <param name="_server"></param>
-        public static void Initialize(string _server)
-        {
-            server = _server;
-        }
-
-        /// <summary>
         /// 
         /// </summary>
-        public void Initialize(IQuestHandler questHandler, IErrorMessagesPresenter errorPresenter)
+        public void Initialize(IQuestHandler questHandler, IErrorMessagesPresenter errorPresenter, IProfileRepository profile)
         {
+            this.profile = profile;
             this.questHandler = questHandler;
             this.errorPresenter = errorPresenter;
             this.refresh();
@@ -85,9 +79,19 @@ namespace Sokoban.View
             this.Status = "Connecting to the server";
 
             // it correctly displays the error
-            string output = this.getRequestOnServer("/remote/GetInitLeagues/");
+            string output = null;
+            try
+            {
+                output = this.getRequestOnServer("/remote/GetInitLeagues/");
+            }
+            catch (UninitializedException e)
+            {
+                this.Status = e.Message;
+                output = null;
+            }
 
-            if (output != "error")
+
+            if (output != "error" && output != null)
             {
                 QuestsXmlInitialLeagues response = new QuestsXmlInitialLeagues();
 
@@ -113,26 +117,11 @@ namespace Sokoban.View
         /// <returns>Response of the server</returns>
         private string getRequestOnServer(string request)
         {
-            if (server == null) throw new UninitializedException("Server name was not initialized.");
-            
-            string url = server.TrimEnd(new char[] { '/' }) + request;
-            string output;
+            string output = ApplicationHttpReq.GetRequestOnServer(request, profile, "Quests", errorPresenter);
 
-            try
+            if (ApplicationHttpReq.LastError != String.Empty)
             {
-                output = HttpReq.GetRequest(url, "");
-            }
-            catch (WebException e)
-            {
-                output = "error";
-                this.Status = "Error in communication with the server. Please try again in a while.";
-                errorMessage(ErrorMessageSeverity.Medium, "Error in communication with the server. Additional information: " + e.Message);
-            }
-            catch (Exception e)
-            {
-                output = "error";
-                this.Status = "Unknown error occured. Please try again in a while.";
-                errorMessage(ErrorMessageSeverity.High, "Unknown error in communication with the server. Additional information: " + e.Message);
+                this.Status = ApplicationHttpReq.LastError;
             }
 
             return output;
@@ -169,14 +158,17 @@ namespace Sokoban.View
         {            
             if (questHandler != null)
             {
-                int id = league.ID;
-
-                string questXml = this.getRequestOnServer("/remote/GetLeague/" + id.ToString());
+                string questXml = this.getRequestOnServer("/remote/GetLeague/" + league.ID.ToString());
 
                 if (questXml != "error" && questXml != "")
                 {
                     Quest q = new Quest(questXml);
-                    questHandler.QuestSelected(q, gameMode);
+                    questHandler.QuestSelected(league.ID, -1, q, gameMode);
+                }
+                else
+                {
+                    errorPresenter.ErrorMessage(ErrorMessageSeverity.Medium, "Quests", "Server returned empty response. The problem is propably at server-side.");
+                    MessageBox.Show("The league cannot be opened. A problem is probably on the side of server.");
                 }
             }
         }

@@ -22,6 +22,7 @@ using Sokoban.Lib;
 using Sokoban.Lib.Exceptions;
 using Sokoban.Solvers;
 using Sokoban.Model.Quests;
+using Sokoban.Interfaces;
 
 namespace Sokoban.View
 {
@@ -136,13 +137,13 @@ namespace Sokoban.View
         /// <summary>
         /// For testing purposes
         /// </summary>
-        public void Add(string questXml)
+        public GameDeskControl Add(string questXml)
         {
             Quest q = new Quest(questXml);
-            this.Add(q, GameMode.SinglePlayer);
+            return this.Add(q, GameMode.SinglePlayer);
         }
 
-        public void Add(IQuest quest, GameMode gameMode)
+        public GameDeskControl Add(IQuest quest, GameMode gameMode)
         {
             //try
             //{                
@@ -155,9 +156,13 @@ namespace Sokoban.View
                 doc.Closed += new EventHandler(doc_Closed);
                 doc.InfoPanel.SizeChanged += new SizeChangedEventHandler(doc.ResizeInfoPanel);
                 GameViews.Add(doc);
-                doc.Resize(GamesDocumentPane.ActualWidth, GamesDocumentPane.ActualHeight);                    
+                doc.Resize(GamesDocumentPane.ActualWidth, GamesDocumentPane.ActualHeight);
+
+                this.SelectedIndex = GameViews.Count - 1;
 
                 this.SetActiveGameChanged(doc);
+
+                return doc;    
             //}
             /*
             catch (PluginLoadFailedException e)
@@ -294,10 +299,10 @@ namespace Sokoban.View
 
         #region IQuestHandler Members
 
-        public void QuestSelected(int leaguesID, int roundsID, IQuest quest, GameMode gameMode)
+        public IGameMatch QuestSelected(int leaguesID, int roundsID, IQuest quest, GameMode gameMode)
         {
             // TODO add params
-            this.Add(quest, gameMode);
+            return this.Add(quest, gameMode);
         }
 
         #endregion

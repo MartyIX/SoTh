@@ -49,17 +49,19 @@ namespace Sokoban.Model
         private Stopwatch stopwatch = new Stopwatch();
         private List<string> pluginSchemata = new List<string>();
         private string questValidationErrorMessage;
+        private GameStatus gameStatus = GameStatus.Unstarted;
+        private GameDisplayType gameDisplayType;
+        private bool isRendering = false;
 
-
+        public Game(IQuest quest, GameDisplayType gameDisplayType)
+        {
+            this.quest = quest;
+            this.gameDisplayType = gameDisplayType;
+        }
 
         private double phaseProp
         {
             get { return stopwatch.ElapsedMilliseconds / (double)PHASE_CONST; }
-        }
-
-        public Game(IQuest quest)
-        {
-            this.quest = quest;
         }
 
         public bool IsQuestValid(IQuest quest)
@@ -107,7 +109,7 @@ namespace Sokoban.Model
             foreach (IGamePlugin g in gameObjects)
             {
                 control.AddVisual(g.UIElement);
-            }            
+            }
         }
 
         void gameRepository_DeskSizeChanged(int fieldsX, int fieldsY)
@@ -124,12 +126,12 @@ namespace Sokoban.Model
             loadRound(quest.ActualRoundXML);
         }
 
+        public event VoidChangeDelegate PreRoundLoaded;
+
         private void loadRound(string roundXml)
         {
-            bool roundLoaded = true;
-
             this.removeOldPainter();
-            this.stopRendering();
+            this.StopRendering();
             this.clearControlContent();
 
             if (gameRepository != null) gameRepository.Terminate();
@@ -140,15 +142,14 @@ namespace Sokoban.Model
             gameRepository.GameRealTime = this;
             gameRepository.DeskSizeChanged += new SetSizeDelegate(gameRepository_DeskSizeChanged);
             gameRepository.GameObjectsLoaded += new GameObjectsLoadedDelegate(gameRepository_GameObjectsLoaded);
-            
-            
-            // may raise exception PluginLoadFailedException - it is catched in GameDocs.xaml.cs
-            gameRepository.LoadRoundFromXML(roundXml);            
+            gameRepository.GameStarted += new VoidChangeDelegate(startGame);
+        
+            if (PreRoundLoaded != null) PreRoundLoaded();
 
-            if (roundLoaded)
-            {
-                this.startGame(); // For debugging
-            }
+            // may raise exception PluginLoadFailedException - it is catched in GameDocs.xaml.cs
+            gameRepository.LoadRoundFromXML(roundXml);
+
+            StartRendering();
         }
 
         private void clearControlContent()
@@ -159,25 +160,43 @@ namespace Sokoban.Model
             }
         }
 
+        /// <summary>
+        /// Called when from gameRepository as event (GameRepository.GameStarted)
+        /// </summary>
         private void startGame()
         {
-            this.startRendering();
+            gameStatus = GameStatus.Running;
+            this.StartRendering();            
         }
 
-        private void startRendering()
+        /// <summary>
+        /// Called from startGame()
+        /// </summary>
+        public void StartRendering()
         {
             if (control != null)
             {
-                CompositionTarget.Rendering += new EventHandler(OnRender);
-                stopwatch.Start();
+                if (isRendering == false)
+                {
+                    CompositionTarget.Rendering += new EventHandler(OnRender);
+                    stopwatch.Start();
+                    isRendering = true;
+                }
             }
         }
 
-        private void stopRendering()
+        /// <summary>
+        /// Called from this.Terminate() and when loading a new round (i.e. this.loadRound(string xml))
+        /// </summary>
+        public void StopRendering()
         {
             if (control != null)
             {
-                CompositionTarget.Rendering -= OnRender;                
+                if (isRendering == true)
+                {
+                    CompositionTarget.Rendering -= OnRender;
+                    isRendering = false;
+                }
             }
         }
 
@@ -186,20 +205,18 @@ namespace Sokoban.Model
         //
         private void OnRender(object sender, EventArgs e)
         {
-            if (stopwatch.ElapsedMilliseconds >= PHASE_CONST)
+            if (gameStatus == GameStatus.Running)
             {
-                gameRepository.ProcessAllEvents();
-                stopwatch.Reset();
-                stopwatch.Start();
+                if (stopwatch.ElapsedMilliseconds >= PHASE_CONST)
+                {
+                    gameRepository.ProcessAllEvents();
+                    stopwatch.Reset();
+                    stopwatch.Start();
+                }
+
             }
 
-            foreach (IGamePlugin g in gameRepository.GetGameObjects)
-        	{
-                if (phaseProp < 1)
-                {
-                    g.Draw(control.Canvas, control.FieldSize, gameRepository.Time, phaseProp);
-                }
-	        }
+            drawGamePlugins();
 
             if (solverPainter != null)
             {
@@ -208,6 +225,21 @@ namespace Sokoban.Model
         }
 
         #region IGame Members
+
+        private void drawGamePlugins()
+        {
+            foreach (IGamePlugin g in gameRepository.GetGameObjects)
+            {
+                if (phaseProp < 1)
+                {
+                    g.Draw(control.Canvas, control.FieldSize, gameRepository.Time, phaseProp);
+                }
+                else
+                {
+                    g.Draw(control.Canvas, control.FieldSize, gameRepository.Time, 0);
+                }
+            }
+        }
 
         public IQuest Quest {
             get { return this.quest; }
@@ -227,6 +259,7 @@ namespace Sokoban.Model
 
         public bool MoveRequest(Key key)
         {
+            // Start game by pressing a keyboard key
             return gameRepository.MoveRequest(key, this.phaseProp);
         }
 
@@ -237,7 +270,7 @@ namespace Sokoban.Model
 
         public void Terminate()
         {
-            this.stopRendering();
+            this.StopRendering();
             gameRepository.Terminate();
         }
 
@@ -260,7 +293,8 @@ namespace Sokoban.Model
 
         public object GetIdentifier()
         {
-            return control;
+            //return control;
+            throw new NotImplementedException("Not implemented by purpose!");
         }
 
         public event GameObjectMovedDel SokobanMoved;

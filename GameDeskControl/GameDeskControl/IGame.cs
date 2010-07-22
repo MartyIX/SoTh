@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Sokoban.View.GameDocsComponents;
 using Sokoban.Solvers;
+using Sokoban.Lib;
 
 namespace Sokoban.Model.GameDesk
 {
@@ -14,5 +15,7 @@ namespace Sokoban.Model.GameDesk
         //int StepsCount { get; }
         string RoundName { get; }
         IGameRepository GameRepository { get; }
+
+        event VoidChangeDelegate PreRoundLoaded;
     }
 }

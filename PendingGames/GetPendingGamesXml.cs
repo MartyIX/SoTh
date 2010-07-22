@@ -42,8 +42,11 @@ namespace Sokoban.Model.Xml
                     OfferItemData o = new OfferItemData(
                         int.Parse(game["OfferID"].InnerText),
                         game["RoundName"].InnerText,
+                        int.Parse(game["RoundID"].InnerText),
                         game["OpponentName"].InnerText,
-                        game["IP"].InnerText);
+                        game["IP"].InnerText,
+                        int.Parse(game["Port"].InnerText)
+                        );
 
                     gameList.Add(o);
                 }

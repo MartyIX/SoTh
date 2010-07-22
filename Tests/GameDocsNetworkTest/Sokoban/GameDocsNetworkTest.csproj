@@ -156,6 +156,14 @@
       <Project>{72836426-37F3-472E-927D-EA899591FAEF}</Project>
       <Name>Networking</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\PluginInterface\PluginInterface\PluginInterface.csproj">
+      <Project>{E1357F87-0BE7-4FF7-84B4-D4CC4CD1788E}</Project>
+      <Name>PluginInterface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DummyObjectImplementations\DummyObjectImplementations.csproj">
+      <Project>{0AA86DD8-394C-44E2-89CF-C6FF45D4C6D0}</Project>
+      <Name>DummyObjectImplementations</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="TestQuest.xml">

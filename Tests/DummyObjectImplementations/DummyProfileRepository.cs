@@ -8,9 +8,15 @@ namespace DummyObjectImplementations
 {
     public class DummyProfileRepository : IProfileRepository
     {
-
-
         #region IProfileRepository Members
+        public string username = "Marty";
+        public string ipAddress = "127.0.0.1";
+        public string password = "philips";
+
+        public DummyProfileRepository()
+        {
+
+        }
 
         public bool TryLogin(string server, string username, string password)
         {
@@ -41,7 +47,7 @@ namespace DummyObjectImplementations
 
         public string Username
         {
-            get { throw new NotImplementedException(); }
+            get { return this.username; }
         }
 
         #endregion
@@ -60,7 +66,7 @@ namespace DummyObjectImplementations
 
         public string SessionID
         {
-            get { return "1234567890123"; }
+            get { return "4c3625ecb8796"; }
         }
 
         #endregion
@@ -70,12 +76,27 @@ namespace DummyObjectImplementations
 
         public string Password
         {
-            get { throw new NotImplementedException(); }
+            get { return this.password; }
         }
 
         #endregion
+
+        #region IProfileRepository Members
+
+
+        public string IPAddress
+        {
+            get
+            {
+                return this.ipAddress;
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        #endregion        
     }
-
-
 }
 

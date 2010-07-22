@@ -3,13 +3,14 @@ using Sokoban.Lib;
 using System.Windows;
 using System.Windows.Controls;
 using System.Xml;
+using System.Collections.Generic;
 
 namespace Sokoban.Model.PluginInterface
 {
     public interface IPluginParent
     {
-        // For undocumented/dev features :-))
-        void Message(string message, IGamePlugin plugin);
+        // For communication between plugins
+        void Message(object message, IGamePlugin plugin);
         
         // Planning
         void MakePlan(string debug, Int64 when, IGamePlugin who, EventType what);
@@ -18,42 +19,51 @@ namespace Sokoban.Model.PluginInterface
         // Gamedesk actions
         IGamePlugin GetObstructionOnPosition(int x, int y);
 
+        IEnumerable<IGamePlugin> AllPlugins {get;}
+        
         // Process all events
         void ProcessAllEvents();
         void ProcessAllEvents(double phase);
         void ProcessAllEvents(bool updateTime, double phase);
 
-
         void PropertyChanged(string name);
+
+        // Sounds
+        void RegisterMediaElement(MediaElement me);
     }
 
     public interface IGamePlugin : IPosition
     {       
         // Plugin identification
         string Name { get; }
+        // Plugin description
         string Description { get; }
+        // Your name
         string Author { get; }
-        string Version { get; }
+        // Version of your plugin; e.g. 1.00;
+        string Version { get; }        
+        // For what version of SoTh application was the plugin created; e.g. 1.00;
         string CreatedForHostVersion { get; }
-
-        // Plugin main actions
-        void Load();
-        void Unload();
-        // Plugin has to draw itself on canvas
-        void Draw(Canvas canvas, double squareSize, Int64 time, double phase);
+        // Appearance of your plugin; it may be image or a geometric shape etc. Whatever object that inherits from UIElement
+        UIElement UIElement { get; set; }
+        // Returns XML schema for what is should be content of tag <YourPluginName></YourPluginName> in round specification
         string XmlSchema { get; }
-        // Returns true if initialization was successful
-        bool ProcessXmlInitialization(int mazeWidth, int mazeHeight, XmlNode settings);
 
+        // Your initialization goes here
+        void Load();
+        // In case that you use some unmanaged code and you need to correctly destruct an object, ...
+        void Unload();
+        // Plugin has to draw itself on gamedesk
+        void Draw(Canvas canvas, double squareSize, Int64 time, double phase);        
+        // Returns true if initialization was successful
+        // settings is content of tag <YourPluginName></YourPluginName> in round specification
+        bool ProcessXmlInitialization(string gameVariant, int mazeWidth, int mazeHeight, XmlNode settings);
         // Return false if plugin is not able to process the event, host will take care of the message
         bool ProcessEvent(Int64 time, Event e);
-
+        // For cross-plugin communication
+        void MessageReceived(object message, IGamePlugin sender);
         // Plugin's host 
-        IPluginParent Parent { get; set; }
-
-        // Plugin's properties
-        int ID { get; set; }
-
-        UIElement UIElement { get; set; }
+        IPluginParent Parent { get; set; }       
+        int ID { get; set; }        
     }
 }

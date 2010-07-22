@@ -64,7 +64,7 @@
     <Compile Include="GraphicsControl.cs" />
     <Compile Include="IGraphicsControl.cs" />
     <Compile Include="SolverPainter.cs" />
-    <Compile Include="Delegates.cs" />
+    <Compile Include="EnumsAndDelegates.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GameDeskControl.xaml.cs">
       <DependentUpon>GameDeskControl.xaml</DependentUpon>

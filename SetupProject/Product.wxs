@@ -68,13 +68,18 @@
               </File>
               <File Id="YassDLL" Name="YASS.dll"
                   Source="$(var.Main.TargetDir)Solvers\YASS.dll" DiskId="1">
-              </File>
+              </File>              
             </Component>
           </Directory>
 
           <Directory Id="PLUGINSLOCATION" Name="Plugins" FileSource="$(var.Main.TargetDir)Plugins">
             <Component Id="CmpntPlugins" Guid="6B6BDF54-2A49-444E-8214-C856530D3BEB">
-              <CreateFolder/>
+              <!--<CreateFolder/>-->
+              <Directory Id="PLUGINSSOUNDSLOCATION" Name="Sounds">
+                <File Id="HitToTheWallWAV" Name="HitToTheWall.wav"
+                    Source="$(var.Main.TargetDir)Plugins\Sounds\HitToThewa.dll" DiskId="1">
+                </File>
+                </Directoy>
             </Component>
           </Directory>
 

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using Sokoban.Model.GameDesk;
 using Sokoban.Lib;
+using Sokoban.Networking;
+using Sokoban.Interfaces;
 
 namespace Sokoban.Model.Quests
 {
@@ -16,6 +18,7 @@ namespace Sokoban.Model.Quests
         /// <param name="round_id">ID to the table rounds_id; -1 if only league was chosen</param>
         /// <param name="quest">Quest instance</param>
         /// <param name="gameMode"></param>
-        void QuestSelected(int leaguesID, int roundsID, IQuest quest, GameMode gameMode);
+        /// <param name="connection">Null for single-player; connection instance for two players</param>
+        IGameMatch QuestSelected(int leaguesID, int roundsID, IQuest quest, GameMode gameMode);
     }
 }

@@ -10,6 +10,9 @@ using System.Windows.Media.Imaging;
 using System.Windows;
 using System.Xml;
 using System.ComponentModel;
+using System.Windows.Controls;
+using System.IO;
+using System.Reflection;
 
 namespace PluginSokoban
 {
@@ -20,6 +23,8 @@ namespace PluginSokoban
         private EventType heldKeyEvent;
         private object syncRoot = new object();
         private bool moveRequestCancelled = true;
+        private MediaElement sounds;
+        private DateTime lastTimeHitWallPlayed = DateTime.Now;
 
         public Sokoban(IPluginParent host) : base(host)
         {            
@@ -95,12 +100,41 @@ namespace PluginSokoban
 
                     #endregion wentXXX
 
+                case EventType.hitToTheWall:
+
+                    return processHitToWall();
+
+                    break;
+
                 default:
                     returnValue = base.ProcessEvent(time, ev);                    
                     break;
             }
 
             return returnValue;
+        }
+
+        protected bool processHitToWall()
+        {
+            // we don't want to play more sounds at one time
+            if (sounds.NaturalDuration.HasTimeSpan == true)
+            {
+                if (DateTime.Now.Subtract(lastTimeHitWallPlayed).TotalMilliseconds > sounds.NaturalDuration.TimeSpan.TotalMilliseconds)
+                {
+                    double length = sounds.NaturalDuration.TimeSpan.TotalMilliseconds;
+                    sounds.Play();
+                    sounds.Position = TimeSpan.Zero;
+                    lastTimeHitWallPlayed = DateTime.Now;
+                }
+            }
+            else
+            {
+                sounds.Play();
+                sounds.Position = TimeSpan.Zero;
+            }
+
+
+            return true;
         }
 
         public void Load()
@@ -111,6 +145,10 @@ namespace PluginSokoban
             ObstructionLevel = 10;
             StepsCount = 0; // we want to notify
 
+            //
+            // Textures
+            //
+            
             image = new System.Windows.Controls.Image();
 
             BitmapImage bi = new BitmapImage();
@@ -120,6 +158,15 @@ namespace PluginSokoban
             image.Source = bi;
 
             this.uiElement = image;
+
+            //
+            // Sounds
+            //
+
+            sounds = new MediaElement();
+            sounds.LoadedBehavior = MediaState.Manual; // TODO ADD TO THE INSTALLER
+            sounds.Source = new Uri(@"D:\Bakalarka\Sokoban\Main\bin\Debug\Plugins\Sounds\HitToTheWall.wav");
+            host.RegisterMediaElement(sounds);
         }
 
         public void Unload()
@@ -244,9 +291,18 @@ namespace PluginSokoban
             get { return PluginSokoban.Properties.Resources.XmlSchema; }
         }
 
-
-        public bool ProcessXmlInitialization(int mazeWidth, int mazeHeight, XmlNode settings)
+        public void MessageReceived(object message, IGamePlugin p)
         {
+
+        }
+
+        public bool ProcessXmlInitialization(string gameVariant, int mazeWidth, int mazeHeight, XmlNode settings)
+        {
+            if (gameVariant.ToLower() != "ordinary" && gameVariant.ToLower() != "soth")
+            {
+                throw new Exception("Plugin Aim doesn't support game variant: " + gameVariant);
+            }
+
             this.Speed = 6;
             this.fieldsX = mazeWidth;
             this.fieldsY = mazeHeight;

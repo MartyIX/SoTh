@@ -5,11 +5,14 @@ using System.Text;
 using System.Collections;
 using Sokoban.Lib;
 using Sokoban.Model.PluginInterface;
+using System.Windows.Controls;
+using Sokoban.Model.GameDesk;
 
 namespace Sokoban.Model
 {
     public partial class GameRepository : IPluginParent
     {
+        
         public int FieldsX
         {
             get { return fieldsX; }
@@ -21,6 +24,11 @@ namespace Sokoban.Model
         }
 
         public IEnumerable<IGamePlugin> GetGameObjects
+        {
+            get { return gameObjects; }
+        }
+
+        public IEnumerable<IGamePlugin> AllPlugins
         {
             get { return gameObjects; }
         }
@@ -97,6 +105,20 @@ namespace Sokoban.Model
             gameObjects = null;
             DeskSizeChanged = null;
             GameObjectsLoaded = null;
+        }
+
+        #endregion
+
+        #region IPluginParent Members
+
+        public event NewMediaElementDelegate MediaElementAdded;
+
+        public void RegisterMediaElement(MediaElement me)
+        {
+            if (MediaElementAdded != null)
+            {
+                MediaElementAdded(me);
+            }
         }
 
         #endregion

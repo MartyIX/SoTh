@@ -81,7 +81,7 @@ namespace NetworkingTest
             if (nc.IsInitialized != false)
             {
                 DebuggerIX.WriteLine("[Net]", "Consument", "Receiving");
-                nc.ReceiveSync();
+                nc.ReceiveAsync();
                 DebuggerIX.WriteLine("[Net]", "Consument", "Received");
             }
 

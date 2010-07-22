@@ -20,6 +20,8 @@ using Sokoban.Model.GameDesk;
 using Sokoban.Lib.Exceptions;
 using Sokoban.Solvers;
 using Sokoban.WPF;
+using Sokoban.Interfaces;
+using Sokoban.Networking;
 
 namespace Sokoban.View.GameDocsComponents
 {
@@ -27,7 +29,7 @@ namespace Sokoban.View.GameDocsComponents
     /// <summary>
     /// Interaction logic for GameDeskControl.xaml
     /// </summary>
-    public partial class GameDeskControl : DocumentContent, INotifyPropertyChanged, ISolverProvider
+    public partial class GameDeskControl : DocumentContent, INotifyPropertyChanged, ISolverProvider, IGameMatch
     {
         //
         // Public fields and properties
@@ -68,6 +70,7 @@ namespace Sokoban.View.GameDocsComponents
         private PlayingMode playingMode = PlayingMode.League;
         private IQuest quest = null;
         private bool displayBothDesks = false;
+        private IConnection networkConnection = null;
 
         //
         // Constructors
@@ -92,13 +95,13 @@ namespace Sokoban.View.GameDocsComponents
             this.quest = quest;
 
             // Game model for first player
-            game = new Game(quest);
+            game = new Game(quest, GameDisplayType.FirstPlayer);
             this.loadCurrentRound(game);
 
             if (gameMode == GameMode.TwoPlayers)
             {
                 this.DisplayBothDesks = true;
-                gameOpponent = new Game(quest);
+                gameOpponent = new Game(quest, GameDisplayType.SecondPlayer);
                 this.loadCurrentRound(gameOpponent);
             }
         }
@@ -116,7 +119,7 @@ namespace Sokoban.View.GameDocsComponents
             // Game model for first player
 
             quest.SetCurrentRound(roundID);
-            game = new Game(quest);
+            game = new Game(quest, GameDisplayType.FirstPlayer);
             this.loadCurrentRound(game);
         }
 
@@ -164,9 +167,12 @@ namespace Sokoban.View.GameDocsComponents
 
         private void loadCurrentRound(Game game)
         {
+            visualSoundsContainer.Children.Clear(); // remove all sounds
+            
             if (game == this.game)
             {
                 game.RegisterVisual(this.graphicsControl);
+                game.PreRoundLoaded += new VoidChangeDelegate(game_PreRoundLoaded);
             }
             else
             {
@@ -187,7 +193,25 @@ namespace Sokoban.View.GameDocsComponents
                 DataContext = this;
                 tbSteps.DataContext = this.Game.GameRepository;
                 Notify("GameRepository");
+                game.StartRendering();
             }
+            else
+            {
+                game.StartRendering();
+            }
+        }
+
+        /// <summary>
+        /// Called after the GameRepository instance is created but before round and plugins are loaded
+        /// </summary>
+        void game_PreRoundLoaded()
+        {
+            game.GameRepository.MediaElementAdded += new NewMediaElementDelegate(GameRepository_MediaElementAdded);
+        }
+
+        private void GameRepository_MediaElementAdded(MediaElement me)
+        {
+            visualSoundsContainer.Children.Add(me);
         }
 
         public void Terminate()
@@ -360,12 +384,22 @@ namespace Sokoban.View.GameDocsComponents
         /// <param name="e"></param>
         public void KeyIsDown(object sender, KeyEventArgs e)
         {
-            e.Handled = game.MoveRequest(e.Key);            
+            if (gameMode == GameMode.SinglePlayer || (gameMode == GameMode.TwoPlayers && networkConnection != null))
+            {
+                e.Handled = game.MoveRequest(e.Key);
+            }
+            else
+            {
+                MessageBox.Show("Connection has not been established yet. Please wait.");
+            }
         }
 
         public void KeyIsUp(object sender, KeyEventArgs e)
         {
-            e.Handled = game.StopMove(e.Key);            
+            if (gameMode == GameMode.SinglePlayer || (gameMode == GameMode.TwoPlayers && networkConnection != null))
+            {
+                e.Handled = game.StopMove(e.Key);
+            }
         }
 
 
@@ -414,7 +448,8 @@ namespace Sokoban.View.GameDocsComponents
 
         public object GetIdentifier()
         {
-            return game.GetIdentifier();
+            //return game.GetIdentifier();
+            return this; // has to be GameDeskControl
         }
 
         #endregion
@@ -440,6 +475,15 @@ namespace Sokoban.View.GameDocsComponents
                 
             timeCounter.Clear();
         }
+
+        #region IGameMatch Members
+
+        public void SetNetworkConnection(IConnection connection)
+        {
+            this.networkConnection = connection;
+        }
+
+        #endregion
     }
 
 

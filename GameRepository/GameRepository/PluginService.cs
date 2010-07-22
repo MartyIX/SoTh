@@ -7,6 +7,7 @@ using Sokoban.Lib;
 using System.IO;
 using Sokoban.Model.PluginInterface;
 using Sokoban.Lib.Exceptions;
+using System.Security;
 
 namespace Sokoban.Model
 {
@@ -48,6 +49,7 @@ namespace Sokoban.Model
                 pluginsPath = _pluginsPath;            
             }            
         }
+        
         /// <summary>
         /// Searches the passed Path for Plugins
         /// </summary>
@@ -76,6 +78,11 @@ namespace Sokoban.Model
         /// </summary>
         public void ClosePlugins()
         {
+            foreach (IGamePlugin p in runningPlugins)
+            {
+                p.Unload();
+            }
+
             runningPlugins.Clear();
         }
 
@@ -147,9 +154,7 @@ namespace Sokoban.Model
                     {
                         if (type.IsPublic && !type.IsAbstract)
                         {
-                            Type typeInterface = type.GetInterface("Sokoban.Model.PluginInterface.IGamePlugin", true);
-
-                            if (typeInterface != null)
+                            if (type.GetInterface("Sokoban.Model.PluginInterface.IGamePlugin", true) != null)
                             {
                                 succesfullyLoaded = true;
                                 pluginType = type;
@@ -160,6 +165,12 @@ namespace Sokoban.Model
                 catch (FileNotFoundException e)
                 {
                     succesfullyLoaded = false;
+                    DebuggerIX.WriteLine("Plugin: " + fileName + " - file not found exception: " + e.Message);
+                }
+                catch (SecurityException e)
+                {
+                    succesfullyLoaded = false;
+                    DebuggerIX.WriteLine("Plugin: " + fileName + " - security exception: " + e.Message);
                 }
 
                 if (succesfullyLoaded)

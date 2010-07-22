@@ -135,6 +135,8 @@ namespace Sokoban.View
             } 
         }
 
+
+
         private void disableStartOfSolver()
         {
             butStart.IsEnabled = false;

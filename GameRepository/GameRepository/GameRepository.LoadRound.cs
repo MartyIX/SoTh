@@ -69,7 +69,7 @@ namespace Sokoban.Model
             //try
             //{
             gamePlugin.Load();
-            gamePlugin.ProcessXmlInitialization(this.fieldsX, this.fieldsY, node);
+            gamePlugin.ProcessXmlInitialization(this.GameVariant, this.fieldsX, this.fieldsY, node);
             //}
             //catch (Exception e)
             //{
@@ -84,9 +84,10 @@ namespace Sokoban.Model
             }
         }
 
-        private void OnLoadedRoundProperties(string roundName, int fieldsX, int fieldsY)
+        private void OnLoadedRoundProperties(string gameVariant, string roundName, int fieldsX, int fieldsY)
         {
             this.RoundName = roundName; // we want to notify
+            this.GameVariant = gameVariant;
             this.fieldsX = fieldsX;
             this.fieldsY = fieldsY;
         }

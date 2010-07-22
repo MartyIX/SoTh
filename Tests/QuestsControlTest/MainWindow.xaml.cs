@@ -16,6 +16,7 @@ using System.Diagnostics;
 using Sokoban.View;
 using Sokoban.Interfaces;
 using Sokoban.Lib;
+using Sokoban.Model;
 
 namespace QuestsControlTest
 {
@@ -30,16 +31,15 @@ namespace QuestsControlTest
         {
             InitializeComponent();
             this.DataContext = this;
-
-            QuestsControl.Initialize("http://127.0.0.1/www/");
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             IQuestHandler iquestHandler = new QuestHandler();
-            questsControlPane.Initialize(iquestHandler, errorMessagePresenter);
+            questsControlPane.Initialize(iquestHandler, errorMessagePresenter, null);
         }
     }
+
 
     public class ErrorMessagePresenter : IErrorMessagesPresenter
     {
@@ -56,15 +56,13 @@ namespace QuestsControlTest
 
     public class QuestHandler : IQuestHandler
     {
-
-
         #region IQuestHandler Members
 
-        public void QuestSelected(Sokoban.Model.GameDesk.IQuest quest, GameMode gameMode)
+        IGameMatch IQuestHandler.QuestSelected(int leaguesID, int roundsID, Sokoban.Model.GameDesk.IQuest quest, GameMode gameMode)
         {
             Debug.WriteLine("Selected game mode: " + gameMode.ToString());
             Debug.WriteLine(quest.WholeQuestXml);
-
+            return null;
         }
 
         #endregion

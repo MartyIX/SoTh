@@ -39,6 +39,7 @@ namespace Sokoban.Model
         /// </summary>
         public bool isUserAutenticated = false;
 
+        public string IPAddress { get; set; }
         public string SessionID { get; set; }
 
         private string server = "";
@@ -202,6 +203,7 @@ namespace Sokoban.Model
                 this.Password = password;
                 this.Server = server;
                 this.SessionID = response.SessionID;
+                this.IPAddress = response.IP;
 
                 return true;
             }
