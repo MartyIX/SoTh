@@ -55,6 +55,13 @@ namespace Sokoban.WPF
             }
         }
 
+        public void Pause()
+        {
+            if (timer != null)
+            {
+                timer.Stop();
+            }
+        }
 
         public void Stop()
         {

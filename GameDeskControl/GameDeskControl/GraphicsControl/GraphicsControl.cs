@@ -57,6 +57,27 @@ namespace Sokoban.View.GameDocsComponents
             gameDeskControl.Resize();
         }
 
+        public void StopTime()
+        {
+            gameDeskControl.StopTime();
+        }
+
+        public void PauseTime()
+        {
+            gameDeskControl.PauseTime();
+        }
+
+        public void RestartGame()
+        {
+            gameDeskControl.Reload();
+        }
+
+        public void PlayNextRound()
+        {
+            gameDeskControl.LoadNextRound();
+        }
+
+
         #endregion
     }
 }

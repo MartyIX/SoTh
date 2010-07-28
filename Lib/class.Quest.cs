@@ -38,6 +38,11 @@ namespace Sokoban.Model.GameDesk
             get { return name; }
         }
 
+        public int RoundsNo
+        {
+            get { return rounds.Count; }
+        }
+
         public string ActualRoundXML
         {
             get { return rounds[actRound].OuterXml; }

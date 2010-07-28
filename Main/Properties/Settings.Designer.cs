@@ -55,5 +55,41 @@ namespace Sokoban.Properties {
                 this["ConsoleCommandPrefix"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IsSoundEnabled {
+            get {
+                return ((bool)(this["IsSoundEnabled"]));
+            }
+            set {
+                this["IsSoundEnabled"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IsSavingWindowLayoutEnabled {
+            get {
+                return ((bool)(this["IsSavingWindowLayoutEnabled"]));
+            }
+            set {
+                this["IsSavingWindowLayoutEnabled"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string WindowLayout {
+            get {
+                return ((string)(this["WindowLayout"]));
+            }
+            set {
+                this["WindowLayout"] = value;
+            }
+        }
     }
 }

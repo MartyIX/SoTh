@@ -55,12 +55,9 @@ namespace PluginWall
             get { return "1.00"; }
         }
 
-        public void Load()
+        public void Load(string appPath)
         {
-            // One-based values
-            posX = 2;
-            posY = 2;
-
+            
             image = new System.Windows.Controls.Image();
 
             BitmapImage bi = new BitmapImage();
@@ -76,18 +73,6 @@ namespace PluginWall
         {
             image = null;
             uiElement = null;
-        }
-
-        public IPluginParent Parent
-        {
-            get
-            {
-                return host;
-            }
-            set
-            {
-                host = value;
-            }
         }
 
         #endregion
@@ -125,7 +110,7 @@ namespace PluginWall
             get { return PluginWall.Properties.Resources.XmlSchema; }
         }
 
-        public void MessageReceived(object message, IGamePlugin p)
+        public void MessageReceived(string messageType, object message, IGamePlugin p)
         {
 
         }
@@ -137,7 +122,7 @@ namespace PluginWall
                 throw new Exception("Plugin Aim doesn't support game variant: " + gameVariant);
             }
 
-            DebuggerIX.WriteLine("[Plugin]", this.Name, "ProcessXmlInitialization, settings: " + settings.InnerXml);
+            DebuggerIX.WriteLine(DebuggerTag.Plugins, this.Name, "ProcessXmlInitialization, settings: " + settings.InnerXml);
 
             posX = int.Parse(settings["PosX"].InnerText);
             posY = int.Parse(settings["PosY"].InnerText);

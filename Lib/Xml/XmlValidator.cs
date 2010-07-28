@@ -51,11 +51,11 @@ namespace Sokoban.Lib
 
             if (e.Severity == XmlSeverityType.Warning)
             {
-                DebuggerIX.WriteLine("[XmlValidation]", "Warning", e.Message);
+                DebuggerIX.WriteLine(DebuggerTag.XmlValidation, "Warning", e.Message);
             }
             else if (e.Severity == XmlSeverityType.Error)
             {
-                DebuggerIX.WriteLine("[XmlValidation]", "ERROR", e.Message);
+                DebuggerIX.WriteLine(DebuggerTag.XmlValidation, "ERROR", e.Message);
             }
         }
         
@@ -85,14 +85,14 @@ namespace Sokoban.Lib
             //This code catches any XML exceptions.
             catch (XmlException XmlExp)
             {
-                DebuggerIX.WriteLine("[XmlValidation]", XmlExp.Message);
+                DebuggerIX.WriteLine(DebuggerTag.XmlValidation, XmlExp.Message);
                 errorMessage = new StringBuilder();
                 errorMessage.Append(XmlExp.Message);
                 isValid = false;
             }
             catch (XmlSchemaValidationException e)
             {
-                DebuggerIX.WriteLine("[XmlValidation]", e.Message);
+                DebuggerIX.WriteLine(DebuggerTag.XmlValidation, e.Message);
                 errorMessage = new StringBuilder();
                 errorMessage.Append(e.Message);
                 isValid = false;

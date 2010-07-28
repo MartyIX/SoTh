@@ -16,9 +16,10 @@
 
     <DockPanel LastChildFill="True">
         <DockPanel DockPanel.Dock="Bottom" LastChildFill="True">
-            <TextBlock DockPanel.Dock="Left" Margin="0,0,5,0">Status:</TextBlock>
-            <Button DockPanel.Dock="Right" x:Name="btnRefresh" Click="btnRefresh_Click">Refresh</Button>
-            <TextBlock x:Name="tbStatus" Text="{Binding Status}" HorizontalAlignment="Stretch"></TextBlock>
+            <TextBlock DockPanel.Dock="Left" Margin="5,0,5,0">Status:</TextBlock>			
+			<!--<Button DockPanel.Dock="Right" Margin="0,0,5,0" x:Name="btnRefresh" Click="btnRefresh_Click">Refresh</Button>-->
+			<Button DockPanel.Dock="Right" Margin="0,0,5,0" x:Name="btnAutoRefresh" Click="btnAutoRefresh_Click">Start refreshing</Button>
+            <TextBlock x:Name="tbStatus" Text="{Binding Status}" FontWeight="Bold" HorizontalAlignment="Stretch"></TextBlock>
         </DockPanel>
 
         <toolkit:DataGrid x:Name="MyDataGrid" HorizontalAlignment="Stretch" 
@@ -35,6 +36,12 @@
                 <toolkit:DataGridTextColumn Header="IP" Binding="{Binding IPAddress}" Width="*" x:Name="dgtcIPAddress" />
             </toolkit:DataGrid.Columns>
             
+			<toolkit:DataGrid.ContextMenu>
+			    <ContextMenu>
+			    <MenuItem Header="Refresh offers" Click="contextMenuRefresh_Click" />
+			    </ContextMenu>
+			</toolkit:DataGrid.ContextMenu>
+			
         </toolkit:DataGrid>
     </DockPanel>
 </ad:DockableContent>

@@ -12,7 +12,7 @@ using Sokoban.Lib.Exceptions;
 namespace Sokoban.Model
 {
 
-    public partial class GameRepository : IBaseRepository
+    public partial class GameRepository
     {
         public event SetSizeDelegate DeskSizeChanged;
         public event GameObjectsLoadedDelegate GameObjectsLoaded;
@@ -23,16 +23,13 @@ namespace Sokoban.Model
         /// </summary>
         /// <param name="xml"></param>
         public void LoadRoundFromXML(string xml)
-        {
-            
-            
+        {                       
             // Initialization of fields
             gameObjects = new List<IGamePlugin>();
-            movableElements = new List<IGamePlugin>();
+            movableElements = new List<IMovableElement>();
             fixedElements = new IGamePlugin[fieldsX, fieldsY];
             fixedTiles = new IGamePlugin[fieldsX, fieldsY];
             controllableByUserObjects = new List<IControllableByUserInput>();
-            gameIndicators = new List<IGamePlugin>();
 
 
             // Reading from the XML 
@@ -47,12 +44,21 @@ namespace Sokoban.Model
                 DeskSizeChanged(fieldsX, fieldsY);
             }
 
+            foreach (IGamePlugin gp in this.AllPlugins)
+            {
+                gp.Load(GameRepository.appPath);
+            }
+
+            // Load game variant settings
+            if (this.gameVariant != null)
+            {
+                this.gameVariant.Load(GameRepository.appPath);
+            }
+
             if (GameObjectsLoaded != null)
             {
                 GameObjectsLoaded(gameObjects);
-            }
-
-            gameState = GameState.Running;
+            }        
         }
 
         /*
@@ -66,16 +72,8 @@ namespace Sokoban.Model
             IGamePlugin gamePlugin = pluginService.RunPlugin(pluginName);
 
             // Plugin bootstrap
-            //try
-            //{
-            gamePlugin.Load();
-            gamePlugin.ProcessXmlInitialization(this.GameVariant, this.fieldsX, this.fieldsY, node);
-            //}
-            //catch (Exception e)
-            //{
-            //   throw new PluginLoadFailedException("Plugin " + pluginName + " failed to load. Error: " + e.Message);
-            //}
-
+            gamePlugin.ProcessXmlInitialization(this.GameVariantName, this.fieldsX, this.fieldsY, node);
+            
 
             // Find out plugin properties according to interfaces it implements
             if (this.integratePlugin(gamePlugin) == false)
@@ -87,9 +85,11 @@ namespace Sokoban.Model
         private void OnLoadedRoundProperties(string gameVariant, string roundName, int fieldsX, int fieldsY)
         {
             this.RoundName = roundName; // we want to notify
-            this.GameVariant = gameVariant;
+            this.GameVariantName = gameVariant;
             this.fieldsX = fieldsX;
             this.fieldsY = fieldsY;
+
+            this.gameVariant = pluginService.RunVariant(gameVariant);
         }
 
         /// <summary>
@@ -104,7 +104,6 @@ namespace Sokoban.Model
             if (controllableByUser != null)
             {
                 controllableByUserObjects.Add(controllableByUser);
-
 
                 if (controllableByUser.StepsCount != -1)
                 {
@@ -121,7 +120,6 @@ namespace Sokoban.Model
             {
                 isElement = true;
                 fixedElements[fixedElement.PosX - 1, fixedElement.PosY - 1] = gamePlugin;
-                gameObjects.Add(gamePlugin);
             }
 
             // Tiles
@@ -131,7 +129,6 @@ namespace Sokoban.Model
             {
                 isElement = true;
                 fixedTiles[fixedTile.PosX - 1, fixedTile.PosY - 1] = gamePlugin;
-                gameObjects.Add(gamePlugin);
             }
 
             // Objects
@@ -140,8 +137,14 @@ namespace Sokoban.Model
             if (movableElement != null)
             {
                 isElement = true;
-                movableElements.Add(gamePlugin);
+                movableElements.Add(movableElement);                
+            }
+
+
+            if (isElement)
+            {
                 gameObjects.Add(gamePlugin);
+                gamePlugin.ID = gameObjects.Count - 1;
             }
 
             return isElement;

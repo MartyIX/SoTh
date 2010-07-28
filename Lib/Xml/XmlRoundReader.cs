@@ -69,7 +69,6 @@ namespace Sokoban.Lib
             }
 
             // Adding objects to the desk
-            int objectID = 0;
             XmlNodeList nodeList;
 
             nodeList = round.SelectNodes("./x:GameObjects/*", names);

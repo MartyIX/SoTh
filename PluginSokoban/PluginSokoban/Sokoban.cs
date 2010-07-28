@@ -13,6 +13,7 @@ using System.ComponentModel;
 using System.Windows.Controls;
 using System.IO;
 using System.Reflection;
+using Sokoban.Lib.Exceptions;
 
 namespace PluginSokoban
 {
@@ -22,12 +23,12 @@ namespace PluginSokoban
 
         private EventType heldKeyEvent;
         private object syncRoot = new object();
-        private bool moveRequestCancelled = true;
         private MediaElement sounds;
         private DateTime lastTimeHitWallPlayed = DateTime.Now;
 
         public Sokoban(IPluginParent host) : base(host)
-        {            
+        {
+            Initialize(this);
         }
 
 
@@ -55,7 +56,7 @@ namespace PluginSokoban
 
         public string CreatedForHostVersion
         {
-            get { return "1.00"; }
+            get { return "2.00"; }
         }
 
         public new bool ProcessEvent(Int64 time, Event ev)
@@ -71,10 +72,18 @@ namespace PluginSokoban
 
                     base.SetOrientation(ev.what);
 
-                    DebuggerIX.WriteLine("[Sokoban]", "ProcessEvent", ev.what.ToString() + "; Raised from EventID: " + ev.EventID.ToString());
-                    DebuggerIX.WriteLine("[Sokoban]", "", ev.ToString());
-                    returnValue = base.ProcessEvent(time, ev);                    
-         
+                    DebuggerIX.WriteLine(DebuggerTag.SimulationEventHandling, "[Sokoban] ProcessEvent", ev.what.ToString() + "; Raised from EventID: " + ev.EventID.ToString());
+                    DebuggerIX.WriteLine(DebuggerTag.SimulationEventHandling, "", "[Sokoban]" + ev.ToString());
+                    
+                    IGamePlugin obstruction = base.ProcessGoEvent(time, ev);
+
+                    if (obstruction != null && obstruction.Name == "Box")
+                    {
+                        this.host.GameVariant.CheckRound(time, "BoxMoved", null);
+                    }
+
+                    returnValue = true;
+
                     break;
 
                 case EventType.wentRight:
@@ -85,13 +94,13 @@ namespace PluginSokoban
                     #region wentXXX
                    
                     movementEventsInBuffer--;
-                    DebuggerIX.WriteLine("SokKeyBuf", "Key buffer: " + movementEventsInBuffer.ToString() +
+                    DebuggerIX.WriteLine(DebuggerTag.SimulationEventHandling, "[Sokoban]", "Key buffer: " + movementEventsInBuffer.ToString() +
                         " / " + MAX_EVENTS_IN_KB.ToString());
 
                     if (heldKeyEvent != EventType.none && movementEventsInBuffer == 0 && timeWholeMovementEnds <= time)
                     {
                         EventType newEvent = heldKeyEvent;
-                        DebuggerIX.WriteLine("SokRepMvmt", "Raised from EventID = " + ev.EventID.ToString());
+                        DebuggerIX.WriteLine(DebuggerTag.SimulationEventHandling, "[Sokoban]", "Raised from EventID = " + ev.EventID.ToString());
                         base.MakePlan("SokRepMvmt", ev.when, ev.who, newEvent);
                     }
 
@@ -103,8 +112,6 @@ namespace PluginSokoban
                 case EventType.hitToTheWall:
 
                     return processHitToWall();
-
-                    break;
 
                 default:
                     returnValue = base.ProcessEvent(time, ev);                    
@@ -137,12 +144,10 @@ namespace PluginSokoban
             return true;
         }
 
-        public void Load()
+        public void Load(string appPath)
         {
             // One-based values
-            posX = 1;
-            posY = 1;
-            ObstructionLevel = 10;
+            obstructionLevel = -1; // special value!
             StepsCount = 0; // we want to notify
 
             //
@@ -163,10 +168,17 @@ namespace PluginSokoban
             // Sounds
             //
 
-            sounds = new MediaElement();
-            sounds.LoadedBehavior = MediaState.Manual; // TODO ADD TO THE INSTALLER
-            sounds.Source = new Uri(@"D:\Bakalarka\Sokoban\Main\bin\Debug\Plugins\Sounds\HitToTheWall.wav");
-            host.RegisterMediaElement(sounds);
+            if (!File.Exists(appPath + @"\Plugins\Sounds\HitToTheWall.wav"))
+            {
+                throw new PluginLoadFailedException("File `" + appPath + @"\Plugins\Sounds\HitToTheWall.wav" + "` could not be found.");
+            }
+            else
+            {
+                sounds = new MediaElement();
+                sounds.LoadedBehavior = MediaState.Manual; // TODO ADD TO THE INSTALLER
+                sounds.Source = new Uri(appPath + @"\Plugins\Sounds\HitToTheWall.wav");
+                host.RegisterMediaElement(sounds);
+            }
         }
 
         public void Unload()
@@ -175,17 +187,6 @@ namespace PluginSokoban
             uiElement = null;
         }
 
-        public IPluginParent Parent
-        {
-            get
-            {
-                return host;
-            }
-            set
-            {
-                host = value;
-            }
-        }
 
         #endregion
 
@@ -200,7 +201,7 @@ namespace PluginSokoban
         /// <returns>Returns if the key was handled</returns>
         public bool OnKeyDown(Key key, Int64 time, double phase)
         {
-            DebuggerIX.WriteLine("[GR-MoveRequest]", ">>> MoveRequest <<<", "Time = " + time.ToString() + 
+            DebuggerIX.WriteLine(DebuggerTag.Keyboard, "[GR-MoveRequest]", ">>> MoveRequest <<< Time = " + time.ToString() + 
                 "; Phase = " + phase.ToString() + "; Key = " + key.ToString());
 
             EventType ev = EventTypeLib.ConvertFromKey(key);
@@ -215,10 +216,9 @@ namespace PluginSokoban
                     {
                         if (this.TimeWholeMovementEnds <= time)
                         {
-                            DebuggerIX.WriteLine("[GR-MoveRequest]", "Movement is not in progress. Movement starts at time: " +
-                                time.ToString());
+                            DebuggerIX.WriteLine(DebuggerTag.SimulationEventHandling, "[GR-MoveRequest]", 
+                                "Movement is not in progress. Movement starts at time: " + time.ToString());
 
-                            moveRequestCancelled = false;
                             // In this moment; events for @time are processed, therefore time + 1
                             //MakePlan("SokStartMov", time + 1, (GameObject)pSokoban, pSokoban.heldKeyEvent);
 
@@ -229,12 +229,14 @@ namespace PluginSokoban
                         else 
                         {                        
                             base.MakePlan("SokKeyBuf", timeWholeMovementEnds, (IGamePlugin)this, heldKeyEvent);
-                            DebuggerIX.WriteLine("[GR-MoveRequest]", "Request is buffered. Movement start at time: " + (this.TimeWholeMovementEnds).ToString());
+                            DebuggerIX.WriteLine(DebuggerTag.SimulationEventHandling, "[GR-MoveRequest]", 
+                                "Request is buffered. Movement start at time: " + (this.TimeWholeMovementEnds).ToString());
                         }
                     }
                     else
                     {
-                        DebuggerIX.WriteLine("[GR-MoveRequest]", "Ignored; Buffer is full: " + this.MovementEventsInBuffer.ToString());
+                        DebuggerIX.WriteLine(DebuggerTag.SimulationEventHandling, "[GR-MoveRequest]", 
+                            "Ignored; Buffer is full: " + this.MovementEventsInBuffer.ToString());
                     }
                 }
 
@@ -253,7 +255,6 @@ namespace PluginSokoban
         public bool OnKeyUp(Key key, Int64 time, double phase)
         {
             this.heldKeyEvent = EventType.none;
-            moveRequestCancelled = true;
 
             return EventTypeLib.ConvertFromKey(key) != EventType.none;
         }
@@ -291,7 +292,7 @@ namespace PluginSokoban
             get { return PluginSokoban.Properties.Resources.XmlSchema; }
         }
 
-        public void MessageReceived(object message, IGamePlugin p)
+        public void MessageReceived(string messageType, object message, IGamePlugin p)
         {
 
         }
@@ -307,7 +308,7 @@ namespace PluginSokoban
             this.fieldsX = mazeWidth;
             this.fieldsY = mazeHeight;
 
-            DebuggerIX.WriteLine("[Plugin]", this.Name, "ProcessXmlInitialization, settings: " + settings.InnerXml);
+            DebuggerIX.WriteLine(DebuggerTag.Plugins, this.Name, "ProcessXmlInitialization, settings: " + settings.InnerXml);
 
             posX = int.Parse(settings["PosX"].InnerText);
             posY = int.Parse(settings["PosY"].InnerText);
@@ -316,6 +317,19 @@ namespace PluginSokoban
         }
 
         #endregion
+
+        public override int ObstructionLevel(IGamePlugin asker)
+        {
+            if (asker.Name == "Monster")
+            {
+                return -1;
+            }
+            else
+            {
+                return 10;
+            }
+        }
+
 
     }
 }

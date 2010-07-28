@@ -3,9 +3,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:Sokoban.View.ChooseConnection"  
     xmlns:components="clr-namespace:Sokoban.Components"  
-    Title="Sokoban: Connect to the game server" Height="238" Width="358"
+    Title="Sokoban: Connect to the game server" Height="250" Width="410"
     ShowInTaskbar="False"
-    WindowStartupLocation="CenterScreen" MinWidth="307" MinHeight="208" MaxWidth="500" MaxHeight="500" Padding="10">
+    Closing="Window_Closing"    
+    WindowStartupLocation="CenterScreen" MinWidth="410" MinHeight="250" MaxWidth="500" MaxHeight="500" Padding="10">
     <Window.Resources>
         <local:ErrorContentConverter x:Key="errorConverter" />
 
@@ -89,9 +90,10 @@
            components:PasswordBoxAssistant.BindPassword="true"  
            components:PasswordBoxAssistant.BoundPassword="{Binding Path=Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="25">
         </PasswordBox>
-        <TextBox Background="White" Foreground="Red" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" x:Name="tbStatus" 
-                 Text="{Binding Path=LoginMessage}" />
-        <StackPanel Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
+        <TextBox AcceptsReturn="True" IsReadOnly="True" Background="White" Foreground="Red" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" 
+		         x:Name="tbStatus" Text="{Binding Path=LoginMessage}" Margin="0,4,0,2" 
+				 TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" />
+        <StackPanel Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,0">
         <Button Name="btnConnect" IsDefault="True" Click="btnConnect_Click">Connect</Button>
         <Button Name="btnCancel" IsCancel="True" Margin="5,0,0,0" Click="btnCancel_Click">Cancel</Button>
         </StackPanel>

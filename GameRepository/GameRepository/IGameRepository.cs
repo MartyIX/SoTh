@@ -19,7 +19,7 @@ namespace Sokoban.Model.GameDesk
     {
         int FieldsX { get; }
         int FieldsY { get; }
-        Int64 Time { get; }
+        Int64 Time { get; set; }
         string RoundName { get; }
         int StepsCount { get; }
         IEnumerable<IGamePlugin> GetGameObjects { get; }
@@ -30,11 +30,14 @@ namespace Sokoban.Model.GameDesk
         bool StopMove(Key key, double phase);
         IGameRealTime GameRealTime { get; set; }
         PluginService PluginService { get; }
+        void MakePlan(int ID, Int64 when, EventType what);
+
 
         event SetSizeDelegate DeskSizeChanged;
         event GameObjectsLoadedDelegate GameObjectsLoaded;
         event VoidChangeDelegate GameStarted;
         event NewMediaElementDelegate MediaElementAdded;
+        event GameChangeDelegate GameChanged;
 
         void Terminate();
     }

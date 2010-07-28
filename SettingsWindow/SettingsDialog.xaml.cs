@@ -52,6 +52,32 @@ namespace Sokoban.View
             }
         }
 
+        public bool IsSavingAppLayoutEnabled
+        {
+            get
+            {
+                return (bool)this.model["IsSavingAppLayoutEnabled"];
+            }
+            set
+            {
+                this.model["IsSavingAppLayoutEnabled"] = value;
+            }
+        }
+
+
+        public bool IsSoundEnabled
+        {
+            get
+            {
+                return (bool)this.model["IsSoundEnabled"];
+            }
+            set
+            {
+                this.model["IsSoundEnabled"] = value;
+            }
+        }
+
+
         #endregion
 
         private void Save_Click(object sender, RoutedEventArgs e)

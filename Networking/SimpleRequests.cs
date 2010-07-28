@@ -17,6 +17,20 @@ namespace Sokoban.Networking
     }
 
     [Serializable]
+    public class SimulationTimeMessage
+    {
+        public DateTime SentTime { get; set; }
+        public Int64 SimulationTime { get; set; }
+
+        public SimulationTimeMessage(Int64 simulationTime, DateTime sentTime)
+        {
+            SentTime = sentTime;
+            SimulationTime = simulationTime;
+        }
+    }
+
+
+    [Serializable]
     public class DisconnectRequestConfirmation
     {
         public DateTime DateTime { get; set; }

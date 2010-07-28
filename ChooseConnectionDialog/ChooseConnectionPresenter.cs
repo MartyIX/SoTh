@@ -6,6 +6,7 @@ using System.Windows;
 using System.Diagnostics;
 using Sokoban.Presenter;
 using Sokoban.Model;
+using Sokoban.Lib;
 
 namespace Sokoban.View.ChooseConnection
 {
@@ -14,6 +15,9 @@ namespace Sokoban.View.ChooseConnection
         private ChooseConnectionDialog chooseConnectionDialog;
         private ChooseConnectionDebug chooseConnectionDebug;
         private string viewName;
+        public Window mainApp = null;
+        public bool isConnected = false;
+        public event VoidChangeDelegate Closing;
 
 
         public ChooseConnectionPresenter(string viewName, IProfileRepository model)
@@ -25,11 +29,13 @@ namespace Sokoban.View.ChooseConnection
 
         public override void InitializeView(Window window) 
         {
+            mainApp = window;
             InitializeView_preFill(window, "", "", "");
         }
 
         public void InitializeView_preFill(Window mainApp, string server, string username, string password)
         {
+            this.mainApp = mainApp;
 
             if (viewName == "form" && (chooseConnectionDialog == null || PresentationSource.FromVisual(chooseConnectionDialog).IsDisposed))
             {
@@ -40,7 +46,9 @@ namespace Sokoban.View.ChooseConnection
 
                 this.view = (IChooseConnectionView)chooseConnectionDialog;
                 chooseConnectionDialog.Owner = mainApp;
+                chooseConnectionDialog.Closed += new EventHandler(chooseConnectionDialog_Closed);
                 chooseConnectionDialog.Show();
+                
             }
             else if (viewName == "debug" && chooseConnectionDebug == null)
             {
@@ -51,6 +59,21 @@ namespace Sokoban.View.ChooseConnection
 
                 this.view = (IChooseConnectionView)chooseConnectionDebug;
                 this.Login();
+                dialogClosing();
+            }
+        }
+
+        void chooseConnectionDialog_Closed(object sender, EventArgs e)
+        {
+            mainApp.Activate();
+            dialogClosing();
+        }
+
+        private void dialogClosing()
+        {            
+            if (Closing != null)
+            {
+                Closing();
             }
         }
 
@@ -58,6 +81,7 @@ namespace Sokoban.View.ChooseConnection
         {
             if (repository.TryLogin(this.view.SelectedURL, this.view.Username, this.view.Password))
             {
+                isConnected = true;
                 // Login was successful
                 Debug.WriteLine("- Login successful");
                 this.view.CloseWindow();

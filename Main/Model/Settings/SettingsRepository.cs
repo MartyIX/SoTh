@@ -31,6 +31,14 @@ namespace Sokoban.Model.Settings
                 {
                     return UserSettingsManagement.IsSplashEnabled;
                 }
+                else if (s == "IsSoundEnabled")
+                {
+                    return UserSettingsManagement.IsSoundEnabled;
+                }
+                else if (s == "IsSavingAppLayoutEnabled")
+                {
+                    return UserSettingsManagement.IsSavingAppLayoutEnabled;
+                }
                 else
                 {
                     throw new Exception("Property `" + s + "' is not in user-settings.");
@@ -42,7 +50,17 @@ namespace Sokoban.Model.Settings
                 if (s == "IsSplashEnabled")
                 {
                     UserSettingsManagement.IsSplashEnabled = (bool)value;
-                } else {
+                }
+                else if (s == "IsSoundEnabled")
+                {
+                    UserSettingsManagement.IsSoundEnabled = (bool)value;                
+                }
+                else if (s == "IsSavingAppLayoutEnabled")
+                {
+                    UserSettingsManagement.IsSavingAppLayoutEnabled = (bool)value;                
+                } 
+                else 
+                {
                     throw new Exception("Property `" + s + "' is not in user-settings.");
                 }
             }

@@ -61,8 +61,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="class.Coordinate.cs" />
-    <Compile Include="GraphicsControl.cs" />
-    <Compile Include="IGraphicsControl.cs" />
+    <Compile Include="FieldSizeToRectConverter.cs" />
+    <Compile Include="Game.Parts\InquiryUser.cs" />
+    <Compile Include="Game.Parts\Round.cs" />
+    <Compile Include="Game.Parts\NetworkService.cs" />
+    <Compile Include="Game.Parts\SolverProvider.cs" />
+    <Compile Include="Game.Parts\SolverPainter.cs" />
+    <Compile Include="GameDeskControl.Parts\Round.cs" />
+    <Compile Include="GameDeskControl.Parts\SolverProvider.cs" />
+    <Compile Include="GameDeskControl.Parts\GameMatch.cs" />
+    <Compile Include="GameDeskRepository.Keyboard.cs" />
+    <Compile Include="GameDeskControl.Parts\Resizing.cs" />
+    <Compile Include="GameDeskControl.Parts\UserInquiryAccepter.cs" />
+    <Compile Include="GraphicsControl\GraphicsControl.cs" />
+    <Compile Include="GraphicsControl\IGraphicsControl.cs" />
+    <Compile Include="NetworkModule.cs" />
+    <Compile Include="Silencer.cs" />
     <Compile Include="SolverPainter.cs" />
     <Compile Include="EnumsAndDelegates.cs" />
     <Compile Include="Game.cs" />
@@ -93,6 +107,10 @@
       <Project>{F44E4759-3B19-4E1B-BA4D-6E4F64086190}</Project>
       <Name>Lib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Networking\Networking.csproj">
+      <Project>{72836426-37F3-472E-927D-EA899591FAEF}</Project>
+      <Name>Networking</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\PluginInterface\PluginInterface\PluginInterface.csproj">
       <Project>{E1357F87-0BE7-4FF7-84B4-D4CC4CD1788E}</Project>
       <Name>PluginInterface</Name>
@@ -112,6 +130,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -13,10 +13,18 @@ namespace Sokoban.Model
 {
     public class PluginService
     {
-        private static SortedDictionary<string, Pair<Type, Assembly>> loadedAssemblies = new SortedDictionary<string, Pair<Type, Assembly>>();
+        private enum PluginType
+        {
+            GamePlugin,
+            GameVariant
+        }
+        
+        private static SortedDictionary<string, Pair<Type, Assembly>> loadedPluginAssemblies = new SortedDictionary<string, Pair<Type, Assembly>>();
+        private static SortedDictionary<string, Pair<Type, Assembly>> loadedVariantAssemblies = new SortedDictionary<string, Pair<Type, Assembly>>();
         private static SortedDictionary<string, bool> loadedFiles = new SortedDictionary<string, bool>();
         private static SortedDictionary<string, string> pluginSchemata = new SortedDictionary<string, string>();
         private List<IGamePlugin> runningPlugins = new List<IGamePlugin>(); // only this will be unloaded via Unl
+        private List<IGameVariant> runningVariants = new List<IGameVariant>(); // only this will be unloaded via Unl
 
         private IPluginParent pluginHost;
 
@@ -40,7 +48,7 @@ namespace Sokoban.Model
             {
                 throw new InvalidStateException("Path to the plugins must be non-empty string.");
             }
-            else if (_pluginsPath[_pluginsPath.Length - 1] != '\\' || _pluginsPath[_pluginsPath.Length - 1] != '/')
+            else if (_pluginsPath[_pluginsPath.Length - 1] != '\\' && _pluginsPath[_pluginsPath.Length - 1] != '/')
             {
                 pluginsPath = _pluginsPath + @"\";
             }
@@ -56,20 +64,20 @@ namespace Sokoban.Model
         /// <param name="Path">Directory to search for Plugins in</param>
         public void LoadAllPlugins(string Path)
         {
-            if (loadedAssemblies.Count == 0)
+            if (loadedPluginAssemblies.Count == 0)
             {
                 foreach (string fileOn in Directory.GetFiles(Path))
                 {
                     FileInfo file = new FileInfo(fileOn);
                     if (file.Extension.Equals(".dll"))
                     {
-                        LoadPlugin(fileOn);
+                        LoadAssembly(fileOn);
                     }
                 }
             }
             else
             {
-                DebuggerIX.WriteLine("[Plugins]", "LoadPlugins", "Method may be used only when no plugins has been loaded yet.");
+                DebuggerIX.WriteLine(DebuggerTag.Plugins, "LoadPlugins", "Method may be used only when no plugins has been loaded yet.");
             }
         }
 
@@ -78,12 +86,23 @@ namespace Sokoban.Model
         /// </summary>
         public void ClosePlugins()
         {
-            foreach (IGamePlugin p in runningPlugins)
+            if (runningPlugins != null)
             {
-                p.Unload();
+                foreach (IGamePlugin p in runningPlugins)
+                {
+                    p.Unload();
+                }
+                runningPlugins.Clear();
             }
 
-            runningPlugins.Clear();
+            if (runningVariants != null)
+            {
+                foreach (IGameVariant v in runningVariants)
+                {
+                    v.Unload();
+                }
+                runningVariants.Clear();
+            }                      
         }
 
         public string GetPluginSchema(string pluginName)
@@ -96,7 +115,7 @@ namespace Sokoban.Model
             {
                 if (pluginsPath == null) throw new InvalidStateException("PluginService class was not initialized.");
 
-                LoadPlugin(this.getPluginPath(pluginName));                
+                LoadAssembly(this.getPluginPath(pluginName));                                                
                 IGamePlugin gamePlugin = RunPlugin(pluginName);
                 pluginSchemata[pluginName] = gamePlugin.XmlSchema;
                 return pluginSchemata[pluginName];
@@ -107,13 +126,13 @@ namespace Sokoban.Model
         {
             pluginName = pluginName.ToLower();
                         
-            if (loadedAssemblies.ContainsKey(pluginName) == false)
+            if (loadedPluginAssemblies.ContainsKey(pluginName) == false)
             {
-                this.LoadPluginByName(pluginName);
+                this.LoadAssemblyByName(pluginName);
             }
 
-            Assembly assembly = loadedAssemblies[pluginName].Second;
-            Type type = loadedAssemblies[pluginName].First;
+            Assembly assembly = loadedPluginAssemblies[pluginName].Second;
+            Type type = loadedPluginAssemblies[pluginName].First;
             Type name = assembly.GetType(type.ToString());
             IGamePlugin gamePlugin = (IGamePlugin)Activator.CreateInstance(name, this.pluginHost);
 
@@ -122,14 +141,33 @@ namespace Sokoban.Model
             return gamePlugin;
         }
 
+        public IGameVariant RunVariant(string variantName)
+        {
+            variantName = variantName.ToLower();
+
+            if (loadedVariantAssemblies.ContainsKey(variantName) == false)
+            {
+                this.LoadAssemblyByName(variantName);
+            }
+
+            Assembly assembly = loadedVariantAssemblies[variantName].Second;
+            Type type = loadedVariantAssemblies[variantName].First;
+            Type name = assembly.GetType(type.ToString());
+            IGameVariant gameVariant = (IGameVariant)Activator.CreateInstance(name, this.pluginHost);
+
+            runningVariants.Add(gameVariant);
+
+            return gameVariant;
+        }
+
         private string getPluginPath(string pluginName)
         {
             return pluginsPath + "Plugin" + pluginName + ".dll";
         }
 
-        public void LoadPluginByName(string pluginName)
+        public void LoadAssemblyByName(string pluginName)
         {
-            LoadPlugin(this.getPluginPath(pluginName));
+            LoadAssembly(this.getPluginPath(pluginName));
         }
 
         /// <summary>
@@ -137,11 +175,12 @@ namespace Sokoban.Model
         /// </summary>
         /// <param name="fileName">Absolute path to the plugin</param>
         /// <returns></returns>
-        public void LoadPlugin(string fileName)
+        public void LoadAssembly(string fileName)
         {
             bool succesfullyLoaded = false;
             Assembly pluginAssembly = null;
-            Type pluginType = null;
+            Type type = null;
+            PluginType pluginType = PluginType.GamePlugin;
 
             if (loadedFiles.ContainsKey(fileName) == false)
             {
@@ -150,14 +189,21 @@ namespace Sokoban.Model
                 try
                 {
                     pluginAssembly = Assembly.LoadFrom(fileName);
-                    foreach (Type type in pluginAssembly.GetTypes())
+                    foreach (Type _type in pluginAssembly.GetTypes())
                     {
-                        if (type.IsPublic && !type.IsAbstract)
+                        if (_type.IsPublic && !_type.IsAbstract)
                         {
-                            if (type.GetInterface("Sokoban.Model.PluginInterface.IGamePlugin", true) != null)
+                            if (_type.GetInterface("Sokoban.Model.PluginInterface.IGamePlugin", true) != null)
                             {
                                 succesfullyLoaded = true;
-                                pluginType = type;
+                                type = _type;
+                                pluginType = PluginType.GamePlugin;
+                            }
+                            else if (_type.GetInterface("Sokoban.Model.PluginInterface.IGameVariant", true) != null)
+                            {
+                                succesfullyLoaded = true;
+                                type = _type;
+                                pluginType = PluginType.GameVariant;
                             }
                         }
                     }
@@ -178,13 +224,22 @@ namespace Sokoban.Model
                     string pluginName = Path.GetFileNameWithoutExtension(fileName).ToLower();
                     string prefix = "plugin";
 
+                    // remove from the plugin name prefix "plugin"
                     if (pluginName.Length >= prefix.Length && pluginName.Substring(0, prefix.Length) == prefix)
                     {
                         pluginName = pluginName.Substring(prefix.Length);
                     }
 
-                    loadedAssemblies[pluginName] = new Pair<Type, Assembly>(pluginType, pluginAssembly);
-                    DebuggerIX.WriteLine("Plugin: " + fileName + " was loaded.");
+                    if (pluginType == PluginType.GamePlugin)
+                    {
+                        loadedPluginAssemblies[pluginName] = new Pair<Type, Assembly>(type, pluginAssembly);
+                        DebuggerIX.WriteLine("Plugin: " + fileName + " was loaded.");
+                    }
+                    else if (pluginType == PluginType.GameVariant)
+                    {
+                        loadedVariantAssemblies[pluginName] = new Pair<Type, Assembly>(type, pluginAssembly);
+                        DebuggerIX.WriteLine("Plugin: " + fileName + " was loaded.");
+                    }
                 }
                 else
                 {

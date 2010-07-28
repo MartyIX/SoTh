@@ -15,19 +15,13 @@ namespace Sokoban.Model.Xml
             Add,
             Delete
         }
-
-        private ActionType action;
+        
         private bool success = false;
         private string errorMessage = null;
         private int offerID;
 
         public PendingGamesXmlServerResponse()
         {
-        }
-
-        public ActionType Action
-        {
-            get { return action; }
         }
 
         public string ErrorMessage

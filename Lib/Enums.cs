@@ -2,6 +2,19 @@
 namespace Sokoban.Lib
 {
 
+    public enum GameDisplayType
+    {
+        FirstPlayer,
+        SecondPlayer
+    }
+
+    public enum GameChange
+    {
+        Won,
+        Lost,
+        StopCountingTime
+    }
+
     public enum GameMode
     {
         SinglePlayer,
@@ -12,7 +25,8 @@ namespace Sokoban.Lib
     {
         Unstarted,
         Running,
-        Paused
+        Paused,
+        Finished
     }   
 
     public enum PlayingMode
@@ -67,66 +81,77 @@ namespace Sokoban.Lib
         /// <summary>
         /// Object is about to go right
         /// </summary>
-        goRight,      // 2
+        goRight = 2,      // 2
         /// <summary>
         /// Object is about to go up
         /// </summary>
-        goUp,         // 3
+        goUp = 3,         // 3
         /// <summary>
         /// Object is about to go down
         /// </summary>
-        goDown,       // 4
+        goDown = 4,       // 4
         /// <summary>
         /// Nothing is about to happen
         /// </summary>
-        none,         // 5
+        none = 5,         // 5
         /// <summary>
         /// Event for monsters (but can be used for other objects) which says that monster should pursuit Sokoban
         /// </summary>
-        pursuit,      // 6
+        pursuit = 6,      // 6
         /// <summary>
         /// Event for monsters. Monster moves in a row of game desk.
         /// </summary>
-        guardRow,     // 7
+        guardRow = 7,     // 7
         /// <summary>
         /// Event for monsters. Monster moves in a collumn of game desk.
         /// </summary>
-        guardColumn,  // 8
+        guardColumn = 8,  // 8
         /// <summary>
         /// Event for Sokoban. Sokoban tried to go against wall.
         /// </summary>
-        hitToTheWall, // 9
+        hitToTheWall = 9, // 9
         /// <summary>
         /// System event for checking if game is over.
         /// </summary>
-        checkIfIsEnd,  // 10
+        checkIfIsEnd = 10,  // 10
         /// <summary>
         /// Object is about to go left
-        /// </summary>
-        wentLeft,   // 11
+        /// </summary>               
+        wentLeft = 11,   // 11
         /// <summary>
         /// Object is about to go right
         /// </summary>
-        wentRight,      // 12
+        wentRight = 12,      // 12
         /// <summary>
         /// Object is about to go up
         /// </summary>
-        wentUp,         // 13
+        wentUp = 13,         // 13
         /// <summary>
         /// Object is about to go down
         /// </summary>
-        wentDown,       // 14
+        wentDown = 14,       // 14
         /// <summary>
         /// Sokoban met with a monster - end of game
         /// </summary>
-        endLostGame,
+        endLostGame = 15,
         /// <summary>
         /// Changes orientation of Sokoban (maybe other object in future)
         /// </summary>
-        setLeftOrientation,
-        setRightOrientation,
-        sokobanWasKilled,
-        restartRound,
+        setLeftOrientation = 16,
+        setRightOrientation = 17,
+        sokobanWasKilled = 18,
+        /// <summary>
+        /// User lost the game
+        /// </summary>
+        gameLost = 19,
+        /// <summary>
+        /// User won the game
+        /// </summary>
+        gameWon = 20,
+        stopCountingTime = 21,
+
+        wait,
+
         customEvent01,
         customEvent02,
         customEvent03,
@@ -137,5 +162,6 @@ namespace Sokoban.Lib
         customEvent08,
         customEvent09,
         customEvent10
+
     }
 }

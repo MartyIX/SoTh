@@ -40,14 +40,14 @@ namespace NetworkingTest
 
         public static void RunProducer()
         {
-            DebuggerIX.WriteLine("[Net]", "Producer", "Method invoked");
+            DebuggerIX.WriteLine(DebuggerTag.Net, "Producer", "Method invoked");
                        
 
             int tries = 0;
             while (ns.IsInitialized == false && tries < 3)
             {
                 ns.InitializeConnection();
-                DebuggerIX.WriteLine("[Net]", "Producer", "After initialization. IsInitialized=" + ns.IsInitialized.ToString());
+                DebuggerIX.WriteLine(DebuggerTag.Net, "Producer", "After initialization. IsInitialized=" + ns.IsInitialized.ToString());
                 tries++;
             }
 
@@ -55,21 +55,21 @@ namespace NetworkingTest
             
             if (ns.IsInitialized != false)
             {
-                DebuggerIX.WriteLine("[Net]", "Producer", "Adding events");
+                DebuggerIX.WriteLine(DebuggerTag.Net, "Producer", "Adding events");
                 ns.AddEventToBuffer(1, 1, EventType.none, 1, 1);
                 ns.AddEventToBuffer(2, 2, EventType.none, 2, 2);
-                DebuggerIX.WriteLine("[Net]", "Producer", "Sending");
+                DebuggerIX.WriteLine(DebuggerTag.Net, "Producer", "Sending");
                 ns.SendAsync(NetworkMessageType.ListOfEvents);
-                DebuggerIX.WriteLine("[Net]", "Producer", "Sent");
+                DebuggerIX.WriteLine(DebuggerTag.Net, "Producer", "Sent");
             }            
         }
 
         public static void RunConsument(object a)
         {
-            DebuggerIX.WriteLine("[Net]", "Consument", "Method invoked");
+            DebuggerIX.WriteLine(DebuggerTag.Net, "Consument", "Method invoked");
 
             
-            DebuggerIX.WriteLine("[Net]", "Consument", "Initializing");
+            DebuggerIX.WriteLine(DebuggerTag.Net, "Consument", "Initializing");
 
             int tries = 0;
             while (nc.IsInitialized == false && tries < 3)
@@ -80,9 +80,9 @@ namespace NetworkingTest
 
             if (nc.IsInitialized != false)
             {
-                DebuggerIX.WriteLine("[Net]", "Consument", "Receiving");
+                DebuggerIX.WriteLine(DebuggerTag.Net, "Consument", "Receiving");
                 nc.ReceiveAsync();
-                DebuggerIX.WriteLine("[Net]", "Consument", "Received");
+                DebuggerIX.WriteLine(DebuggerTag.Net, "Consument", "Received");
             }
 
             resetEvents[0].Set();

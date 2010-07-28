@@ -67,7 +67,7 @@ namespace Sokoban.Solvers
             {
                 throw new InvalidStateException("Path to the solvers must be non-empty string.");
             }
-            else if (_solversPath[_solversPath.Length - 1] != '\\' || _solversPath[_solversPath.Length - 1] != '/')
+            else if (_solversPath[_solversPath.Length - 1] != '\\' && _solversPath[_solversPath.Length - 1] != '/')
             {
                 solversPath = _solversPath + @"\";
             }

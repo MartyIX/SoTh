@@ -1,65 +1,65 @@
 ﻿<Window x:Class="Sokoban.View.SetupNetwork.InitConnection"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:Sokoban.View.SetupNetwork"  
-    Title="Sokoban: Multiplayer connection" Width="358" Height="275"
-    ShowInTaskbar="False"
-    WindowStartupLocation="CenterScreen"
-    MinWidth="307" MinHeight="238" MaxWidth="500" MaxHeight="500" Padding="10"
-    Loaded="Window_Loaded"
-    Closing="Window_Closing">
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:local="clr-namespace:Sokoban.View.SetupNetwork"  
+	Title="Sokoban: Multiplayer connection" Width="358" Height="275"
+	ShowInTaskbar="False"
+	WindowStartupLocation="CenterScreen"
+	MinWidth="307" MinHeight="238" MaxWidth="500" MaxHeight="500" Padding="10"
+	Loaded="Window_Loaded"
+	Closing="Window_Closing">
 
-    <Grid Margin="10">
-        <Grid.Resources>
-            <Style TargetType="TextBlock">
-                <Setter Property="Margin" Value="5,3" />
-            </Style>
-        </Grid.Resources>
+	<Grid Margin="10">
+		<Grid.Resources>
+			<Style TargetType="TextBlock">
+				<Setter Property="Margin" Value="5,3" />
+			</Style>
+		</Grid.Resources>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto" />
+			<ColumnDefinition Width="*" />
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
 
-        <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Text="Establishing connection" 
-                   FontSize="17" Height="30" />
+		<TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Text="Establishing connection" 
+				   FontSize="17" Height="30" />
 
-        <Label Grid.Row="1" Grid.Column="0">IP:</Label>
-        <DockPanel Grid.Row="1" Grid.Column="1" LastChildFill="True">
-            <Button Content="{Binding BtnListenContent, FallbackValue=Listen}" Width="50" HorizontalAlignment="Right" 
-                    DockPanel.Dock="Right" x:Name="btnListen" Click="btnListen_Click" />
-            <TextBox DockPanel.Dock="Right" x:Name="tbPort" HorizontalAlignment="Right" Margin="0,0,5,0" Width="40" Text="{Binding Port}" />			
+		<Label Grid.Row="1" Grid.Column="0">IP:</Label>
+		<DockPanel Grid.Row="1" Grid.Column="1" LastChildFill="True">
+			<Button Content="{Binding BtnListenContent, FallbackValue=Listen}" Width="50" HorizontalAlignment="Right" 
+					DockPanel.Dock="Right" x:Name="btnListen" Click="btnListen_Click" />
+			<TextBox DockPanel.Dock="Right" x:Name="tbPort" HorizontalAlignment="Right" Margin="0,0,5,0" Width="40" Text="{Binding Port}" />			
 			<TextBlock DockPanel.Dock="Right">:</TextBlock>			
 			<TextBox DockPanel.Dock="Left" HorizontalAlignment="Stretch" x:Name="tbIpAddress" Text="{Binding IpAddress}" />
 		</DockPanel>	
 
-        <Label Grid.Row="2" Grid.ColumnSpan="2">Users:</Label>
-        <ListBox Height="50" Grid.Row="3" Grid.ColumnSpan="2" ItemsSource="{Binding ConnectingPlayers}" />            
-        
+		<Label Grid.Row="2" Grid.ColumnSpan="2">Users:</Label>
+		<ListBox x:Name="lbUsers" Height="50" Grid.Row="3" Grid.ColumnSpan="2" ItemsSource="{Binding ConnectingPlayers}" />            		
 
-        <TextBox Background="White" Margin="0,5,0,0" Height="50"
-                 Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" x:Name="tbStatus" IsReadOnly="True" AcceptsReturn="True"
-                 Text="" VerticalScrollBarVisibility="Auto" />
-        <DockPanel Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2" LastChildFill="True">
-	        <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" >
-		        <TextBlock>Connect to the first player: </TextBlock>
+		<TextBox Background="White" Margin="0,5,0,0" Height="50"
+				 Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" x:Name="tbStatus" IsReadOnly="True" AcceptsReturn="True"
+				 Text="" VerticalScrollBarVisibility="Auto" />
+		<DockPanel Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2" LastChildFill="True">
+			<StackPanel Orientation="Horizontal" DockPanel.Dock="Left" >
+				<TextBlock>Connect to the first player: </TextBlock>
 				<CheckBox x:Name="cbAutomaticFirstConnect" VerticalAlignment="Center" IsChecked="{Binding AutomaticFirstConnect}"  />
 			</StackPanel>
 
-	        <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
-				<Button Name="btnConnect" IsDefault="True" Click="btnConnect_Click">Connect</Button>
-		        <Button Name="btnCancel" IsCancel="True" Click="btnCancel_Click" Margin="5,0,0,0">Cancel</Button>
+			<StackPanel Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
+				<Button Name="btnConnect" IsDefault="True" Click="btnConnect_Click" 
+						IsEnabled="{Binding IsUserListNonEmpty, Mode=OneWay}">Connect</Button>
+				<Button Name="btnCancel" IsCancel="True" Click="btnCancel_Click" Margin="5,0,0,0">Cancel</Button>
 			</StackPanel>
-        </DockPanel>
+		</DockPanel>
 				
-    </Grid>
+	</Grid>
 </Window>

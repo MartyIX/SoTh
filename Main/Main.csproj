@@ -31,6 +31,8 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <Utf8Output>true</Utf8Output>
+    <ExpressionBlendVersion>4.0.20525.0</ExpressionBlendVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -79,6 +81,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\AvalonDock\AvalonDock.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Expression.Interactions" />
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -88,6 +91,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web.DynamicData.Design" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
@@ -110,6 +114,7 @@
     <Reference Include="WindowsFormsIntegration">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="WPFToolkit" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="Application\App.xaml">
@@ -118,6 +123,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Properties\DesignTimeResources.xaml" Condition="'$(DesignTime)'=='true' OR ('$(SolutionPath)'!='' AND Exists('$(SolutionPath)') AND '$(BuildingInsideVisualStudio)'!='true' AND '$(BuildingInsideExpressionBlend)'!='true')">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <ContainsDesignTimeResources>true</ContainsDesignTimeResources>
+    </Page>
     <Page Include="Themes\Generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -142,6 +152,15 @@
     </Compile>
     <Compile Include="Application\Management\AppConfigManagement.cs" />
     <Compile Include="Application\Management\UserSettings.cs" />
+    <Compile Include="MainWindow.Parts\AvalonDockVisibilityConverter.cs" />
+    <Compile Include="MainWindow.Parts\ConnectionDialogPresenter.cs" />
+    <Compile Include="MainWindow.Parts\SettingsDialog.cs" />
+    <Compile Include="MainWindow.Parts\MessageBoxShow.cs" />
+    <Compile Include="MainWindow.Parts\ConnectionRelayer.cs" />
+    <Compile Include="MainWindow.Parts\QuestHandler.cs" />
+    <Compile Include="MainWindow.Parts\Keyboard.cs" />
+    <Compile Include="MainWindow.Parts\ViewMenuClicks.cs" />
+    <Compile Include="MainWindow.Parts\Shutdown.cs" />
     <Compile Include="Model\Settings\SettingsRepository.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -182,6 +201,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Model\Profile\ProfileRepository.cs" />
+    <Compile Include="MainWindow.Parts\UserInquirer.cs" />
     <Compile Include="View\Delegates.cs" />
   </ItemGroup>
   <!-- / old sokoban -->
@@ -242,6 +262,10 @@
       <Project>{65D0C3FE-C558-44D4-B71B-FA32CDC24443}</Project>
       <Name>Console</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Dialog\UserDialog.csproj">
+      <Project>{0FC26AB9-F5D5-472F-A1B1-F8E50680D968}</Project>
+      <Name>UserDialog</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GameDeskControl\GameDeskControl\GameDeskControl.csproj">
       <Project>{D86C56B6-A996-41F1-A647-2868A1940B68}</Project>
       <Name>GameDeskControl</Name>
@@ -276,14 +300,30 @@
       <Name>PluginBox</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\PluginFakeBox\PluginFakeBox\PluginFakeBox.csproj">
+      <Project>{320D5BB4-990D-44C1-8BA8-3586FAADFDCC}</Project>
+      <Name>PluginFakeBox</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PluginInterface\PluginInterface\PluginInterface.csproj">
       <Project>{E1357F87-0BE7-4FF7-84B4-D4CC4CD1788E}</Project>
       <Name>PluginInterface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PluginMonster\PluginMonster.csproj">
+      <Project>{2832EE46-855C-4417-A5F4-401C03857212}</Project>
+      <Name>PluginMonster</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PluginOrdinary\PluginOrdinary.csproj">
+      <Project>{97A993B7-F00D-474C-8823-E8A5CC5B1001}</Project>
+      <Name>PluginOrdinary</Name>
     </ProjectReference>
     <ProjectReference Include="..\PluginSokoban\PluginSokoban\PluginSokoban.csproj">
       <Project>{CDEC8CB2-A57E-49E9-91C7-06A8F7AF8355}</Project>
       <Name>PluginSokoban</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\PluginSoTh\PluginSoTh.csproj">
+      <Project>{CCFDEEBC-89FE-4BC4-99E4-9A5AD872F106}</Project>
+      <Name>PluginSoTh</Name>
     </ProjectReference>
     <ProjectReference Include="..\PluginWall\PluginWall.csproj">
       <Project>{A74B8493-59F1-44B7-BFC0-9C41F4F238EF}</Project>

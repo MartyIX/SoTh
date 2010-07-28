@@ -47,15 +47,6 @@ namespace Sokoban.Model
         /// </summary>
         public MainWindow MainWindow;
 
-        #region Fields (20)
-        /// <summary>
-        /// Name of actual league
-        /// </summary>
-        public string actLeagueName = "";
-        /// <summary>
-        /// XML file with rounds definitions
-        /// </summary>                                                       
-        public string actLeagueXml = "";
         /// <summary>
         /// If program is run as executable file then program finds the path itself
         /// </summary>
@@ -65,22 +56,6 @@ namespace Sokoban.Model
         /// (note that URI has to end with trailing backslash)
         /// </summary>
         public string baseURI = @"http://sokoban.martinvseticka.eu/";
-        /// <summary>
-        /// This path is relevant only if program is run from Visual Studio
-        /// </summary>
-        public string DEBUG_PATH = @"D:\Skola\Rocnikovy projekt - specifikace\Program\Sokoban_source\Sokoban";
-        /// <summary>
-        /// Enables/disables refresh of XNA window
-        /// </summary>
-        public bool IsGraphicsChangeEnabled = true;
-        /// <summary>
-        /// Enable/disable initial displaying of login form
-        /// </summary>
-        public readonly bool IsLogInEnabled = false;
-        /// <summary>
-        /// Name of file where is list of leagues
-        /// </summary>
-        public readonly string LeaguesFileNameURI = @"listOfLeagues.xml";
 
         public ApplicationParameters appParams;
 
@@ -93,8 +68,7 @@ namespace Sokoban.Model
         ChooseConnectionPresenter chooseConnectionPresenter;
         SettingsPresenter settingsPresenter;
 
-        #endregion Fields
-
+        
         /// <summary>
         /// We don't want to initialize the application twice
         /// </summary>
@@ -113,7 +87,7 @@ namespace Sokoban.Model
             
             // redirect console output to parent process;
             // must be before any calls to Console.WriteLine()
-            AttachConsole(ATTACH_PARENT_PROCESS);
+            //AttachConsole(ATTACH_PARENT_PROCESS);
 
             ApplicationRepository.Instance.profileRepository = ProfileRepository.Instance;
             ApplicationRepository.Instance.settingsRepository = SettingsRepository.Instance;
@@ -164,7 +138,8 @@ namespace Sokoban.Model
 
                 // Paths initialization
                 PluginService.Initialize(ApplicationRepository.AssemblyDirectory + @"\Plugins\");
-                SolversManager.Initialize(ApplicationRepository.AssemblyDirectory + @"\Solvers\");                
+                SolversManager.Initialize(ApplicationRepository.AssemblyDirectory + @"\Solvers\");
+                GameRepository.Initialize(ApplicationRepository.AssemblyDirectory);
 
                 // Console initialization
                 ConsoleControl.Initialize(
@@ -241,7 +216,7 @@ namespace Sokoban.Model
         private void LoadViewChooseConnection()
         {
             chooseConnectionPresenter = new ChooseConnectionPresenter(Instance.appParams.getView("ChooseConnection"), profileRepository);
-
+            chooseConnectionPresenter.Closing += new Lib.VoidChangeDelegate(OnStartUp_PhaseThree);
 
             if (appParams.credentials != null)
             {
@@ -255,10 +230,10 @@ namespace Sokoban.Model
                 chooseConnectionPresenter.InitializeView(MainWindow);
             }
 
-            OnStartUp_PhaseThree();
+            
         }
 
-        public void LoadViewSettings()
+        public SettingsPresenter LoadViewSettings()
         {
             if (settingsPresenter == null)
             {
@@ -266,6 +241,8 @@ namespace Sokoban.Model
             }
 
             settingsPresenter.InitializeView(MainWindow);
+
+            return settingsPresenter;
         }
 
 
@@ -288,7 +265,7 @@ namespace Sokoban.Model
                 string codeBase = Assembly.GetExecutingAssembly().CodeBase;
                 UriBuilder uri = new UriBuilder(codeBase);
                 string path = Uri.UnescapeDataString(uri.Path);
-                return Path.GetDirectoryName(path);
+                return Path.GetDirectoryName(path).TrimEnd(new char[] {'\\', '/'});
             }
         }
     }

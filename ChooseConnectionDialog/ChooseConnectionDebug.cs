@@ -9,7 +9,6 @@ using Sokoban.Model;
 using System.Collections;
 using System.Diagnostics;
 using System.Windows.Data;
-using Sokoban.Model;
 
 namespace Sokoban.View.ChooseConnection
 {

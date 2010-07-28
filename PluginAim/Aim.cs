@@ -24,7 +24,7 @@ namespace PluginAim
 
         public Aim(IPluginParent host)
         {
-            this.host = host;
+            this.host = host;            
         }
 
 
@@ -60,12 +60,8 @@ namespace PluginAim
             return true; // TODO
         }
 
-        public void Load()
+        public void Load(string appPath)
         {
-            // One-based values
-            posX = 2;
-            posY = 2;
-
             // Rectangle
             rect = new System.Windows.Shapes.Rectangle();
 
@@ -78,18 +74,6 @@ namespace PluginAim
         public void Unload()
         {
             this.rect = null;
-        }
-
-        public IPluginParent Parent
-        {
-            get
-            {
-                return host;
-            }
-            set
-            {
-                host = value;
-            }
         }
 
         #endregion
@@ -134,8 +118,8 @@ namespace PluginAim
             {
                 throw new Exception("Plugin Aim doesn't support game variant: " + gameVariant);
             }
-            
-            DebuggerIX.WriteLine("[Plugin]", this.Name, "ProcessXmlInitialization, settings: " + settings.InnerXml);
+
+            DebuggerIX.WriteLine(DebuggerTag.Plugins, this.Name, "ProcessXmlInitialization, settings: " + settings.InnerXml);
 
             posX = int.Parse(settings["PosX"].InnerText);
             posY = int.Parse(settings["PosY"].InnerText);
@@ -143,7 +127,7 @@ namespace PluginAim
             return true;
         }
 
-        public void MessageReceived(object message, IGamePlugin p)
+        public void MessageReceived(string messageType, object message, IGamePlugin p)
         {
 
         }

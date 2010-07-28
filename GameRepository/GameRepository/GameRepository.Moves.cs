@@ -35,7 +35,7 @@ using System.Windows.Input;
 
 namespace Sokoban.Model
 {
-    public partial class GameRepository : IBaseRepository
+    public partial class GameRepository
     {        
         public event VoidChangeDelegate GameStarted;
         public IGameRealTime game = null;

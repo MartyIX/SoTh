@@ -14,8 +14,9 @@ namespace Sokoban.Networking
     {
         private string ipAddress;
         private int port;
-        private string role = "Client";
-        private IAsyncResult currentAsyncResult = null;
+        private string role = "Client";        
+        private string errorMessage;
+        public string ErrorMessage { get {return errorMessage;} }
 
         public NetworkClient(string ipAddress, int port)
             : base("Client")
@@ -35,6 +36,8 @@ namespace Sokoban.Networking
             receivingInit();
             sendingInit();
 
+            errorMessage = "";
+
             try
             {
                 clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -45,6 +48,10 @@ namespace Sokoban.Networking
                 IPEndPoint ipEnd = new IPEndPoint(ip, this.port);
                 // Connect to the remote host
                 clientSocket.Connect(ipEnd);
+                clientSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                clientSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
+                clientSocket.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.NoDelay, true);
+
 
                 if (clientSocket.Connected)
                 {
@@ -54,12 +61,14 @@ namespace Sokoban.Networking
             catch (SocketException e)
             {
                 isInitialized = false;
-                DebuggerIX.WriteLine("[Net]", "[ClientInitConnection]", "Connection failed, is the server running? " + e.Message);
+                DebuggerIX.WriteLine(DebuggerTag.Net, "[ClientInitConnection]", "Connection failed, is the server running? " + e.Message);
+                errorMessage = e.Message;
             }
             catch (NullReferenceException e)
             {
                 isInitialized = false;
-                DebuggerIX.WriteLine("[Net]", "[ClientInitConnection]", "Connection failed, is the server running? " + e.Message);
+                DebuggerIX.WriteLine(DebuggerTag.Net, "[ClientInitConnection]", "Connection failed, is the server running? " + e.Message);
+                errorMessage = e.Message;
             }
         }
 

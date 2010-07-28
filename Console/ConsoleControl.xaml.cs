@@ -32,8 +32,15 @@ namespace Sokoban.View
         }
 
         private void appendText(string text)
-        {
-            tbConsoleOut.AppendText(text);
+        {            
+            tbConsoleOut.Dispatcher.Invoke(
+                  System.Windows.Threading.DispatcherPriority.Normal,
+                  new Action(
+                    delegate()
+                    {
+                        tbConsoleOut.AppendText(text);
+                    }
+            ));
         }
 
         public static void Initialize(string _consoleCommandPrefix, string _consoleInitialText)

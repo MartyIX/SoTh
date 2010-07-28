@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema xmlns="http://www.martinvseticka.eu/SoTh" 
+           targetNamespace="http://www.martinvseticka.eu/SoTh" 
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+
+  <xs:element name="FirstState">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="wait"/>
+        <xs:enumeration value="goRight"/>
+        <xs:enumeration value="goUp"/>
+        <xs:enumeration value="goDown"/>
+        <xs:enumeration value="wait"/>
+        <xs:enumeration value="pursuit"/>
+        <xs:enumeration value="guardRow"/>
+        <xs:enumeration value="guardColumn"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:complexType name="MonsterType">
+    <xs:complexContent>
+      <xs:extension base="GameObjectType">
+        <xs:sequence>
+          <xs:element ref="FirstState" />          
+        </xs:sequence>
+       </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:element name="Monster" substitutionGroup="GameObject" type="MonsterType" />
+  
+</xs:schema>

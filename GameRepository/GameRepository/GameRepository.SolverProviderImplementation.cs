@@ -14,7 +14,7 @@ using Sokoban.Solvers;
 
 namespace Sokoban.Model
 {
-    public partial class GameRepository : ISolverProvider
+    public partial class GameRepository
     {
 
         #region ISolverProvider Members

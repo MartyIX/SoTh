@@ -6,13 +6,6 @@ using Sokoban.Lib;
 
 namespace Sokoban.Model.GameDesk
 {
-    public delegate void TimeDelegate(ref Int64 time);    
     public delegate void SizeChangedDelegate(double width, double height, double fieldSize);
-
-    public enum GameDisplayType
-    {
-        FirstPlayer,
-        SecondPlayer
-    }
 
 }

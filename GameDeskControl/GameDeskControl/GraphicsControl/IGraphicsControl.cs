@@ -14,5 +14,9 @@ namespace Sokoban.View.GameDocsComponents
         void AddVisual(UIElement c);
         void ClearVisuals();
         void SetGameDeskSize(int fieldsX, int fieldsY);
+        void StopTime();
+        void RestartGame();
+        void PauseTime();
+        void PlayNextRound();
     }
 }

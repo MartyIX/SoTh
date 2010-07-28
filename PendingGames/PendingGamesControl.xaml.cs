@@ -25,6 +25,8 @@ using Microsoft.Windows.Controls.Primitives;
 using System.Reflection;
 using Sokoban.View.SetupNetwork;
 using Sokoban.Lib;
+using System.Windows.Threading;
+using System.Diagnostics;
 
 namespace Sokoban.View
 {
@@ -54,11 +56,31 @@ namespace Sokoban.View
         private IProfileRepository profileRepository = null;
         private IConnectionRelayer connectionRelayer = null;
         private IConnectionDialogPresenter connectionDialogPresenter = null;
+        private DispatcherTimer reloadTimer;
+        private BackgroundWorker dataLoader;
 
         public PendingGamesControl()
         {
             InitializeComponent();
             this.DataContext = this;
+
+            dataLoader = new BackgroundWorker();
+            dataLoader.DoWork += new DoWorkEventHandler(dataLoader_DoWork);
+            dataLoader.RunWorkerCompleted += new RunWorkerCompletedEventHandler(dataLoader_RunWorkerCompleted);
+
+            reloadTimer = new DispatcherTimer();
+            reloadTimer.Tick += new EventHandler(reloadTimer_Tick);
+            reloadTimer.Interval = new TimeSpan(0, 0, 10);
+
+            this.IsActiveContentChanged += new EventHandler(PendingGamesControl_IsActiveContentChanged);
+        }
+
+        void PendingGamesControl_IsActiveContentChanged(object sender, EventArgs e)
+        {
+            if (this.IsActiveContent == false)
+            {
+                changeRefreshing(false); // stop refreshing
+            }
         }
 
         public void Initialize(IErrorMessagesPresenter errorPresenter, 
@@ -70,26 +92,45 @@ namespace Sokoban.View
             this.errorPresenter = errorPresenter;
             this.connectionRelayer = connectionRelayer;
             this.connectionDialogPresenter = connectionDialogPresenter;
-            this.refresh();
+            this.Refresh();
         }
 
-
-        private void refresh()
+        private void reloadTimer_Tick(object sender, EventArgs e)
         {
-            this.Status = "Connecting to the server";
+            Refresh();
+        }
 
+        private void dataLoader_DoWork(object sender, DoWorkEventArgs e)
+        {
             // it correctly displays the error
             string output = null;
+            string error = "";
             try
             {
                 output = this.getRequestOnServer("/remote/GetPendingGames/");
             }
-            catch (UninitializedException e)
-            {
-                this.Status = e.Message;
+            catch (UninitializedException ex)
+            {                
                 output = null;
+                error = ex.Message;
             }
 
+            e.Result = new DataLoaderResult(output, error);
+        }
+
+        private void dataLoader_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            DataLoaderResult dlr = e.Result as DataLoaderResult;
+            string output = dlr.Data;
+
+            if (dlr.Error != "")
+            {
+                this.Status = dlr.Error;
+            }
+            else
+            {
+                this.Status = "Pending games reloaded.";
+            }
 
             if (output != "error" && output != null)
             {
@@ -100,9 +141,9 @@ namespace Sokoban.View
                     response.Parse(output);
                     this.Status = "Pending games loaded.";
                 }
-                catch (InvalidStateException e)
+                catch (InvalidStateException ex)
                 {
-                    this.Status = e.Message;
+                    this.Status = ex.Message;
                 }
 
                 if (this.dataGridItemsSource != null)
@@ -113,6 +154,13 @@ namespace Sokoban.View
                 this.dataGridItemsSource = new ObservableCollection<OfferItemData>(response.GameList);
                 Notify("DataGridItemsSource");
             }           
+        }
+
+       
+        public void Refresh()
+        {
+            this.Status = "Connecting to the server";
+            dataLoader.RunWorkerAsync();                       
         }
 
         #region INotifyPropertyChanged Members
@@ -180,9 +228,42 @@ namespace Sokoban.View
             }
         }
 
-        private void btnRefresh_Click(object sender, RoutedEventArgs e)
+        private void btnAutoRefresh_Click(object sender, RoutedEventArgs e)
         {
-            refresh();
+            changeRefreshing();
+        }
+
+        private void changeRefreshing()
+        {
+            changeRefreshing(null);
+        }
+
+        private void changeRefreshing(bool? setState)
+        {
+            if (!setState.HasValue)
+            {
+                reloadTimer.IsEnabled = !reloadTimer.IsEnabled;
+            }
+            else
+            {
+                reloadTimer.IsEnabled = setState.Value;
+            }
+
+            if (reloadTimer.IsEnabled == true)
+            {
+                btnAutoRefresh.Content = "Stop refreshing";
+                Refresh();
+            }
+            else
+            {
+                btnAutoRefresh.Content = "Start refreshing";
+            }               
+        }
+
+
+        private void contextMenuRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            this.Refresh();
         }
 
         private void MyDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -196,13 +277,16 @@ namespace Sokoban.View
 
                 if (connectionDialogPresenter != null)
                 {
-                    connectionDialogPresenter.Show(o.IPAddress, o.Port, -1, o.RoundsID,
+                    connectionDialogPresenter.Show(o.IPAddress, o.Port, o.LeaguesID, o.RoundsID,
                         this.profileRepository, this.errorPresenter, this.connectionRelayer, null);
+
+                    changeRefreshing(false); // turn of refreshing
                 }
                 else
                 {
                     MessageBox.Show("Error: Cannot show 'Connection dialog'.");
-                    DebuggerIX.WriteLine("[PendingGamesControl]", "MouseDoubleClick", "ERROR: connectionDialogPresenter is NULL");
+                    DebuggerIX.WriteLine(DebuggerTag.AppComponents, "[PendingGamesControl]", 
+                        "MouseDoubleClick - ERROR: connectionDialogPresenter is NULL");
                 }
             }
         }
@@ -253,6 +337,18 @@ namespace Sokoban.View
             {
                 return GetDataGridFromChild(VisualTreeHelper.GetParent(dataGridPart));
             }
+        }
+    }
+
+    public class DataLoaderResult
+    {
+        public string Data { get; set; }
+        public string Error { get; set; }
+
+        public DataLoaderResult(string data, string error)
+        {
+            Data = data;
+            Error = error;
         }
     }
 }

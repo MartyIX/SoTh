@@ -14,6 +14,11 @@ namespace Sokoban.Networking
         None = 5,
         DisconnectRequest = 6,
         DisconnectRequestConfirmation = 7,
-        StartGame = 8         // Message from server to client that game may start
+        StartGame = 8,         // Message from server to client that game may start
+        SimulationTime = 9
     }
+
+    public delegate void EstablishConnectionDelegate(IConnection connection, Authentication authentication);
+    public delegate void ConnectionEstablished(bool successfully);        
+
 }

@@ -34,13 +34,12 @@ namespace Sokoban.View
         public DockingManager dm;
         public ObservableCollection<DocumentContent> GameViews { get; set; }
         public GameDeskControl ActiveGameControl = null;
-
         private bool isKeyDown = false;
-
+        private IUserInquirer userInquirer = null;
 
         public GameDocs()
         {
-            InitializeComponent();
+            InitializeComponent();            
 
             GameViews = new ObservableCollection<DocumentContent>();
         
@@ -68,13 +67,18 @@ namespace Sokoban.View
             GameViews.Clear();
         }
 
+        public void Initialize(IUserInquirer userInquirer)
+        {
+            this.userInquirer = userInquirer;
+        }
+
         private void OnDockingManagerChanged(object sender, EventArgs e)
         {
             dm = GameManagerProperties.GetDockingManager((DependencyObject)this);
             //dm.RequestDocumentClose += new EventHandler<RequestDocumentCloseEventArgs>(dm_RequestDocumentClose);                       
 
             //dm.SizeChanged += new SizeChangedEventHandler(dm_SizeChanged);
-            dm.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(dm_PropertyChanged);
+            dm.ActiveDocumentChanged += new EventHandler(dm_ActiveDocumentChanged);
 
             // make a new source
             Binding myBinding = new Binding("GameViews");
@@ -82,25 +86,21 @@ namespace Sokoban.View
             dm.SetBinding(DockingManager.DocumentsSourceProperty, myBinding);
         }
 
-        void dm_DocumentClosing(object sender, CancelEventArgs e)
+        void dm_ActiveDocumentChanged(object sender, EventArgs e)
         {
-            
+            if (dm.ActiveDocument != null && dm.ActiveDocument is GameDeskControl)
+            {
+                SetActiveGameChanged((GameDeskControl)dm.ActiveDocument);
+            }
+            else
+            {
+                SetActiveGameChanged(null);
+            }
         }
 
         void GamesDocumentPane_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             dm_SizeChanged(sender, e);
-        }
-
-        void dm_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "ActiveDocument" && dm.ActiveDocument != null)
-            {
-                if (dm.ActiveDocument != null && dm.ActiveDocument is GameDeskControl)
-                {
-                    SetActiveGameChanged((GameDeskControl)dm.ActiveDocument);
-                }
-            }
         }
 
         void dm_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -123,14 +123,27 @@ namespace Sokoban.View
             if (e.DocumentToClose is GameDeskControl)
             {
                 GameDeskControl gdc = (GameDeskControl)e.DocumentToClose;
-                DebuggerIX.WriteLine("[GameDocs]", "Close", string.Format("Tab {0} was closed", gdc.Title));
+                DebuggerIX.WriteLine(DebuggerTag.AppComponents, "[GameDocs]", "Close: " + string.Format("Tab {0} was closed", gdc.Title));
                 gdc.Terminate();
                 GameViews.Remove(gdc);
             }
         }
 
+        public void SetSoundsSettings(bool isEnabled)
+        {
+            foreach (GameDeskControl gdc in GameViews)
+            {
+                gdc.SetSounds(isEnabled);
+            }
+        }
+
         public void SetActiveGameChanged(GameDeskControl g)
         {
+            if (dm != null)
+            {
+                dm.ActiveDocument = g;
+            }
+
             ActiveGameControl = g;
         }
 
@@ -145,51 +158,46 @@ namespace Sokoban.View
 
         public GameDeskControl Add(IQuest quest, GameMode gameMode)
         {
-            //try
-            //{                
+            GameDeskControl doc = new GameDeskControl(quest, gameMode, userInquirer);
+            doc.Title = quest.Name;
+            doc.InfoTip = doc.Title;
+            doc.ContentTypeDescription = "";
+            doc.Closing += new EventHandler<CancelEventArgs>(doc_Closing);
+            doc.Closed += new EventHandler(doc_Closed);
+            doc.InfoPanel.SizeChanged += new SizeChangedEventHandler(doc.ResizeInfoPanel);
+            GameViews.Add(doc);
+            doc.Resize(GamesDocumentPane.ActualWidth, GamesDocumentPane.ActualHeight);
 
-                GameDeskControl doc = new GameDeskControl(quest, gameMode);
-                doc.Title = quest.Name;
-                doc.InfoTip = doc.Title;
-                doc.ContentTypeDescription = "";
-                doc.Closing += new EventHandler<CancelEventArgs>(doc_Closing);
-                doc.Closed += new EventHandler(doc_Closed);
-                doc.InfoPanel.SizeChanged += new SizeChangedEventHandler(doc.ResizeInfoPanel);
-                GameViews.Add(doc);
-                doc.Resize(GamesDocumentPane.ActualWidth, GamesDocumentPane.ActualHeight);
-
-                this.SelectedIndex = GameViews.Count - 1;
-
-                this.SetActiveGameChanged(doc);
-
-                return doc;    
-            //}
-            /*
-            catch (PluginLoadFailedException e)
-            {
-                MessageBox.Show("Cannot load quest. There's a problem in plugin: " + e.Message);
-            }
+            //this.SelectedIndex = GameViews.Count - 1;
             
-            catch (NotValidQuestException e)
-            {
-                MessageBox.Show("Cannot load quest. There's a problem in quest XML: " + e.Message);
-            }*/
+
+            this.SetActiveGameChanged(doc);
+
+            return doc;                
         }
 
         private void doc_Closed(object sender, EventArgs e)
         {
-            
+            if (sender is GameDeskControl)
+            {
+                GameDeskControl gdc = sender as GameDeskControl;
+
+                if (gdc == ActiveGameControl)
+                {
+                    ActiveGameControl = null;
+                }
+            }
+
         }
 
         private void doc_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            
-            
+            Debug.WriteLine("");            
         }
 
         public void KeyIsDown(object sender, KeyEventArgs e)
         {
-            DebuggerIX.WriteLine("[Keyboard]", "KeyIsDown; isKeyDown = " + isKeyDown.ToString());
+            DebuggerIX.WriteLine(DebuggerTag.Keyboard, "KeyIsDown", "isKeyDown = " + isKeyDown.ToString());
 
             if (isKeyDown == false)
             {
@@ -238,7 +246,14 @@ namespace Sokoban.View
         /// <returns></returns>
         public uint  GetMazeWidth()
         {
-            return ActiveGameControl.GetMazeWidth();
+            if (ActiveGameControl == null)
+            {
+                throw new NoRoundIsOpenException();
+            }
+            else
+            {
+                return ActiveGameControl.GetMazeWidth();
+            }
         }
 
         /// <summary>
@@ -247,7 +262,14 @@ namespace Sokoban.View
         /// <returns></returns>
         public uint  GetMazeHeight()
         {
-            return ActiveGameControl.GetMazeHeight();
+            if (ActiveGameControl == null)
+            {
+                throw new NoRoundIsOpenException();
+            }
+            else
+            {
+                return ActiveGameControl.GetMazeHeight();
+            }
         }
 
         /// <summary>
@@ -257,7 +279,14 @@ namespace Sokoban.View
         /// <returns></returns>
         public string  SerializeMaze()
         {
-            return ActiveGameControl.SerializeMaze();
+            if (ActiveGameControl == null)
+            {
+                throw new NoRoundIsOpenException();
+            }
+            else
+            {
+                return ActiveGameControl.SerializeMaze();
+            }
         }
 
         /// <summary>
@@ -267,7 +296,14 @@ namespace Sokoban.View
 
         public object GetIdentifier()
         {
-            return ActiveGameControl.GetIdentifier();
+            if (ActiveGameControl == null)
+            {
+                throw new NoRoundIsOpenException();
+            }
+            else
+            {
+                return ActiveGameControl.GetIdentifier();
+            }
         }
 
         #endregion
@@ -286,7 +322,7 @@ namespace Sokoban.View
             }
             else
             {
-                MessageBox.Show("The solution cannot be displayed because the tab has been closed in the mean time.");
+                MessageBoxShow("The solution cannot be displayed because the tab has been closed in the mean time.");                
             }
         }
 
@@ -306,5 +342,13 @@ namespace Sokoban.View
         }
 
         #endregion
+
+        private void MessageBoxShow(string message)
+        {
+            if (userInquirer != null)
+            {
+                userInquirer.ShowMessage(message);
+            }
+        }
     }
 }

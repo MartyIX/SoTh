@@ -86,6 +86,7 @@ namespace Sokoban
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             DebuggerIX.Start(DebuggerMode.File);
+
             loadQuest();
         }
 
@@ -139,8 +140,8 @@ namespace Sokoban
 
         public void Connect(IConnection connection, IGameMatch gameMatch, Authentication autentization, int leaguesID, int roundsID)
         {
-            DebuggerIX.WriteLine("Connected", "Auth", autentization.Name + " " + autentization.IP);
-            DebuggerIX.WriteLine("Connected", "Game", "LeaguesID: " + leaguesID + "; RoundsID: " + roundsID);
+            DebuggerIX.WriteLine(DebuggerTag.Net, "Connected", "Auth: " + autentization.Name + " " + autentization.IP);
+            DebuggerIX.WriteLine(DebuggerTag.Net, "Connected", "Game = {LeaguesID: " + leaguesID + "; RoundsID: " + roundsID + "}");
 
             if (conn1 == null)
             {
@@ -192,11 +193,11 @@ namespace Sokoban
 
                     if (l != null)
                     {
-                        DebuggerIX.WriteLine("[Net]", "runTest01", "List was received");
+                        DebuggerIX.WriteLine(DebuggerTag.Net, "runTest01", "List was received");
                     }
                     else
                     {
-                        DebuggerIX.WriteLine("[Net]", "runTest01", "Error: list was not received");
+                        DebuggerIX.WriteLine(DebuggerTag.Net, "runTest01", "Error: list was not received");
                     }
                 }
                 else

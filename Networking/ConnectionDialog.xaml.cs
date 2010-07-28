@@ -54,7 +54,6 @@ namespace Sokoban.View.SetupNetwork
         //
 
         private delegate void AddMessageDelegate(string message);
-        private delegate void EstablishConnectionDelegate(IConnection connection, Authentication authentication);        
         private IErrorMessagesPresenter errorPresenter = null;
         private IConnectionRelayer connectionRelayer = null;
         private IProfileRepository profile = null;
@@ -184,20 +183,22 @@ namespace Sokoban.View.SetupNetwork
 
             string role = "Client";
             NetworkClient n = new NetworkClient(this.ipAddress, this.port);
+            ConnectionEstablished threadStoppedDel = new ConnectionEstablished(threadStopped);
 
             int i = 1;
             AddMessageDelegate addMessage = new AddMessageDelegate(AddMessage);
             Dispatcher.Invoke(addMessage, "Connecting to: " + this.ipAddress + ":" + this.port);
 
-            bool startGame = false;
+            bool startGameMessageReceived = false;
+            bool wasGameStarted = false;
             int maxNumberOfConnectionAttempts = 3;
 
             try
             {
                 while (i <= maxNumberOfConnectionAttempts && endTheThread != 1)
                 {
-                    startGame = false;
-                    DebuggerIX.WriteLine("[Net]", role, "Initialization # " + i + " invoked");
+                    startGameMessageReceived = false;
+                    DebuggerIX.WriteLine(DebuggerTag.Net, role, "Initialization # " + i + " invoked");
                     Dispatcher.Invoke(addMessage, "Attempt to receive connection #" + i);
 
                     try
@@ -206,22 +207,26 @@ namespace Sokoban.View.SetupNetwork
                     }
                     catch (InvalidStateException e)
                     {
-                        DebuggerIX.WriteLine("[Net]", role, "InvalidState: " + e.Message);
+                        DebuggerIX.WriteLine(DebuggerTag.Net, role, "InvalidState: " + e.Message);
                         Dispatcher.Invoke(addMessage, "Error:" + e.Message);
                         continue;
                     }
                     catch (TimeoutException e)
                     {
-                        DebuggerIX.WriteLine("[Net]", role, "TimeOut: " + e.Message);
+                        DebuggerIX.WriteLine(DebuggerTag.Net, role, "TimeOut: " + e.Message);
                         Dispatcher.Invoke(addMessage, "Timeout for attempt #" + i);
                         continue;
                     }
 
-                    DebuggerIX.WriteLine("[Net]", role, "Initialization = " + n.IsInitialized);
+                    DebuggerIX.WriteLine(DebuggerTag.Net, role, "Initialization = " + n.IsInitialized);
 
-                    if (n.IsInitialized == true)
+                    if (n.IsInitialized == false)
                     {
-                        DebuggerIX.WriteLine("[Net]", role, "Sending 'Autentization'");
+                        Dispatcher.Invoke(addMessage, n.ErrorMessage);
+                    }
+                    else 
+                    {
+                        DebuggerIX.WriteLine(DebuggerTag.Net, role, "Sending 'Autentization'");
                         n.SendAsync(NetworkMessageType.Authentication, param.Authentication);
 
                         try
@@ -230,23 +235,23 @@ namespace Sokoban.View.SetupNetwork
                         }
                         catch (TimeoutException)
                         {
-                            DebuggerIX.WriteLine("[Net]", role, "Timeout");
+                            DebuggerIX.WriteLine(DebuggerTag.Net, role, "Timeout");
                             Dispatcher.Invoke(addMessage, "Timeout");
                             continue;
                         }
-                        
-                        DebuggerIX.WriteLine("[Net]", role, "'Autentization' sent");
+
+                        DebuggerIX.WriteLine(DebuggerTag.Net, role, "'Autentization' sent");
                         Dispatcher.Invoke(addMessage, "Handshake sent");
 
                         bool disconnect = false;
                         Authentication auth = null;
                         int noneMessageNo = 0;
 
-                        while (startGame == false && disconnect == false && n.IsInitialized == true)
+                        while (startGameMessageReceived == false && disconnect == false && n.IsInitialized == true)
                         {
-                            DebuggerIX.WriteLine("[Net]", role, "Start async receiving");
+                            DebuggerIX.WriteLine(DebuggerTag.Net, role, "Start async receiving");
                             n.ReceiveAsync();
-                            DebuggerIX.WriteLine("[Net]", role, "Waiting for a message to be received");
+                            DebuggerIX.WriteLine(DebuggerTag.Net, role, "Waiting for a message to be received");
 
                             try
                             {
@@ -254,20 +259,27 @@ namespace Sokoban.View.SetupNetwork
                             }
                             catch (TimeoutException)
                             {
-                                DebuggerIX.WriteLine("[Net]", role, "Timeout");
+                                DebuggerIX.WriteLine(DebuggerTag.Net, role, "Timeout");
                                 Dispatcher.Invoke(addMessage, "Timeout");
                                 break;
                             }
 
+                            
                             NetworkMessageType messageType = n.GetReceivedMessageType();
-                            DebuggerIX.WriteLine("[Net]", role, "Received message: " + messageType);
+                            DebuggerIX.WriteLine(DebuggerTag.Net, role, "Received message: " + messageType);
+                            object message = null;
 
-                            if (messageType != NetworkMessageType.None) noneMessageNo = 0;
+                            if (messageType != NetworkMessageType.None)
+                            {
+                                noneMessageNo = 0;
+                                message = n.GetReceivedMessageFromQueue();
+                            }
+
 
                             if (messageType == NetworkMessageType.Authentication)
                             {
-                                auth = (Authentication)n.GetReceivedMessageFromQueue();
-                                DebuggerIX.WriteLine("[Net]", role,
+                                auth = (Authentication)message;
+                                DebuggerIX.WriteLine(DebuggerTag.Net, role,
                                     string.Format("'Autentization' message details: {0}, {1}", auth.Name, auth.IP));                                
 
                                 Dispatcher.Invoke(addMessage, "Autentization message received");
@@ -275,24 +287,23 @@ namespace Sokoban.View.SetupNetwork
                             }
                             else if (messageType == NetworkMessageType.DisconnectRequest)
                             {
-                                DisconnectRequest dr = (DisconnectRequest)n.GetReceivedMessageFromQueue();
-                                DebuggerIX.WriteLine("[Net]", role, "'DisconnectRequest' was sent by the other side in: " +
+                                DisconnectRequest dr = (DisconnectRequest)message;
+                                DebuggerIX.WriteLine(DebuggerTag.Net, role, "'DisconnectRequest' was sent by the other side in: " +
                                     dr.DateTime);
 
-                                DebuggerIX.WriteLine("[Net]", role, "Sending 'DisconnectRequestConfirmation' message");
+                                DebuggerIX.WriteLine(DebuggerTag.Net, role, "Sending 'DisconnectRequestConfirmation' message");
                                 n.SendAsync(NetworkMessageType.DisconnectRequestConfirmation);
                                 n.AllSentHandle.WaitOne();
-                                DebuggerIX.WriteLine("[Net]", role, "'DisconnectRequestConfirmation' sent");
+                                DebuggerIX.WriteLine(DebuggerTag.Net, role, "'DisconnectRequestConfirmation' sent");
                                 disconnect = true;
                                 Dispatcher.Invoke(addMessage, "Send request to end handshake");
                                 
                             }
                             else if (messageType == NetworkMessageType.StartGame)
                             {
-                                startGame = true;
-                                
+                                startGameMessageReceived = true;
                             }
-                            else if (messageType == NetworkMessageType.None )
+                            else if (messageType == NetworkMessageType.None)
                             {
                                 noneMessageNo++;
 
@@ -306,23 +317,28 @@ namespace Sokoban.View.SetupNetwork
                                     Dispatcher.Invoke(addMessage, "No message was received.");
                                 }
                             }
+                            else
+                            {
+                                Dispatcher.Invoke(addMessage, "Warning: Unknown message received.");
+                            }
                         }
 
                         if (n.IsInitialized == false)
                         {
                             Dispatcher.Invoke(addMessage, "Connection lost.");
-                            DebuggerIX.WriteLine("[Net]", role, "Connection lost.");
+                            DebuggerIX.WriteLine(DebuggerTag.Net, role, "Connection lost.");
                         }
 
                         if (disconnect)
                         {
                             n.CloseConnection();
                             Dispatcher.Invoke(addMessage, "End of initial handshake");
-                            DebuggerIX.WriteLine("[Net]", role, "Connection closed.");
+                            DebuggerIX.WriteLine(DebuggerTag.Net, role, "Connection closed.");
                         }
 
-                        if (startGame && auth != null)
+                        if (startGameMessageReceived && auth != null)
                         {
+                            wasGameStarted = true;
                             Dispatcher.Invoke(addMessage, "Game is about to start.");                            
                             Dispatcher.Invoke(new EstablishConnectionDelegate(establishConnection),
                                 new object[] { n, auth });
@@ -333,28 +349,41 @@ namespace Sokoban.View.SetupNetwork
                     i++;
                 }
 
-                if (startGame == false)
+                if (wasGameStarted == false)
                 {
-                    DebuggerIX.WriteLine("[Net]", role, "All attempts tried. Click 'Again' to begin again.");
+                    DebuggerIX.WriteLine(DebuggerTag.Net, role, "All attempts tried. Click 'Again' to begin again.");
                     Dispatcher.Invoke(addMessage, "All attempts tried. Click 'Again' to begin again.");
                 }
-            }
-            catch (ThreadInterruptedException)
+                else
+                {
+                    Dispatcher.BeginInvoke(threadStoppedDel, new object[] { wasGameStarted });
+                }
+            }            
+            catch (ThreadInterruptedException e)
             {
                 n.CloseConnection();
-                DebuggerIX.WriteLine("[Net]", role, "Thread interrupted.");
+                DebuggerIX.WriteLine(DebuggerTag.Net, role, "Thread interrupted. Message: " + e.Message);
                 Dispatcher.Invoke(addMessage, "Connection attempts aborted by user request.");
             }
             finally
             {
 
-                if (startGame == false)
+                if (wasGameStarted == false)
                 {
                     n.CloseConnection();
                     Dispatcher.Invoke(addMessage, "Network connection searching was disabled.");
                 }                
             }
-            DebuggerIX.WriteLine("[Net]", role, "Finished");
+            DebuggerIX.WriteLine(DebuggerTag.Net, role, "Finished");
+        }
+
+        private void threadStopped(bool isGameStarted)
+        {
+            if (isGameStarted == true)
+            {
+                t1.Join(); 
+                this.Close(); // hide the dialog after successful autentication
+            }
         }
 
         private void btnAgain_Click(object sender, RoutedEventArgs e)

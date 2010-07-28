@@ -57,6 +57,7 @@
     <Compile Include="Event.cs" />
     <Compile Include="IFixedElement.cs" />
     <Compile Include="IFixedTile.cs" />
+    <Compile Include="IGameVariant.cs" />
     <Compile Include="IMovableElement.cs" />
     <Compile Include="IControllableByUserInput.cs" />
     <Compile Include="IPosition.cs" />

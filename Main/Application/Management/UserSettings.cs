@@ -23,6 +23,46 @@ namespace Sokoban.Configuration
             }            
         }
 
+        public static bool IsSoundEnabled
+        {
+            get
+            {
+                return Properties.Settings.Default.IsSoundEnabled;
+            }
+
+            set
+            {
+                Properties.Settings.Default.IsSoundEnabled = value;
+            }
+        }
+
+        public static bool IsSavingAppLayoutEnabled
+        {
+            get
+            {
+                return Properties.Settings.Default.IsSavingWindowLayoutEnabled;
+            }
+
+            set
+            {
+                Properties.Settings.Default.IsSavingWindowLayoutEnabled = value;
+            }
+        }
+
+        public static string WindowLayout
+        {
+            get
+            {
+                return Properties.Settings.Default.WindowLayout;
+            }
+
+            set
+            {
+                Properties.Settings.Default.WindowLayout = value;
+            }
+        }
+
+
         public static string ConsoleCommandPrefix
         {
             get

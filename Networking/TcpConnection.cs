@@ -95,7 +95,21 @@ namespace Sokoban.Networking
             }
             else if (nmt == NetworkMessageType.Authentication)
             {
+                if (data == null)
+                {
+                    throw new InvalidStateException("SendAsync: data is null; expected Autentization instance.");
+                }
+
                 this.SendAutentizationInfo((Authentication)data);
+            }
+            else if (nmt == NetworkMessageType.SimulationTime)
+            {
+                if (data == null)
+                {
+                    throw new InvalidStateException("SendAsync: data is null; expected Autentization instance.");
+                }
+
+                this.SendSimulationTime((SimulationTimeMessage)data);
             }
             else if (nmt == NetworkMessageType.DisconnectRequest)
             {
@@ -139,6 +153,7 @@ namespace Sokoban.Networking
         private void SendBufferedEvents()
         {
             this.sendRawData(NetworkMessageType.ListOfEvents, outBuffer);
+            outBuffer.Clear();
         }
 
         private void SendStartGame()
@@ -165,6 +180,12 @@ namespace Sokoban.Networking
             this.sendRawData(NetworkMessageType.Authentication, auth);
         }
 
+        private void SendSimulationTime(SimulationTimeMessage simulationTimeMessage)
+        {
+            this.sendRawData(NetworkMessageType.SimulationTime, simulationTimeMessage);
+        }
+
+
         //
         // END OF Handlers for sending network messages
         //
@@ -181,57 +202,67 @@ namespace Sokoban.Networking
             ProcessSendingQueue();
         }
 
+
+        private object sendAsyncCallbackLock = new object();
+
+        /// <summary>
+        /// May be called from several threads at the same time. THREAD SAFETY IS REQUIRED!!
+        /// </summary>
+        /// <param name="ar"></param>
         private void SendAsyncCallback(IAsyncResult ar)
         {
-            //try
-            //{
-            // Retrieve the socket from the state object.
-            //Socket handler = (Socket)ar.AsyncState;
-            Socket handler = clientSocket;
-            AsyncState asyncState = (AsyncState)ar.AsyncState;
-            int bytesSent = 0;
-
-            try
+            lock (sendAsyncCallbackLock)
             {
-                // Complete sending the data to the remote device.
-                bytesSent = handler.EndSend(ar);
+                //try
+                //{
+                // Retrieve the socket from the state object.
+                //Socket handler = (Socket)ar.AsyncState;
+                Socket handler = clientSocket;
+                AsyncState asyncState = (AsyncState)ar.AsyncState;
+                int bytesSent = 0;
 
-            }
-            catch (NullReferenceException e)
-            {
-                if (isClosed == false)
+                try
                 {
-                    DebuggerIX.WriteLine("[Net]", role, e.Message);
+                    // Complete sending the data to the remote device.
+                    bytesSent = handler.EndSend(ar);
+
+                }
+                catch (NullReferenceException e)
+                {
+                    if (isClosed == false)
+                    {
+                        DebuggerIX.WriteLine(DebuggerTag.Net, role, e.Message);
+                    }
+
+                    return;
+                }
+                catch (SocketException e)
+                {
+                    if (isClosed == false)
+                    {
+                        DebuggerIX.WriteLine(DebuggerTag.Net, role, e.Message);
+                    }
+
+                    return;
                 }
 
-                return;
+                //Triple<int, int, byte[]> t = sendBuffer.Dequeue();
+
+                if (bytesSent != asyncState.Length)
+                    throw new Exception(
+                        "Exception: Sent bytes=" + bytesSent + "; Should be sent=" + asyncState.Length);
+
+                DebuggerIX.WriteLine(DebuggerTag.Net, role,
+                    string.Format("Message #{0} was sent. Transfered {1} bytes.", asyncState.Order, asyncState.Length));
+                //}
+                //catch (Exception e)
+                //{
+                //   DebuggerIX.WriteLine("An error in SendCallback: " + e.ToString());
+                //}
+
+                ProcessSendingQueue();
             }
-            catch (SocketException e)
-            {
-                if (isClosed == false)
-                {
-                    DebuggerIX.WriteLine("[Net]", role, e.Message);
-                }
-
-                return;
-            }
-
-            //Triple<int, int, byte[]> t = sendBuffer.Dequeue();
-
-            if (bytesSent != asyncState.Length)
-                throw new Exception(
-                    "Exception: Sent bytes=" + bytesSent + "; Should be sent=" + asyncState.Length);
-
-            DebuggerIX.WriteLine("[Net]", role,
-                string.Format("Message #{0} was sent. Transfered {1} bytes.", asyncState.Order, asyncState.Length));
-            //}
-            //catch (Exception e)
-            //{
-            //   DebuggerIX.WriteLine("An error in SendCallback: " + e.ToString());
-            //}
-
-            ProcessSendingQueue();
-        }
+        }        
 
         private void ProcessSendingQueue()
         {
@@ -246,7 +277,8 @@ namespace Sokoban.Networking
                 }
                 catch (SocketException e)
                 {
-                    DebuggerIX.WriteLine("[Net]", role, "ProcessSendingQueue, SocketException: " + e.Message);
+                    DebuggerIX.WriteLine(DebuggerTag.Net, role, "ProcessSendingQueue, SocketException: " + e.Message);
+                    throw;
                 }
             }
             else
@@ -345,17 +377,14 @@ namespace Sokoban.Networking
                 Pair<NetworkMessageType, byte[]> message = rcvdBuffer.Dequeue();
                 MemoryStream stream = new MemoryStream(message.Second, 0, message.Second.Length);
 
-                if (message.First == NetworkMessageType.Authentication ||
-                    message.First == NetworkMessageType.DisconnectRequest ||
-                    message.First == NetworkMessageType.DisconnectRequestConfirmation ||
-                    message.First == NetworkMessageType.ListOfEvents ||
-                    message.First == NetworkMessageType.StartGame)
+                if (Enum.IsDefined(typeof(NetworkMessageType), message.First) && 
+                    message.First != NetworkMessageType.None)
                 {
                     return binaryFormatter.Deserialize(stream);
                 }
                 else
                 {
-                    throw new Exception("Unknown message type");
+                    throw new Exception("Unknown message type: " + message.First.ToString());
                 }
             }
         }
@@ -409,7 +438,8 @@ namespace Sokoban.Networking
             }
             catch (SocketException e)
             {
-                DebuggerIX.WriteLine("[Net]", role, "SocketException: " + e.Message);
+                DebuggerIX.WriteLine(DebuggerTag.Net, role, "SocketException: " + e.Message);
+                throw;
             }
         }
 
@@ -428,96 +458,101 @@ namespace Sokoban.Networking
             }
             catch (SocketException se)
             {
-                DebuggerIX.WriteLine("[Net]", role, "SocketException: " + se.Message);
+                DebuggerIX.WriteLine(DebuggerTag.Net, role, "SocketException: " + se.Message);
+                throw;
             }
         }
 
+        private object readCallbackLock = new object();
+        
         public void ReadCallback(IAsyncResult ar)
         {
+            lock (readCallbackLock)
+            {
 
-            // Retrieve the state object and the handler socket
-            // from the asynchronous state object.
-            AsyncState asyncState = (AsyncState)ar.AsyncState;
+                // Retrieve the state object and the handler socket
+                // from the asynchronous state object.
+                AsyncState asyncState = (AsyncState)ar.AsyncState;
 
-            // Read data from the client socket. 
-            int received = 0;
+                // Read data from the client socket. 
+                int received = 0;
 
-            try
-            {
-                received = clientSocket.EndReceive(ar);
-            }
-            catch (ObjectDisposedException)
-            {
-                DebuggerIX.WriteLine("[Net]", role, "ReadCallback: Socket has been closed\n");
-                return;
-            }
-            catch (ArgumentException e)
-            {
-                DebuggerIX.WriteLine("[Net]", role, "ReadCallback: Called from wrong AsyncResult\n");
-                return;
-            }
-            catch (SocketException se)
-            {
-                if (se.ErrorCode == 10054) // Error code for Connection reset by peer
+                try
                 {
-                    DebuggerIX.WriteLine("[Net]", role, "Client  Disconnected");
+                    received = clientSocket.EndReceive(ar);
+                }
+                catch (ObjectDisposedException)
+                {
+                    DebuggerIX.WriteLine(DebuggerTag.Net, role, "ReadCallback: Socket has been closed\n");
                     return;
+                }
+                catch (ArgumentException e)
+                {
+                    DebuggerIX.WriteLine(DebuggerTag.Net, role, "ReadCallback: Called from wrong AsyncResult; Exception: " + e.Message);
+                    return;
+                }
+                catch (SocketException se)
+                {
+                    if (se.ErrorCode == 10054) // Error code for Connection reset by peer
+                    {
+                        DebuggerIX.WriteLine(DebuggerTag.Net, role, "Client  Disconnected");
+                        return;
+                    }
+                    else
+                    {
+                        DebuggerIX.WriteLine(DebuggerTag.Net, role, se.Message);
+                        return;
+                    }
+                }
+
+                rcvdBufferLength += received;
+                rcvdBufferOffset += rcvdBufferLength;
+
+                if (received == asyncState.Length)
+                {
+                    // All the data has been read from the 
+                    // client. Display it on the console.
+                    //Console.WriteLine("Read {0} bytes from socket. \n Data : {1}", content.Length, content);                
+
+                    if (rcvdMode == receivingMode.receivingDescriptor)
+                    {
+                        DebuggerIX.WriteLine(DebuggerTag.Net, role,
+                            "Message #" + asyncState.Order + " descriptor received. Total bytes: " + rcvdBufferLength +
+                            "; Next message (length, type): (" + BitConverter.ToInt32(rcvdByteBuffer, 0) +
+                            ", " + (NetworkMessageType)BitConverter.ToInt32(rcvdByteBuffer, 4) + ")");
+                        rcvdMode = receivingMode.descriptorReceived;
+                    }
+                    else if (rcvdMode == receivingMode.receivingMessage)
+                    {
+                        DebuggerIX.WriteLine(DebuggerTag.Net, role,
+                            "Message #" + asyncState.Order + " received. Total bytes: " + rcvdBufferLength);
+                        rcvdMode = receivingMode.messageReceived;
+                    }
+
+                    receiveAsyncProcessing();
                 }
                 else
                 {
-                    DebuggerIX.WriteLine("[Net]", role, se.Message);
-                    return;
+                    asyncState.Length = asyncState.Length - received;
+
+                    // Not all data received. Get more.
+                    try
+                    {
+                        clientSocket.BeginReceive(rcvdByteBuffer, rcvdBufferOffset, asyncState.Length, SocketFlags.None,
+                            new AsyncCallback(ReadCallback), asyncState);
+                    }
+                    catch (SocketException e)
+                    {
+                        DebuggerIX.WriteLine(DebuggerTag.Net, role, "ReadCallback: Exception. Message: " + e.Message);
+                    }
+
+                    //} 
+                    //catch (SocketException e)
+                    //{
+                    //if (isClosed == false) throw new Exception("SocketException: " + e.Message);
+                    //}
                 }
             }
-
-            rcvdBufferLength += received;
-            rcvdBufferOffset += rcvdBufferLength;
-
-            if (received == asyncState.Length)
-            {
-                // All the data has been read from the 
-                // client. Display it on the console.
-                //Console.WriteLine("Read {0} bytes from socket. \n Data : {1}", content.Length, content);                
-
-                if (rcvdMode == receivingMode.receivingDescriptor)
-                {
-                    DebuggerIX.WriteLine("[Net]", role,
-                        "Message #" + asyncState.Order + " descriptor received. Total bytes: " + rcvdBufferLength +
-                        "; Next message (length, type): (" + BitConverter.ToInt32(rcvdByteBuffer, 0) +
-                        ", " + (NetworkMessageType)BitConverter.ToInt32(rcvdByteBuffer, 4) + ")");
-                    rcvdMode = receivingMode.descriptorReceived;
-                }
-                else if (rcvdMode == receivingMode.receivingMessage)
-                {
-                    DebuggerIX.WriteLine("[Net]", role,
-                        "Message #" + asyncState.Order + " received. Total bytes: " + rcvdBufferLength);
-                    rcvdMode = receivingMode.messageReceived;
-                }
-
-                receiveAsyncProcessing();
-            }
-            else
-            {
-                asyncState.Length = asyncState.Length - received;
-
-                // Not all data received. Get more.
-                try
-                {
-                    clientSocket.BeginReceive(rcvdByteBuffer, rcvdBufferOffset, (asyncState.Length - received), SocketFlags.None,
-                        new AsyncCallback(ReadCallback), asyncState);
-                }
-                catch (SocketException e)
-                {
-                    DebuggerIX.WriteLine("[Net]", role, "ReadCallback: Exception. Message: " + e.Message);
-                }
-
-                //} 
-                //catch (SocketException e)
-                //{
-                //if (isClosed == false) throw new Exception("SocketException: " + e.Message);
-                //}
-            }
-
         }
 
         private EventWaitHandle receivedMessageHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
@@ -547,19 +582,19 @@ namespace Sokoban.Networking
                 isClosed = true;
                 if (clientSocket.Connected)
                 {
-                    DebuggerIX.WriteLine("[Net]", role, "Connection Shutdown");
+                    DebuggerIX.WriteLine(DebuggerTag.Net, role, "Connection Shutdown");
                     clientSocket.Shutdown(SocketShutdown.Both);
-                    DebuggerIX.WriteLine("[Net]", role, "Beginning disconnect");
+                    DebuggerIX.WriteLine(DebuggerTag.Net, role, "Beginning disconnect");
                     clientSocket.Disconnect(true);  // 10 second timeout
 
                     if (clientSocket.Connected)
                     {
-                        DebuggerIX.WriteLine("[Net]", role, "We're still connnected");
+                        DebuggerIX.WriteLine(DebuggerTag.Net, role, "We're still connnected");
                         isInitialized = true;
                     }
                     else
                     {
-                        DebuggerIX.WriteLine("[Net]", role, "We're disconnected");
+                        DebuggerIX.WriteLine(DebuggerTag.Net, role, "We're disconnected");
                         isInitialized = false;
                     }
 
@@ -568,13 +603,13 @@ namespace Sokoban.Networking
                 else
                 {
                     isInitialized = false;
-                    DebuggerIX.WriteLine("[Net]", role, "Already closed.");
+                    DebuggerIX.WriteLine(DebuggerTag.Net, role, "Already closed.");
                 }
             }
             else
             {
                 isInitialized = false;
-                DebuggerIX.WriteLine("[Net]", role, "Already closed.");
+                DebuggerIX.WriteLine(DebuggerTag.Net, role, "Already closed.");
             }
         }
 

@@ -10,7 +10,7 @@ namespace Sokoban.Model.PluginInterface
     public interface IPluginParent
     {
         // For communication between plugins
-        void Message(object message, IGamePlugin plugin);
+        void Message(string messageType, object message, IGamePlugin plugin);
         
         // Planning
         void MakePlan(string debug, Int64 when, IGamePlugin who, EventType what);
@@ -20,11 +20,16 @@ namespace Sokoban.Model.PluginInterface
         IGamePlugin GetObstructionOnPosition(int x, int y);
 
         IEnumerable<IGamePlugin> AllPlugins {get;}
+        IGamePlugin[,] GetFixedElements();
+        IGamePlugin[,] GetFixedTiles();
+        IGameVariant GameVariant { get; }
         
         // Process all events
         void ProcessAllEvents();
         void ProcessAllEvents(double phase);
         void ProcessAllEvents(bool updateTime, double phase);
+        void ResumeSimulation();
+        void StopSimulation();
 
         void PropertyChanged(string name);
 
@@ -49,8 +54,8 @@ namespace Sokoban.Model.PluginInterface
         // Returns XML schema for what is should be content of tag <YourPluginName></YourPluginName> in round specification
         string XmlSchema { get; }
 
-        // Your initialization goes here
-        void Load();
+        // Your initialization goes here; appPath param is without trailing backslash
+        void Load(string appPath);
         // In case that you use some unmanaged code and you need to correctly destruct an object, ...
         void Unload();
         // Plugin has to draw itself on gamedesk
@@ -61,9 +66,7 @@ namespace Sokoban.Model.PluginInterface
         // Return false if plugin is not able to process the event, host will take care of the message
         bool ProcessEvent(Int64 time, Event e);
         // For cross-plugin communication
-        void MessageReceived(object message, IGamePlugin sender);
-        // Plugin's host 
-        IPluginParent Parent { get; set; }       
+        void MessageReceived(string messageType, object message, IGamePlugin sender);
         int ID { get; set; }        
     }
 }

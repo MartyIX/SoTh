@@ -17,6 +17,7 @@ namespace PluginBox
 
         public Box(IPluginParent host) : base(host)
         {
+            Initialize(this);
         }
 
 
@@ -52,11 +53,9 @@ namespace PluginBox
             return base.ProcessEvent(time, ev);
         }
 
-        public void Load()
+        public void Load(string appPath)
         {
             // One-based values
-            posX = 2;
-            posY = 2;
             obstructionLevel = 5;
             Speed = 0;
 
@@ -75,18 +74,6 @@ namespace PluginBox
         {
             image = null;
             uiElement = null;
-        }
-
-        public IPluginParent Parent
-        {
-            get
-            {
-                return host;
-            }
-            set
-            {
-                host = value;
-            }
         }
 
         #endregion
@@ -124,7 +111,7 @@ namespace PluginBox
             get { return PluginBox.Properties.Resources.XmlSchema; }
         }
 
-        public void MessageReceived(object message, IGamePlugin p)
+        public void MessageReceived(string messageType, object message, IGamePlugin p)
         {
 
         }
@@ -133,13 +120,13 @@ namespace PluginBox
         {
             if (gameVariant.ToLower() != "ordinary" && gameVariant.ToLower() != "soth")
             {
-                throw new Exception("Plugin Aim doesn't support game variant: " + gameVariant);
+                throw new Exception("Plugin `Box' doesn't support game variant: " + gameVariant);
             }
 
             this.fieldsX = mazeWidth;
             this.fieldsY = mazeHeight;
 
-            DebuggerIX.WriteLine("[Plugin]", this.Name, "ProcessXmlInitialization, settings: " + settings.InnerXml);
+            DebuggerIX.WriteLine(DebuggerTag.Plugins, this.Name, "ProcessXmlInitialization, settings: " + settings.InnerXml);
 
             posX = int.Parse(settings["PosX"].InnerText);
             posY = int.Parse(settings["PosY"].InnerText);

@@ -102,9 +102,12 @@
     <Compile Include="Interfaces\IConnectionProvider.cs" />
     <Compile Include="Interfaces\IErrorMessagesPresenter.cs" />
     <Compile Include="Interfaces\IGameMatch.cs" />
+    <Compile Include="Interfaces\INetworkService.cs" />
     <Compile Include="Interfaces\IProfileRepository.cs" />
     <Compile Include="Interfaces\IQuest.cs" />
     <Compile Include="Interfaces\IQuestHandler.cs" />
+    <Compile Include="Interfaces\IUserInquirer.cs" />
+    <Compile Include="Interfaces\IUserInquiryAccepter.cs" />
     <Compile Include="Networking\ApplicationHttpReq.cs" />
     <Compile Include="Networking\Autentization.cs" />
     <Compile Include="Networking\Enums.cs" />

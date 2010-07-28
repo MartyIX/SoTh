@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Controls;
 using System.Windows;
 using System.ComponentModel;
+using System.Collections;
 
 namespace Sokoban.Model.PluginInterface
 {
@@ -27,27 +28,33 @@ namespace Sokoban.Model.PluginInterface
         protected Image image;
         protected int obstructionLevel = 0;
         protected DateTime lastPositionChange = DateTime.Now;
+        private IGamePlugin thisGamePlugin;
 
-        public int ObstructionLevel
-        {
-            get { return obstructionLevel; }
-            set { obstructionLevel = value; }
-        }
-        protected int fieldsX = 0;
-        protected int fieldsY = 0;
-        protected int stepsCount;
         private static int[] moves = { -1,  0, 
                                         1,  0, 
                                         0, -1, 
-                                        0,  1 };        
+                                        0,  1 };
+        
 
+        public virtual int ObstructionLevel(IGamePlugin asker)
+        {
+            return obstructionLevel;
+        }
+
+        protected int fieldsX = 0;
+        protected int fieldsY = 0;
+        protected int stepsCount;
 
         public MovableEssentials(IPluginParent host)
         {
-            this.host = host;            
-
+            this.host = host;
+            
         }
 
+        public void Initialize(IGamePlugin thisGamePlugin)
+        {
+            this.thisGamePlugin = thisGamePlugin;
+        }
 
         public virtual void PrepareMovement(Int64 goTime, double phase, IGamePlugin who, EventType ev)
         {
@@ -90,7 +97,7 @@ namespace Sokoban.Model.PluginInterface
         }
 
         [Conditional("DebugDraw")]
-        public void Debug(string category, string subcategory, string message)
+        public void Debug(DebuggerTag category, string subcategory, string message)
         {
             DebuggerIX.WriteLine(category, subcategory, message);
         }
@@ -106,7 +113,7 @@ namespace Sokoban.Model.PluginInterface
                 y = (this.posY - 1) * squareSize;
 
 
-                this.Debug("[Draw]", "NotInProgress",
+                this.Debug(DebuggerTag.PluginDraw, "NotInProgress",
                         "[x,y] = " + x.ToString("0.00")
                     + ", " + y.ToString("0.00")
                     + "; pos = " + posX.ToString() + "x" + posY.ToString()
@@ -125,7 +132,7 @@ namespace Sokoban.Model.PluginInterface
                 x = (this.lastPosX - 1) * squareSize + (posX - lastPosX) * step;
                 y = (this.lastPosY - 1) * squareSize + (posY - lastPosY) * step;
 
-                this.Debug("[Draw]", "InProgress",
+                this.Debug(DebuggerTag.PluginDraw, "InProgress",
                         "[x,y] = " + x.ToString("0.00")
                     + ", " + y.ToString("0.00")
                     + "; pos = " + lastPosX.ToString() + "x" + lastPosY.ToString()
@@ -159,14 +166,23 @@ namespace Sokoban.Model.PluginInterface
             {
                 Canvas.SetLeft(image, x + squareSize);
                 Canvas.SetTop(image, y);
+                Crash(canvas, time, x + squareSize, y, squareSize);
             }
             else
             {
                 Canvas.SetLeft(image, x);
                 Canvas.SetTop(image, y);
+                Crash(canvas, time, x, y, squareSize);
             }
 
             Canvas.SetZIndex(image, 20); // 10 is for tile, 11 - 19 is for middle layer objects and GameObjects have 20 - 29 and 30 is for walls
+
+            
+        }
+
+        public virtual void Crash(Canvas canvas, Int64 time, double x, double y, double squareSize)
+        {
+
         }
 
         public bool ProcessEvent(Int64 time, Event ev)
@@ -203,7 +219,7 @@ namespace Sokoban.Model.PluginInterface
                 case EventType.hitToTheWall:
 
                     return false;
-
+       
                 default:
                     returnValue = false;
                     break;
@@ -212,14 +228,17 @@ namespace Sokoban.Model.PluginInterface
             return returnValue;
         }
 
+        
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="time"></param>
         /// <param name="ev"></param>
-        public void ProcessGoEvent(Int64 time, Event ev)
-        {            
+        /// <returns>What GamePlugin was moved; if none then null</returns>
+        public IGamePlugin ProcessGoEvent(Int64 time, Event ev)
+        {
+            IGamePlugin result = null;
             // TODO: It's not possible to move object if there's something behind it
 
             MovementDirection md = EventType2MovementDirection(ev.what);
@@ -250,8 +269,14 @@ namespace Sokoban.Model.PluginInterface
             {
                 PrepareMovement(ev.when, 0, (IGamePlugin)ev.who, ev.what);
             }
+            else if (isThereWall == false && ((IMovableElement)obstructionGp).ObstructionLevel(thisGamePlugin) == -1)
+            {
+                PrepareMovement(ev.when, 0, (IGamePlugin)ev.who, ev.what);
+                result = obstructionGp;
+            }
             // No wall and object can be moved
-            else if (isThereWall == false && this.obstructionLevel > ((IMovableElement)obstructionGp).ObstructionLevel)
+            else if (isThereWall == false && 
+                this.ObstructionLevel(obstructionGp) > ((IMovableElement)obstructionGp).ObstructionLevel(thisGamePlugin))
             {
                 int nextNextX = CoordinationOfMovementDirectionX(nextFieldX, md);
                 int nextNextY = CoordinationOfMovementDirectionY(nextFieldY, md);
@@ -278,6 +303,7 @@ namespace Sokoban.Model.PluginInterface
                             ((IMovableElement)obstructionGp).Speed = -speed;
                         }
                         PrepareMovement(ev.when, 0, obstructionGp, ev.what, speed);
+                        result = obstructionGp;
                     }
                     else
                     {
@@ -289,7 +315,9 @@ namespace Sokoban.Model.PluginInterface
             else
             {
                 planHittingWall("PGE-Wall", ev.when, ev.who);
-            }            
+            }
+
+            return result;
         }
 
         private void planHittingWall(string debugMessage, Int64 when, IGamePlugin who)
@@ -301,12 +329,12 @@ namespace Sokoban.Model.PluginInterface
 
             if (diff > 400)
             {
-                DebuggerIX.WriteLine("[MovableEssentials]", "planHittingWall", "True; Diff = " + diff);
+                DebuggerIX.WriteLine(DebuggerTag.SimulationEventHandling, "[MovableEssentials]", "planHittingWall = True; Diff = " + diff);
                 MakePlan(debugMessage, when, who, EventType.hitToTheWall); // ev.who = this plugin
             }
             else
             {
-                DebuggerIX.WriteLine("[MovableEssentials]", "planHittingWall", "False; Diff = " + diff);
+                DebuggerIX.WriteLine(DebuggerTag.SimulationEventHandling, "[MovableEssentials]", "planHittingWall = False; Diff = " + diff);
             }
         }
 
@@ -561,7 +589,7 @@ namespace Sokoban.Model.PluginInterface
 
                 movementEventsInBuffer++;
 
-                DebuggerIX.WriteLine("[KeyBuf]", "Buffer is now: " + this.MovementEventsInBuffer.ToString());
+                DebuggerIX.WriteLine(DebuggerTag.SimulationEventHandling, "[MovableEssentials]", "[KeyBuf] Buffer is now: " + this.MovementEventsInBuffer.ToString());
             }
 
             host.MakePlan(debug, time, iGamePlugin, eventType);

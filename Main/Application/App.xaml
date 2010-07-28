@@ -2,9 +2,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ad="clr-namespace:AvalonDock;assembly=AvalonDock"
-    Startup="Application_Startup"
-    LoadCompleted="Application_LoadCompleted" StartupUri="/Sokoban;component/MainWindow.xaml"
     >
+    <!--StartupUri="/Sokoban;component/MainWindow.xaml"-->
     <Application.Resources>
 
     </Application.Resources>

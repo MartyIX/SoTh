@@ -74,9 +74,10 @@ namespace Sokoban.View
         /// </summary>
         /// <param name="path">Absolute path to the directory with solvers</param>
         /// <param name="parentWindow">We need to display dialogs and the dialogs need to be bound to a window; main window reference is expected</param>
-        public void Initialize(ISolverProvider solverProvider, Window parentWindow, IErrorMessagesPresenter errorPresenter)
+        public void Initialize(ISolverProvider solverProvider, Window parentWindow, IErrorMessagesPresenter errorPresenter, IUserInquirer userInquirer)
         {
             this.errorPresenter = errorPresenter;
+            this.userInquirer = userInquirer;
             solversManager = new SolversManager(solverProvider, parentWindow);
             // Register callback
             solversManager.RegisterStatusChangeCallback(solverStatusChange);
@@ -102,6 +103,7 @@ namespace Sokoban.View
         private SolversManager solversManager;
         private ObservableCollection<string> solversList = new ObservableCollection<string>();
         private IErrorMessagesPresenter errorPresenter;
+        private IUserInquirer userInquirer;
 
         // Initialized in method Initialize from ISolverProvider -- it's a hack actually because we expect that the object implements
         // ISolverPainter and ISolverProvider at the same time. But we save a parameter..
@@ -131,6 +133,19 @@ namespace Sokoban.View
                     enableStartOfSolver();
                     SolverStatus = "Solver cannot finish its work.";
                     addItemToMessageLog(0, ex.Message);
+                }
+                catch (NotStandardSokobanVariantException ex)
+                {
+                    enableStartOfSolver();
+                    SolverStatus = "Solver cannot solve this game variant.";
+                    addItemToMessageLog(0, ex.Message);
+                    this.showMessage("The opened round is not standard Sokoban variant. Solvers can solve only the variant. We're sorry for the inconvenience.");
+                }
+                catch (NoRoundIsOpenException)
+                {
+                    enableStartOfSolver();
+                    SolverStatus = "No round is opened.";
+                    this.showMessage("No round is opened. For solving rounds open a standard variant round and click \"Start\" button again.");
                 }
             } 
         }
@@ -308,6 +323,15 @@ namespace Sokoban.View
                 errorPresenter.ErrorMessage(ems, "Solvers", message);
             }
         }
+
+        private void showMessage(string message)
+        {
+            if (userInquirer != null)
+            {
+                userInquirer.ShowMessage(message);
+            }
+        }
+
     }
 
     public class MessagesLogItemData

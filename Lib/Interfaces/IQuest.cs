@@ -13,5 +13,6 @@ namespace Sokoban.Model.GameDesk
         void MoveCurrentToNext();
         void SetCurrentRound(int n);
         bool IsLast();
+        int RoundsNo { get; }
     }
 }

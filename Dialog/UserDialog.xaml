@@ -1,0 +1,73 @@
+﻿<Window x:Class="Sokoban.View.UserDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:Sokoban.View"  
+    Title="" 
+    Width="350" 
+    Height="230"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterScreen"
+    WindowStyle="None" ResizeMode="NoResize"
+    AllowsTransparency="True"
+    Background="Transparent"
+    Loaded="Window_Loaded"
+    PreviewKeyDown="Window_PreviewKeyDown"    
+    Closed="Window_Closed">
+
+    <Window.Resources>
+        <Style TargetType="Button"
+               BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Margin" Value="2,5" />
+            <Setter Property="Foreground" Value="White" />
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="Black" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Border  
+        BorderThickness="2"
+        BorderBrush="Black"
+        CornerRadius="6"
+        >
+        <Border.Background>
+            <SolidColorBrush>
+                <SolidColorBrush.Color>
+                    <Color A="255" R="57" G="97" B="145" />
+                </SolidColorBrush.Color>
+            </SolidColorBrush>
+        </Border.Background>
+        
+        <DockPanel LastChildFill="True" Margin="10,10" HorizontalAlignment="Center">
+                     
+            <StackPanel DockPanel.Dock="Bottom"                        
+                        Orientation="Horizontal" 
+                        x:Name="buttonContainer"
+                        >
+            
+            </StackPanel>
+
+            <Grid x:Name="myGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+               
+                <Image Source="Resources/obj_S.png" Width="50" Height="50" Grid.Row="0" Grid.Column="0" />
+                                                                                  
+                <TextBlock
+                     Grid.Row="0" Grid.Column="1"
+                     Foreground="White" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                     x:Name="tbMessage" Text="{Binding Message}" TextWrapping="Wrap"></TextBlock>                               
+            
+            </Grid>    
+        </DockPanel>
+    </Border>
+</Window>

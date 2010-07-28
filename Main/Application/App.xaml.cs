@@ -16,11 +16,6 @@ namespace Sokoban
     public partial class App : System.Windows.Application
     {
 
-        public void Application_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
-        {
-
-        }
-
         public void Application_Startup(object sender, StartupEventArgs e)
         {
 
@@ -42,21 +37,11 @@ namespace Sokoban
             
 
         }
-
+        
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-
-                        
-            if ( 1 == 2 )
-            {
-                /* do stuff without a GUI */
-            }
-            else
-            {
-                ApplicationRepository.Start(e.Args);
-            }            
-
+            ApplicationRepository.Start(e.Args);        
             this.Shutdown();
         }
     }

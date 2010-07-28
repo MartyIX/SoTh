@@ -11,5 +11,14 @@
     <Setting Name="ConsoleCommandPrefix" Type="System.String" Scope="User">
       <Value Profile="(Default)">&gt; </Value>
     </Setting>
+    <Setting Name="IsSoundEnabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="IsSavingWindowLayoutEnabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="WindowLayout" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

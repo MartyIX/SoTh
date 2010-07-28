@@ -76,7 +76,7 @@ namespace Sokoban.Networking
 	        {
                 NetworkEvent ne = q.Dequeue();
                 inBuffer.Enqueue(ne);
-                DebuggerIX.WriteLine("[Net]", "[DeserializeData]", ne.ToString());
+                DebuggerIX.WriteLine(DebuggerTag.Net, "[DeserializeData]", ne.ToString());
 	        }                               
         }
     }

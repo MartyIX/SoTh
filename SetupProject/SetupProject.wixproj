@@ -35,6 +35,13 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLLOCATION</RefTargetDir>
     </ProjectReference>
+    <ProjectReference Include="..\Console\Console.csproj">
+      <Name>Console</Name>
+      <Project>{65d0c3fe-c558-44d4-b71b-fa32cdc24443}</Project>
+      <Private>True</Private>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLLOCATION</RefTargetDir>
+    </ProjectReference>
     <ProjectReference Include="..\GameDeskControl\GameDeskControl\GameDeskControl.csproj">
       <Name>GameDeskControl</Name>
       <Project>{d86c56b6-a996-41f1-a647-2868a1940b68}</Project>
@@ -78,6 +85,20 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLLOCATION</RefTargetDir>
     </ProjectReference>
+    <ProjectReference Include="..\Networking\Networking.csproj">
+      <Name>Networking</Name>
+      <Project>{72836426-37f3-472e-927d-ea899591faef}</Project>
+      <Private>True</Private>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLLOCATION</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\PendingGames\PendingGames.csproj">
+      <Name>PendingGames</Name>
+      <Project>{d87242df-7377-49bf-bf86-3c0ba2a5d9c6}</Project>
+      <Private>True</Private>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLLOCATION</RefTargetDir>
+    </ProjectReference>
     <ProjectReference Include="..\PluginAim\PluginAim.csproj">
       <Name>PluginAim</Name>
       <Project>{3bafa179-5f2e-4dc5-9ac2-db689688793c}</Project>
@@ -92,12 +113,33 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>PLUGINSLOCATION</RefTargetDir>
     </ProjectReference>
+    <ProjectReference Include="..\PluginFakeBox\PluginFakeBox\PluginFakeBox.csproj">
+      <Name>PluginFakeBox</Name>
+      <Project>{320d5bb4-990d-44c1-8ba8-3586faadfdcc}</Project>
+      <Private>True</Private>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>PLUGINSLOCATION</RefTargetDir>
+    </ProjectReference>
     <ProjectReference Include="..\PluginInterface\PluginInterface\PluginInterface.csproj">
       <Name>PluginInterface</Name>
       <Project>{e1357f87-0be7-4ff7-84b4-d4cc4cd1788e}</Project>
       <Private>True</Private>
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLLOCATION</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\PluginMonster\PluginMonster.csproj">
+      <Name>PluginMonster</Name>
+      <Project>{2832ee46-855c-4417-a5f4-401c03857212}</Project>
+      <Private>True</Private>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>PLUGINSLOCATION</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\PluginOrdinary\PluginOrdinary.csproj">
+      <Name>PluginOrdinary</Name>
+      <Project>{97a993b7-f00d-474c-8823-e8a5cc5b1001}</Project>
+      <Private>True</Private>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>PLUGINSLOCATION</RefTargetDir>
     </ProjectReference>
     <ProjectReference Include="..\PluginSokoban\PluginSokoban\PluginSokoban.csproj">
       <Name>PluginSokoban</Name>
@@ -106,6 +148,15 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>PLUGINSLOCATION</RefTargetDir>
     </ProjectReference>
+    <ProjectReference Include="..\PluginSoTh\PluginSoTh.csproj">
+      <Name>PluginSoTh</Name>
+      <Project>{ccfdeebc-89fe-4bc4-99e4-9a5ad872f106}</Project>
+      <Private>True</Private>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>PLUGINSLOCATION</RefTargetDir>
+      <DoNotHarvest>
+      </DoNotHarvest>
+    </ProjectReference>
     <ProjectReference Include="..\PluginWall\PluginWall.csproj">
       <Name>PluginWall</Name>
       <Project>{a74b8493-59f1-44b7-bfc0-9c41f4f238ef}</Project>
@@ -113,9 +164,23 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>PLUGINSLOCATION</RefTargetDir>
     </ProjectReference>
+    <ProjectReference Include="..\QuestsControl\QuestsControl.csproj">
+      <Name>QuestsControl</Name>
+      <Project>{b2653a3f-a6ee-4212-bfe5-fda3c6c18d2f}</Project>
+      <Private>True</Private>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLLOCATION</RefTargetDir>
+    </ProjectReference>
     <ProjectReference Include="..\SettingsWindow\SettingsDialog.csproj">
       <Name>SettingsDialog</Name>
       <Project>{b6fc1ae6-0066-442f-bf3f-aea88a344c80}</Project>
+      <Private>True</Private>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLLOCATION</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\SolverLibrary\SolverLibrary.csproj">
+      <Name>SolverLibrary</Name>
+      <Project>{95463e7f-dfd5-488e-8eb0-84e0d0edeaf1}</Project>
       <Private>True</Private>
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLLOCATION</RefTargetDir>

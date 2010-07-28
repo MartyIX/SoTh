@@ -42,6 +42,7 @@ namespace Sokoban.Model.Xml
                     OfferItemData o = new OfferItemData(
                         int.Parse(game["OfferID"].InnerText),
                         game["RoundName"].InnerText,
+                        int.Parse(game["LeagueID"].InnerText),
                         int.Parse(game["RoundID"].InnerText),
                         game["OpponentName"].InnerText,
                         game["IP"].InnerText,

@@ -50,6 +50,23 @@ namespace Sokoban.Lib.Exceptions
         }
     }
 
+    public class NoRoundIsOpenException : System.Exception
+    {
+        // The default constructor needs to be defined
+        // explicitly now since it would be gone otherwise.
+
+        public NoRoundIsOpenException()
+        {
+        }
+
+        public NoRoundIsOpenException(string message)
+            : base(message)
+        {
+        }
+    }
+
+
+    
     public class NotValidQuestException : System.Exception
     {
         // The default constructor needs to be defined
@@ -101,6 +118,17 @@ namespace Sokoban.Lib.Exceptions
         {
         }
     }
-    
 
+    public class InvalidDataFromNetworkException : System.Exception
+    {
+        public InvalidDataFromNetworkException()
+        {
+        }
+
+        public InvalidDataFromNetworkException(string message)
+            : base(message)
+        {
+        }
+    }
+    
 }
