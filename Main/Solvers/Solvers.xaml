@@ -36,7 +36,8 @@ Notes: DockableContent is not closed, only hiden when closed!
                   ItemsSource="{Binding DataGridItemsSource}"
                   Margin="5,0,5,5" DockPanel.Dock="Top" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                   AutoGenerateColumns="False"
-                  CanUserAddRows="False">
+                  CanUserAddRows="False"
+                  IsReadOnly="True">
             <toolkit:DataGrid.Columns>
                 <toolkit:DataGridTextColumn Binding="{Binding Move}" Header="Move" x:Name="Move" />
                 <toolkit:DataGridTextColumn Binding="{Binding Plugin}" Header="Plugin" x:Name="Plugin" />

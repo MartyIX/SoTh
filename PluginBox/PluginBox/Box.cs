@@ -17,7 +17,7 @@ namespace PluginBox
 
         public Box(IPluginParent host) : base(host)
         {
-            Initialize(this);
+            Initialize(this, true);
         }
 
 
@@ -113,7 +113,6 @@ namespace PluginBox
 
         public void MessageReceived(string messageType, object message, IGamePlugin p)
         {
-
         }
 
         public bool ProcessXmlInitialization(string gameVariant, int mazeWidth, int mazeHeight, XmlNode settings)

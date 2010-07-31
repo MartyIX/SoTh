@@ -12,10 +12,37 @@ namespace Sokoban.View.GameDocsComponents
 {
     public partial class GameDeskControl
     {
-        public void Reload()
+        public void RestartGame(GameDisplayType gameDisplayType)
         {
-            Terminate();
-            loadCurrentRound(game);
+            bool executeRestart = true;
+            removeShadeEffect();
+
+            if (gameMode == GameMode.TwoPlayers && gameDisplayType == GameDisplayType.FirstPlayer && networkModule != null)
+            {
+                if (game.GameStatus == GameStatus.Finished)
+                {
+                    MessageBoxShow("You've already finished the game with opponent.");
+                    executeRestart = false;
+                }
+                else
+                {
+                    networkModule.SendRestartMessage();
+                }
+            }
+
+            if (executeRestart)
+            {
+                if (gameDisplayType == GameDisplayType.FirstPlayer)
+                {
+                    TerminateFirstPlayer(); // do not terminate opponent gamedesk
+                    loadCurrentRound(game);
+                }
+                else if (gameDisplayType == GameDisplayType.SecondPlayer)
+                {
+                    TerminateSecondPlayer(true); // do not terminate opponent gamedesk
+                    loadCurrentRound(gameOpponent);
+                }
+            }                                             
         }
 
         public void LoadNextRound()

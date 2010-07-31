@@ -15,8 +15,9 @@ namespace Sokoban.View.GameDocsComponents
         public void SetNetworkConnection(IConnection connection)
         {
             if (this.networkModule != null)
-            {
+            {                
                 this.networkModule.SetNetworkConnection(connection);
+                this.removeBlurEffect();
             }
             else
             {

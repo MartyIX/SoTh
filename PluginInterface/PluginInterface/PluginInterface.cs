@@ -13,7 +13,7 @@ namespace Sokoban.Model.PluginInterface
         void Message(string messageType, object message, IGamePlugin plugin);
         
         // Planning
-        void MakePlan(string debug, Int64 when, IGamePlugin who, EventType what);
+        void MakePlan(string debug, Int64 when, IGamePlugin who, EventType what, bool force);
         void MakeImmediatePlan(string debug, IGamePlugin who, EventType what);
 
         // Gamedesk actions
@@ -28,6 +28,7 @@ namespace Sokoban.Model.PluginInterface
         void ProcessAllEvents();
         void ProcessAllEvents(double phase);
         void ProcessAllEvents(bool updateTime, double phase);
+        bool IsSimulationActive { get; }
         void ResumeSimulation();
         void StopSimulation();
 
@@ -65,7 +66,7 @@ namespace Sokoban.Model.PluginInterface
         bool ProcessXmlInitialization(string gameVariant, int mazeWidth, int mazeHeight, XmlNode settings);
         // Return false if plugin is not able to process the event, host will take care of the message
         bool ProcessEvent(Int64 time, Event e);
-        // For cross-plugin communication
+        // For cross-plugin communication; sender is object who sends message
         void MessageReceived(string messageType, object message, IGamePlugin sender);
         int ID { get; set; }        
     }

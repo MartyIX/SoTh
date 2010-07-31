@@ -25,5 +25,25 @@ namespace Sokoban.View.GameDocsComponents
             }
         }
 
+        public void SendRestartMessage()
+        {
+            if (networkService != null)
+            {
+                networkService.SendRestartMessage();
+            }
+        }
+
+        void INetworkService.Terminate()
+        {
+            if (networkService != null)
+            {
+                networkService.Terminate();
+            }
+        }
+
+        /// <summary>
+        /// Not implemented
+        /// </summary>
+        public event GameChangeDelegate GameChanged;
     }
 }

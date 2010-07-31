@@ -94,7 +94,7 @@ namespace PluginOrdinary
 
 				if (isFinished)
 				{
-					parent.MakePlan("Ordinary", time + ((IMovableElement)sokoban).Speed, null, EventType.gameWon);
+					parent.MakePlan("Ordinary", time + ((IMovableElement)sokoban).Speed, null, EventType.gameWon, true);
 				}
 			}
 		}

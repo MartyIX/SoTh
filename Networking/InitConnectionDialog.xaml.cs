@@ -308,7 +308,8 @@ namespace Sokoban.View.SetupNetwork
                     
                     if (response == null)
                     {
-                        MessageBox.Show("Cannot parse game server answer.");
+                        //MessageBox.Show("Cannot parse game server answer.");
+                        DebuggerIX.WriteLine(DebuggerTag.Net, "DeleteGameOffer", "Message cannot be parsed");
                     }
                     else
                     {
@@ -319,7 +320,9 @@ namespace Sokoban.View.SetupNetwork
                         }
                         else
                         {
-                            MessageBox.Show("Game offer could not be deleted from the game server.");
+                            BtnListenContent = "Listen";
+                            this.Status = "Game offer could not be deleted.";
+                            //MessageBox.Show("Game offer could not be deleted from the game server.");
                             errorMessage(ErrorMessageSeverity.Medium, 
                                 "Game offer was not deleted from the game server. Server's error message:" + response.ErrorMessage);
                         }                       

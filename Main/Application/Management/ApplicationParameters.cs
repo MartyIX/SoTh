@@ -125,6 +125,7 @@ namespace Sokoban.Application
                         string errorMessage = "Param `--play-network-game` requires syntax: --play-network-game <league_id> <round_id>";
                         throw new ApplicationParametersException(errorMessage);
                     }                
+
                 }
                 else if (args[i].ToLower() == "--log-exclude-tags" || args[i].ToLower() == "--log-permit-tags")
                 {

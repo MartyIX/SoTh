@@ -10,8 +10,6 @@ namespace Sokoban.View.GameDocsComponents
 {
     public partial class Game : ISolverPainter
     {
-        #region ISolverPainter Members
-
         private SolverPainter solverPainter;
 
         private IMovableElement solversSokobanRef;
@@ -80,7 +78,7 @@ namespace Sokoban.View.GameDocsComponents
             if (solverPainter != null)
             {
                 SokobanMoved -= solverPainter.Update;
-                solverPainter.Terminate();
+                solverPainter.Terminate();                
             }
         }
 
@@ -101,8 +99,5 @@ namespace Sokoban.View.GameDocsComponents
                 SokobanMoved(newX, newY, direction);
             }
         }
-
-        #endregion
-
     }
 }

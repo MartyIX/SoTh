@@ -24,6 +24,11 @@ namespace Sokoban.Model
             get { return fieldsY; }
         }
 
+        public int EventsInCalendar
+        {
+            get { return calendar.CountOfEvents; }
+        }
+
         public IEnumerable<IGamePlugin> GetGameObjects
         {
             get { return gameObjects; }
@@ -147,15 +152,30 @@ namespace Sokoban.Model
         /// <param name="when">Time when action should be processed.</param>
         /// <param name="who"></param>
         /// <param name="what">What event should be processed.</param>
-        public void MakePlan(string debug, Int64 when, IGamePlugin who, EventType what)
+        /// <param name="force">Add the event even though the simulation is stopped</param>
+        public void MakePlan(string debug, Int64 when, IGamePlugin who, EventType what, bool force)
         {
-            // Send events to the opponent over network
-            if (gameMode == GameMode.TwoPlayers && gameDisplayType == GameDisplayType.FirstPlayer && networkService != null)
+            if (gameDisplayType == GameDisplayType.FirstPlayer)
             {
-                networkService.SendNetworkEvent(who.ID, when, what, who.PosX, who.PosY);
-            }
 
-            Event? ev = calendar.AddEvent(when, who, what);
+                if (calendar.IsEnabledAddingEvents || force)
+                {
+                    // Send events to the opponent over network
+                    if (gameMode == GameMode.TwoPlayers && gameDisplayType == GameDisplayType.FirstPlayer && networkService != null)
+                    {
+                        if (who != null)
+                        {
+                            networkService.SendNetworkEvent(who.ID, when, what, who.PosX, who.PosY);
+                        }
+                        else
+                        {
+                            networkService.SendNetworkEvent(-1, when, what, -1, -1);
+                        }
+                    }
+                }
+
+                Event? ev = calendar.AddEvent(when, who, what, force);
+            }
         }
 
 
@@ -167,16 +187,33 @@ namespace Sokoban.Model
         /// <param name="what"></param>
         public void MakePlan(int ID, Int64 when, EventType what)
         {
-            if (gameObjects.Count - 1 < ID)
-                throw new InvalidDataFromNetworkException("ID " + ID + " of a game object is invalid.");
+            if (when == -1) // for restart event 
+            {
+                when = Math.Max(calendar.LastEventTimeInCalendar + 1, this.time);
+            }
+            
+            if (ID == -1)
+            {
+                Event? ev = calendar.AddEvent(when, null, what);
+            }
+            else
+            {
+                if (gameObjects.Count - 1 < ID)
+                    throw new InvalidDataFromNetworkException("ID " + ID + " of a game object is invalid.");
 
-            IGamePlugin who = gameObjects[ID];
-            Event? ev = calendar.AddEvent(when, who, what);
+                IGamePlugin who = gameObjects[ID];
+                Event? ev = calendar.AddEvent(when, who, what);
+            }
         }
 
         public void ResumeSimulation()
         {
             calendar.IsEnabledAddingEvents = true;
+        }
+
+        public bool IsSimulationActive
+        {
+            get { return calendar.IsEnabledAddingEvents; }
         }
 
 
@@ -192,7 +229,7 @@ namespace Sokoban.Model
         /// <param name="what">Event to process</param>
         public void MakeImmediatePlan(string debug, IGamePlugin who, EventType what)
         {
-            MakePlan("[Immediate]" + debug, time, who, what);
+            MakePlan("[Immediate]" + debug, time, who, what, false);
         }
 
         public void Message(string messageType, object message, IGamePlugin plugin)

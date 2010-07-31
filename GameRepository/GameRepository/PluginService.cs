@@ -84,7 +84,7 @@ namespace Sokoban.Model
         /// <summary>
         /// Unloads and Closes all AvailablePlugins
         /// </summary>
-        public void ClosePlugins()
+        public void CloseAllPlugins()
         {
             if (runningPlugins != null)
             {
@@ -260,7 +260,7 @@ namespace Sokoban.Model
 
         public void Terminate()
         {
-            this.ClosePlugins();            
+            this.CloseAllPlugins();            
             runningPlugins = null;
             pluginHost = null;
         }

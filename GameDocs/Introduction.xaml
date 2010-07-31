@@ -1,0 +1,87 @@
+﻿<ad:DocumentContent x:Class="Sokoban.View.GameDocsComponents.Introduction"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:ad="clr-namespace:AvalonDock;assembly=AvalonDock"
+	xmlns:local="clr-namespace:Sokoban.View.GameDocsComponents"
+	Loaded="DocumentContent_Loaded" 
+	mc:Ignorable="d" 
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+	Height="336" Width="800">
+    <ad:DocumentContent.Resources>
+        <Style x:Key="heading01">
+            <Setter Property="TextElement.FontFamily" Value="Calibri, Verdana" />
+            <Setter Property="TextElement.FontSize" Value="24" />
+            <Setter Property="TextElement.FontWeight" Value="Bold" />
+        </Style>
+
+        <Style x:Key="heading02">
+            <Setter Property="TextElement.FontFamily" Value="Calibri, Verdana" />
+            <Setter Property="TextElement.FontSize" Value="18" />
+            <Setter Property="TextElement.FontWeight" Value="Bold" />
+        </Style>
+
+    </ad:DocumentContent.Resources>
+    <!-- view -->
+        <FlowDocument>
+
+        <Paragraph Style="{StaticResource heading01}">
+            <Bold>SoTh</Bold>
+        </Paragraph>
+            
+        <Paragraph>
+            <Italic>SoTh</Italic> (Sokoban Thesis) is my Bachelor's thesis. It consists of 
+            this application and the
+            <Hyperlink NavigateUri="http://sokoban.research-site.net" Name="link1" Click="link1_Click">website</Hyperlink>.
+            
+        </Paragraph>
+        <Paragraph Style="{StaticResource heading02}">
+            Features:
+        </Paragraph>
+
+        <List>
+            <ListItem>
+                <Paragraph>
+                    <Bold>Single player game</Bold> - You can play quests (leagues) or rounds (levels) and get points for finishing them.
+                </Paragraph>
+            </ListItem>
+            <ListItem>
+                <Paragraph>
+                    <Bold>Network game for two players</Bold> - Prove that you are better than your opponent!
+                </Paragraph>
+            </ListItem>
+            <ListItem>
+                <Paragraph>
+                    <Bold>Programable game objects and programable variants of game</Bold> - If you know about a good Sokoban variant
+                    you can program it and play it in one application.
+                </Paragraph>
+            </ListItem>
+            <ListItem>
+                <Paragraph>
+                    <Bold>Game servers</Bold> - You can play on a different server as long as the server implements
+                    <Hyperlink NavigateUri="http://sokoban.research-site.net/www/remote/" Name="link2" Click="link2_Click">API</Hyperlink>.
+                </Paragraph>
+            </ListItem>
+            <ListItem>
+                <Paragraph>
+                    <Bold>Resizable game desk</Bold> - You can resize the game desk according to your preferences.
+                </Paragraph>
+            </ListItem>
+            <ListItem>
+                <Paragraph>
+                    <Bold>Panel layout</Bold> - You can move panels exactly as you need and how it fits you best.
+                </Paragraph>
+            </ListItem>
+            <ListItem>
+                <Paragraph>
+                    ...
+                </Paragraph>
+            </ListItem>
+        </List>
+
+        <Paragraph Style="{StaticResource heading02}">
+            Enjoy the game!
+        </Paragraph>
+    </FlowDocument>
+
+</ad:DocumentContent>

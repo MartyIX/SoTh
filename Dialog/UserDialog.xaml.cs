@@ -54,6 +54,11 @@ namespace Sokoban.View
             this.sender = sender;
         }
         
+        public void AppendMessage(string message)
+        {
+            Message = Message + "\n" + message;
+        }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {            
             foreach (string text in buttons)

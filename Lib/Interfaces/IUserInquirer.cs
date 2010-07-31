@@ -11,5 +11,6 @@ namespace Sokoban.Interfaces
         void ShowMessage(string message); // Ok button displayed
         void ShowQuestion(string message, IEnumerable<string> answers, IUserInquiryAccepter accepter); // return one of given answers
         string PutQuestion(string message, IEnumerable<string> answers); // No event is fired
+        void AppendMessage(string message); // appends message to ShowMessage
     }
 }

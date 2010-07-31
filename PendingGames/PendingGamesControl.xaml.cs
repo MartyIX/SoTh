@@ -83,8 +83,8 @@ namespace Sokoban.View
             }
         }
 
-        public void Initialize(IErrorMessagesPresenter errorPresenter, 
-            IProfileRepository profileRepository, IConnectionRelayer connectionRelayer, 
+        public void Initialize(IErrorMessagesPresenter errorPresenter,
+            IProfileRepository profileRepository, IConnectionRelayer connectionRelayer,
             IConnectionDialogPresenter connectionDialogPresenter)
         {
             this.profile = profileRepository;
@@ -110,7 +110,7 @@ namespace Sokoban.View
                 output = this.getRequestOnServer("/remote/GetPendingGames/");
             }
             catch (UninitializedException ex)
-            {                
+            {
                 output = null;
                 error = ex.Message;
             }
@@ -153,14 +153,22 @@ namespace Sokoban.View
 
                 this.dataGridItemsSource = new ObservableCollection<OfferItemData>(response.GameList);
                 Notify("DataGridItemsSource");
-            }           
+            }
         }
 
-       
-        public void Refresh()
+
+        public bool Refresh()
         {
-            this.Status = "Connecting to the server";
-            dataLoader.RunWorkerAsync();                       
+            if (dataLoader.IsBusy)
+            {
+                return false;
+            }
+            else
+            {
+                this.Status = "Connecting to the server";
+                dataLoader.RunWorkerAsync();
+                return true;
+            }
         }
 
         #region INotifyPropertyChanged Members
@@ -257,13 +265,16 @@ namespace Sokoban.View
             else
             {
                 btnAutoRefresh.Content = "Start refreshing";
-            }               
+            }
         }
 
 
         private void contextMenuRefresh_Click(object sender, RoutedEventArgs e)
         {
-            this.Refresh();
+            if (this.Refresh() == false)
+            {
+                this.Status = "Data are being downloaded. Wait a second.";
+            }
         }
 
         private void MyDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -285,7 +296,7 @@ namespace Sokoban.View
                 else
                 {
                     MessageBox.Show("Error: Cannot show 'Connection dialog'.");
-                    DebuggerIX.WriteLine(DebuggerTag.AppComponents, "[PendingGamesControl]", 
+                    DebuggerIX.WriteLine(DebuggerTag.AppComponents, "[PendingGamesControl]",
                         "MouseDoubleClick - ERROR: connectionDialogPresenter is NULL");
                 }
             }

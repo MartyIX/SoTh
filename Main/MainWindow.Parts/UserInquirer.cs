@@ -13,6 +13,7 @@ namespace Sokoban
     public class UserInquirer : IUserInquirer
     {
         private Window window;
+        private View.UserDialog lastDialog = null;
 
         /// <summary>
         /// 
@@ -26,10 +27,33 @@ namespace Sokoban
         public void ShowMessage(string message)
         {
             View.UserDialog d = new View.UserDialog(message, new string[] {"Ok"}, null);
-            d.Completed += new VoidObjectStringStringDelegate(d_Completed);
+            d.Completed += new VoidObjectStringStringDelegate(showMessage_Completed);
             d.Owner = window;
+            lastDialog = d;
             d.Show();
         }
+
+        public void AppendMessage(string message)
+        {
+            if (lastDialog != null)
+            {
+                lastDialog.AppendMessage(message);
+            }
+        }
+
+        private void showMessage_Completed(object sender, string message, string answer)
+        {
+            lastDialog = null;
+
+            window.Activate();
+
+            if (sender != null && sender is IUserInquiryAccepter)
+            {
+                IUserInquiryAccepter acceptor = sender as IUserInquiryAccepter;
+                acceptor.UserInquiryResult(message, answer);
+            }
+        }
+
 
         public void ShowQuestion(string message, IEnumerable<string> answers, IUserInquiryAccepter accepter)
         {
@@ -57,7 +81,6 @@ namespace Sokoban
             View.UserDialog d = new View.UserDialog(message, answers, null);
             d.Owner = window;
             d.Completed += new VoidObjectStringStringDelegate(putQuestion_Completed);
-            
             d.ShowDialog();
             
             // here is callback putQuestion_Completed called

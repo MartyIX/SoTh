@@ -18,8 +18,6 @@ namespace Sokoban.View.GameDocsComponents
         // Events
         //
         public event VoidChangeDelegate PreRoundLoaded;
-        
-        
 
         public bool IsQuestValid(IQuest quest)
         {
@@ -83,8 +81,6 @@ namespace Sokoban.View.GameDocsComponents
             loadRound(quest.ActualRoundXML);
         }
 
-        
-
         private void loadRound(string roundXml)
         {
             this.removeOldPainter();
@@ -102,9 +98,10 @@ namespace Sokoban.View.GameDocsComponents
 
             if (gameDisplayType == GameDisplayType.FirstPlayer)
             {
-                gameRepository.GameStarted += new VoidChangeDelegate(StartGame);
-                gameRepository.GameChanged += new GameChangeDelegate(gameRepository_GameChanged);
+                gameRepository.GameStarted += new VoidChangeDelegate(StartGame);                
             }
+
+            gameRepository.GameChanged += new GameChangeDelegate(control.GameChangedHandler);
 
             if (PreRoundLoaded != null) PreRoundLoaded();
 
@@ -112,49 +109,6 @@ namespace Sokoban.View.GameDocsComponents
             gameRepository.LoadRoundFromXML(roundXml);
 
             StartRendering();
-        }
-
-        void gameRepository_GameChanged(GameChange gameChange)
-        {
-            if (gameMode == GameMode.SinglePlayer)
-            {
-                if (gameChange == GameChange.Won)
-                {
-                    if (quest.RoundsNo > 1)
-                    {
-                        if (!quest.IsLast())
-                        {
-                            ShowQuestion(inquirySinglePlayerPlayNextRoundOfLeague, new string[] { "Yes", "No" });
-                        }
-                        else
-                        {
-                            MessageBoxShow("Congratulations! You've won the round and completed the league!");
-                        }
-                    }
-                    else
-                    {
-                        MessageBoxShow("Congratulations! You've won the round!");
-                    }
-
-                    this.gameStatus = GameStatus.Finished;
-                    control.StopTime();
-                }
-                else if (gameChange == GameChange.StopCountingTime)
-                {
-                    control.PauseTime();
-                }
-                else if (gameChange == GameChange.Lost)
-                {                    
-                    this.gameStatus = GameStatus.Finished;
-                    control.PauseTime();
-
-                    this.ShowQuestion(inquiryRestart, new string[] { "Yes", "No" }); // answer is processed in UserInquirer.cs                    
-                }
-            }
-            else
-            {
-                throw new NotImplementedException("not implemented");
-            }
         }
 
         private void clearControlContent()
@@ -210,41 +164,70 @@ namespace Sokoban.View.GameDocsComponents
         //
         private void OnRender(object sender, EventArgs e)
         {
-            if (gameStatus == GameStatus.Running)
+            if (isRendering == true)
             {
-                if (stopwatch.ElapsedMilliseconds >= PHASE_CONST)
+                if (gameStatus == GameStatus.Running || gameStatus == GameStatus.Finishing)
                 {
-                    gameRepository.ProcessAllEvents();
-                    stopwatch.Reset();
-                    stopwatch.Start();
-
-                    if (gameMode == GameMode.TwoPlayers && gameDisplayType == GameDisplayType.FirstPlayer)
+                    if (stopwatch.ElapsedMilliseconds >= PHASE_CONST)
                     {
-                        ProcessNetworkTraffic(gameRepository.Time);
+                        gameRepository.ProcessAllEvents();
+
+                        stopwatch.Reset();
+                        stopwatch.Start();
+
+                        if (gameStatus == GameStatus.Running &&
+                            gameMode == GameMode.TwoPlayers &&
+                            gameDisplayType == GameDisplayType.FirstPlayer)
+                        {
+                            try
+                            {
+                                ProcessNetworkTraffic(gameRepository.Time);
+                            }
+                            catch (InvalidDataFromNetworkException ex)
+                            {
+                                gameStatus = Lib.GameStatus.Finished;
+                                DebuggerIX.WriteLine(DebuggerTag.Net, "OnRender",
+                                    "InvalidDataFromNetworkException, message: " + ex.Message);
+                                MessageBoxShow("Data from network are corrupted. The opponent game window can't be updated any more.");
+                            }
+                        }
+
+                        if (gameStatus == GameStatus.Finishing && gameRepository.EventsInCalendar == 0)
+                        {
+                            gameStatus = GameStatus.Finished;
+                        }
                     }
                 }
 
-            }
+                if (gameRepository.Time >= 0)
+                {
+                    drawGamePlugins();
+                }
 
-            drawGamePlugins();
-
-            if (solverPainter != null)
-            {
-                solverPainter.Redraw(control.FieldSize);
+                if (solverPainter != null)
+                {
+                    solverPainter.Redraw(control.FieldSize);
+                }
             }
         }
 
         private void drawGamePlugins()
         {
-            foreach (IGamePlugin g in gameRepository.GetGameObjects)
+            if (isRendering == true && gameRepository != null && gameRepository.GetGameObjects != null)
             {
-                if (phaseProp < 1)
+                foreach (IGamePlugin g in gameRepository.GetGameObjects)
                 {
-                    g.Draw(control.Canvas, control.FieldSize, gameRepository.Time, phaseProp);
-                }
-                else
-                {
-                    g.Draw(control.Canvas, control.FieldSize, gameRepository.Time, 0);
+                    // escape
+                    if (isRendering == false) return;
+
+                    if (phaseProp < 1)
+                    {
+                        g.Draw(control.Canvas, control.FieldSize, gameRepository.Time, phaseProp);
+                    }
+                    else
+                    {
+                        g.Draw(control.Canvas, control.FieldSize, gameRepository.Time, 0);
+                    }
                 }
             }
         }
@@ -252,6 +235,6 @@ namespace Sokoban.View.GameDocsComponents
         public void RegisterVisual(IGraphicsControl graphicsControl)
         {
             this.control = graphicsControl;
-        }       
+        }
     }
 }

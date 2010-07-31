@@ -4,14 +4,74 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using AvalonDock;
+using Sokoban.View.AboutDialog;
+using Sokoban.Configuration;
 
 namespace Sokoban
 {
     public partial class MainWindow
     {
+
+        public string ViewSoundState
+        {
+            get { return (UserSettingsManagement.IsSoundEnabled) ? "Sounds On" : "Sounds Off"; }
+        }
+
+        public string ViewSoundStateFile
+        {
+            get { return (UserSettingsManagement.IsSoundEnabled) ? "View/Resources/SoundsOn.png" : "View/Resources/SoundsOff.png"; }
+        }
+        
+        private bool isRestartEnabled = false;
+        public bool IsRestartEnabled
+        {
+            get { return isRestartEnabled; }
+            set { isRestartEnabled = value; Notify("IsRestartEnabled"); }
+        }
+
+        private void gameManager_RestartAvaibilityChanged(bool b)
+        {
+            IsRestartEnabled = b;
+        }
+
         //
         // MENU CLICKS HANDLERS
-        //
+        //         
+
+        private void miRestart_Click(object sender, RoutedEventArgs e)
+        {
+            restartFirstPlayer();
+        }
+
+        private void miSound_Click(object sender, RoutedEventArgs e)
+        {
+            UserSettingsManagement.IsSoundEnabled = !UserSettingsManagement.IsSoundEnabled;
+            UserSettingsManagement.Save();
+
+            if (gameManager != null)
+            {
+                gameManager.SetSoundsSettings(UserSettingsManagement.IsSoundEnabled);
+            }
+
+            Notify("ViewSoundState");
+            Notify("ViewSoundStateFile");
+        }
+
+
+        private void MenuItem_About_Click(object sender, RoutedEventArgs e)
+        {
+            AboutDialog ad = new AboutDialog();
+            ad.Closed += new EventHandler(aboutDialog_Closed);
+            ad.Owner = this;
+            ad.Show();
+        }
+
+        void aboutDialog_Closed(object sender, EventArgs e)
+        {
+            this.Activate();
+        }
+
+
 
         private void MenuItem_GameWindow_Click(object sender, RoutedEventArgs e)
         {
@@ -81,6 +141,8 @@ namespace Sokoban
                 }
             }
         }
+
+
 
         private void SetVisibilityOfMenuItems(DockableContent dc)
         {

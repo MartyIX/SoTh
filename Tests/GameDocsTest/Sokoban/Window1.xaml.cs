@@ -77,7 +77,7 @@ namespace Sokoban
             }
             else if (e.Key == Key.R)
             {
-                gameManager.ActiveGameControl.Reload();
+                gameManager.ActiveGameControl.RestartGame();
             }
             else
             {

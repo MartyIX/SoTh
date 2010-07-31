@@ -17,7 +17,7 @@ namespace PluginFakeBox
 
         public FakeBox(IPluginParent host) : base(host)
         {
-            Initialize(this);
+            Initialize(this, true);
         }
 
 

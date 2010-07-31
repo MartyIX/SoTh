@@ -17,5 +17,6 @@ namespace Sokoban.Model.GameDesk
         IGameRepository GameRepository { get; }
 
         event VoidChangeDelegate PreRoundLoaded;
+        //void GameChangedHandler(GameChange gameChange);
     }
 }

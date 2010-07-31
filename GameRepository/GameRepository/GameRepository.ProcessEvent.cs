@@ -27,21 +27,28 @@ namespace Sokoban.Model
             {
                 if (GameChanged != null)
                 {
-                    GameChanged(GameChange.Won);
+                    GameChanged(gameDisplayType, GameChange.Won);
                 }
             }
             else if (e.what == EventType.stopCountingTime)
             {
                 if (GameChanged != null)
                 {
-                    GameChanged(GameChange.StopCountingTime);
+                    GameChanged(gameDisplayType, GameChange.StopCountingTime);
                 }
             }
             else if (e.what == EventType.gameLost)
             {
                 if (GameChanged != null)
                 {
-                    GameChanged(GameChange.Lost);
+                    GameChanged(gameDisplayType, GameChange.Lost);
+                }
+            }
+            else if (e.what == EventType.restartGame)
+            {
+                if (GameChanged != null)
+                {
+                    GameChanged(gameDisplayType, GameChange.Restart);
                 }
             }
         }
@@ -70,24 +77,31 @@ namespace Sokoban.Model
                 Interlocked.Increment(ref time);
             }
 
-            if (calendar.CountOfEvents > 0)
+            if (time > 0)
             {
-                DebuggerIX.WriteLine(DebuggerTag.SimulationEventHandling, "[EventProcessing|Player" + playerNumber() + "]", "=== Time: " + time.ToString() + " ===");
-            }
-            else
-            {
-                DebuggerIX.WriteLine(DebuggerTag.SimulationEventHandling, "[EventProcessing|Player" + playerNumber() + "]", "=== Time: " + time.ToString() + " === | Empty calendar");
-            }
 
-            while ((ud = calendar.First(time)) != null)
-            {
-                if (ud.Value.who == null ||  ud.Value.who.ProcessEvent(time, ud.Value) == false)
+                if (calendar.CountOfEvents > 0)
                 {
-                    this.ProcessEvent(ud.Value);
+                    DebuggerIX.WriteLine(DebuggerTag.SimulationNotableEvents, "[EventProcessing|Player" + playerNumber() + "]", "=== Time: " + time.ToString() + " ===");
                 }
-            }
+                else
+                {
+                    DebuggerIX.WriteLine(DebuggerTag.SimulationNotableEvents, "[EventProcessing|Player" + playerNumber() + "]", "=== Time: " + time.ToString() + " === | Empty calendar");
+                }
 
-            gameVariant.CheckRound(time);
+                while ((ud = calendar.First(time)) != null)
+                {
+                    DebuggerIX.WriteLine(DebuggerTag.SimulationProcessedEvents,
+                        (ud.Value.who == null ? "NULL" : ud.Value.who.Name), ud.Value.ToString());
+
+                    if (ud.Value.who == null || ud.Value.who.ProcessEvent(time, ud.Value) == false)
+                    {
+                        this.ProcessEvent(ud.Value);
+                    }
+                }
+
+                gameVariant.CheckRound(time);
+            }
         }
     }
 }

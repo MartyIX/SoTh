@@ -1,19 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using AvalonDock;
-using System.Diagnostics;
-using Sokoban.View;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 using Sokoban.Model.GameDesk;
@@ -36,6 +25,8 @@ namespace Sokoban.View
         public GameDeskControl ActiveGameControl = null;
         private bool isKeyDown = false;
         private IUserInquirer userInquirer = null;
+        private bool isSoundOn = true;
+        public event VoidBoolDelegate RestartAvaibilityChanged;
 
         public GameDocs()
         {
@@ -47,10 +38,8 @@ namespace Sokoban.View
                 GameManagerProperties.DockingManagerProperty,
                 typeof(GameManagerProperties));
 
-            prop.AddValueChanged(this, OnDockingManagerChanged);
-           
-            GamesDocumentPane.SizeChanged += new SizeChangedEventHandler(GamesDocumentPane_SizeChanged);
-            
+            prop.AddValueChanged(this, OnDockingManagerChanged);           
+            GamesDocumentPane.SizeChanged += new SizeChangedEventHandler(GamesDocumentPane_SizeChanged);            
             this.DataContext = this;            
         }
 
@@ -59,9 +48,13 @@ namespace Sokoban.View
         /// </summary>
         public void Terminate()
         {
-            foreach (GameDeskControl gameDeskControl in GameViews)
+            foreach (DocumentContent dc in GameViews)
             {
-                gameDeskControl.Terminate();
+                GameDeskControl gameDeskControl = dc as GameDeskControl;
+                if (gameDeskControl != null)
+                {
+                    gameDeskControl.Terminate();
+                }
             }
 
             GameViews.Clear();
@@ -70,6 +63,17 @@ namespace Sokoban.View
         public void Initialize(IUserInquirer userInquirer)
         {
             this.userInquirer = userInquirer;
+        }
+
+        public void AddIntroduction()
+        {
+            Introduction doc = new Introduction();
+            doc.Title = "Introduction";
+            doc.InfoTip = doc.Title;
+            doc.ContentTypeDescription = "";
+            doc.Closing += new EventHandler<CancelEventArgs>(doc_Closing);
+            doc.Closed += new EventHandler(doc_Closed);
+            GameViews.Add(doc);             
         }
 
         private void OnDockingManagerChanged(object sender, EventArgs e)
@@ -88,14 +92,49 @@ namespace Sokoban.View
 
         void dm_ActiveDocumentChanged(object sender, EventArgs e)
         {
-            if (dm.ActiveDocument != null && dm.ActiveDocument is GameDeskControl)
+            GameDeskControl oldVal = ActiveGameControl;
+
+            if (dm.ActiveDocument != null)
             {
-                SetActiveGameChanged((GameDeskControl)dm.ActiveDocument);
+                GameDeskControl gdc = dm.ActiveDocument as GameDeskControl;
+
+                if (gdc != null)
+                {
+                    ActiveGameControl = gdc;
+                }
+                else
+                {
+                    ActiveGameControl = null;
+                }
             }
-            else
+            else 
             {
-                SetActiveGameChanged(null);
+                ActiveGameControl = null;                
             }
+
+            restartAvaibilityChangeCheck(oldVal, ActiveGameControl);
+        }
+
+        private void restartAvaibilityChangeCheck(GameDeskControl oldValue, GameDeskControl newValue)
+        {
+            if (oldValue != newValue)
+            {
+                if (RestartAvaibilityChanged != null)
+                {
+                    RestartAvaibilityChanged(newValue != null);
+                }
+            }
+        }
+
+        public void SetActiveGameChanged(GameDeskControl g)
+        {
+            if (dm != null && dm.ActiveDocument != g)
+            {
+                dm.ActiveDocument = g;
+            }
+
+            restartAvaibilityChangeCheck(g, ActiveGameControl);
+            ActiveGameControl = g;
         }
 
         void GamesDocumentPane_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -118,46 +157,38 @@ namespace Sokoban.View
             }
         }
 
-        void dm_RequestDocumentClose(object sender, RequestDocumentCloseEventArgs e)
-        {
-            if (e.DocumentToClose is GameDeskControl)
-            {
-                GameDeskControl gdc = (GameDeskControl)e.DocumentToClose;
-                DebuggerIX.WriteLine(DebuggerTag.AppComponents, "[GameDocs]", "Close: " + string.Format("Tab {0} was closed", gdc.Title));
-                gdc.Terminate();
-                GameViews.Remove(gdc);
-            }
-        }
-
         public void SetSoundsSettings(bool isEnabled)
         {
-            foreach (GameDeskControl gdc in GameViews)
-            {
-                gdc.SetSounds(isEnabled);
-            }
-        }
+            this.isSoundOn = isEnabled;
 
-        public void SetActiveGameChanged(GameDeskControl g)
-        {
-            if (dm != null)
+            foreach (DocumentContent gdc in GameViews)
             {
-                dm.ActiveDocument = g;
+                if (gdc is GameDeskControl)
+                {
+                    ((GameDeskControl)gdc).SetSounds(isEnabled);
+                }
             }
-
-            ActiveGameControl = g;
         }
 
         /// <summary>
         /// For testing purposes
         /// </summary>
-        public GameDeskControl Add(string questXml)
+        public GameDeskControl Add(OpeningMode openingMode, string questXml)
         {
-            Quest q = new Quest(questXml);
+            Quest q = new Quest(openingMode, questXml);
             return this.Add(q, GameMode.SinglePlayer);
         }
 
         public GameDeskControl Add(IQuest quest, GameMode gameMode)
         {
+            if (GameViews.Count == 1)
+            {
+                if (GameViews[0] is Introduction)
+                {
+                    GameViews.RemoveAt(0);
+                }
+            }
+            
             GameDeskControl doc = new GameDeskControl(quest, gameMode, userInquirer);
             doc.Title = quest.Name;
             doc.InfoTip = doc.Title;
@@ -165,6 +196,7 @@ namespace Sokoban.View
             doc.Closing += new EventHandler<CancelEventArgs>(doc_Closing);
             doc.Closed += new EventHandler(doc_Closed);
             doc.InfoPanel.SizeChanged += new SizeChangedEventHandler(doc.ResizeInfoPanel);
+            doc.SetSounds(this.isSoundOn);
             GameViews.Add(doc);
             doc.Resize(GamesDocumentPane.ActualWidth, GamesDocumentPane.ActualHeight);
 
@@ -178,21 +210,36 @@ namespace Sokoban.View
 
         private void doc_Closed(object sender, EventArgs e)
         {
+            GameDeskControl oldVal = ActiveGameControl;
+
             if (sender is GameDeskControl)
             {
                 GameDeskControl gdc = sender as GameDeskControl;
 
                 if (gdc == ActiveGameControl)
                 {
-                    ActiveGameControl = null;
-                }
+                    ActiveGameControl = null;                    
+                }                
             }
 
+            if (GameViews.Count == 0)
+            {
+                AddIntroduction();
+            }
+
+            restartAvaibilityChangeCheck(oldVal, ActiveGameControl);
         }
 
         private void doc_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Debug.WriteLine("");            
+            GameDeskControl gdc = sender as GameDeskControl;
+
+            if (gdc != null)
+            {
+                DebuggerIX.WriteLine(DebuggerTag.AppComponents, "[GameDocs]", "Close: " + string.Format("Tab {0} was closed", gdc.Title));
+                gdc.Terminate();
+                GameViews.Remove(gdc);
+            }
         }
 
         public void KeyIsDown(object sender, KeyEventArgs e)

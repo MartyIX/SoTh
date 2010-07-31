@@ -90,6 +90,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserDialog", "..\Dialog\Use
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserDialogTest", "..\Tests\UserDialogTest\UserDialogTest.csproj", "{BB632D99-3344-42A3-9FCE-E166B0CC4689}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "About", "..\About\About.csproj", "{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1158,6 +1160,37 @@ Global
 		{BB632D99-3344-42A3-9FCE-E166B0CC4689}.Release|Mixed Platforms.Build.0 = Release|x86
 		{BB632D99-3344-42A3-9FCE-E166B0CC4689}.Release|x86.ActiveCfg = Release|x86
 		{BB632D99-3344-42A3-9FCE-E166B0CC4689}.Release|x86.Build.0 = Release|x86
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.Debug|x86.Build.0 = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.DebugGameDocsNetworkTest|Any CPU.ActiveCfg = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.DebugGameDocsNetworkTest|Any CPU.Build.0 = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.DebugGameDocsNetworkTest|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.DebugGameDocsNetworkTest|Mixed Platforms.Build.0 = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.DebugGameDocsNetworkTest|x86.ActiveCfg = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.DebugGameDocsTest|Any CPU.ActiveCfg = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.DebugGameDocsTest|Any CPU.Build.0 = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.DebugGameDocsTest|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.DebugGameDocsTest|Mixed Platforms.Build.0 = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.DebugGameDocsTest|x86.ActiveCfg = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.DebugNetworkingTest|Any CPU.ActiveCfg = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.DebugNetworkingTest|Any CPU.Build.0 = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.DebugNetworkingTest|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.DebugNetworkingTest|Mixed Platforms.Build.0 = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.DebugNetworkingTest|x86.ActiveCfg = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.DebugQuestsControlTest|Any CPU.ActiveCfg = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.DebugQuestsControlTest|Any CPU.Build.0 = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.DebugQuestsControlTest|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.DebugQuestsControlTest|Mixed Platforms.Build.0 = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.DebugQuestsControlTest|x86.ActiveCfg = Debug|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

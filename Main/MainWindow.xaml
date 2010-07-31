@@ -10,7 +10,7 @@
 	xmlns:pendingGames="clr-namespace:Sokoban.View;assembly=PendingGamesControl"        
 	xmlns:model="clr-namespace:Sokoban.Model"
 	xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
-	Title="Sokoban" Height="526" Width="1041" Loaded="Window_Loaded" WindowState="Maximized"
+	Title="SoTh" Height="526" Width="1041" Loaded="Window_Loaded" WindowState="Maximized"
 	PreviewKeyDown="Window_PreviewKeyDown" PreviewKeyUp="Window_PreviewKeyUp" 
 	Icon="/Sokoban;component/View/Resources/favicon.ico" 
 	Closed="Window_Closed"
@@ -39,12 +39,6 @@
 					</MenuItem>
 				</MenuItem>
 				<MenuItem Header="_View">
-                    <MenuItem Header="_Game window" IsCheckable="true" Click="MenuItem_GameWindow_Click">
-						<MenuItem.IsChecked>
-							<Binding ElementName="gameManager" Path="Visibility" Converter="{StaticResource avalonDockVisibilityConverter}" Mode="TwoWay" />
-						</MenuItem.IsChecked>
-					</MenuItem>
-
 					<MenuItem Header="_Console" IsCheckable="true" Click="MenuItem_Console_Click">
 						<MenuItem.IsChecked>
 							<Binding ElementName="consolePane" Path="Visibility" Converter="{StaticResource avalonDockVisibilityConverter}" Mode="TwoWay" />
@@ -65,9 +59,19 @@
 							<Binding ElementName="pendingGamesPane" Path="Visibility" Converter="{StaticResource avalonDockVisibilityConverter}" Mode="TwoWay" />
 						</MenuItem.IsChecked>
 					</MenuItem>
+					<MenuItem Header="_About" Click="MenuItem_About_Click" />
 				</MenuItem>
 			</Menu>
 			<Menu DockPanel.Dock="Right" Background="{x:Null}">
+				
+				<MenuItem Header="_Restart round" IsEnabled="{Binding IsRestartEnabled}" Name="miRestart" HorizontalAlignment="Right" Click="miRestart_Click">                    
+				</MenuItem>
+
+				<MenuItem Header="{Binding ViewSoundState}" Name="miSound" HorizontalAlignment="Right" Click="miSound_Click">
+					<MenuItem.Icon>
+						<Image Source="{Binding ViewSoundStateFile}" Style="{StaticResource menuItemIconStyle}" />
+					</MenuItem.Icon>
+				</MenuItem>
 				<MenuItem Header="{Binding Source={x:Static model:ProfileRepository.Instance}, Path=Username}" Name="miUser" HorizontalAlignment="Right">
 					<MenuItem.Icon>
 						<Image Source="View/Resources/user_icon.gif" Style="{StaticResource menuItemIconStyle}" />

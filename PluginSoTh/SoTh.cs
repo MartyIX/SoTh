@@ -94,14 +94,15 @@ namespace PluginOrdinary
 
                 if (isFinished)
                 {
-                    parent.MakePlan("SoTh", time + ((IMovableElement)sokoban).Speed, null, EventType.gameWon);
+                    parent.MakePlan("SoTh", time + ((IMovableElement)sokoban).Speed, null, EventType.gameWon, true);
+                    parent.StopSimulation();
                 }
             }
             else if (messageType == "SokobanKilled")
             {
                 int monsterSpeed = (int)data;
                 parent.ResumeSimulation();
-                parent.MakePlan("SoTh", time + monsterSpeed, null, EventType.gameLost);
+                parent.MakePlan("SoTh", time + monsterSpeed, null, EventType.gameLost, true);
                 parent.StopSimulation();
             }
         }

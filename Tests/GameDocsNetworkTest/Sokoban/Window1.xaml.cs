@@ -111,7 +111,10 @@ namespace Sokoban
             }
             else if (e.Key == Key.R)
             {
-                gameManager.ActiveGameControl.Reload();
+                if (gameManager != null && gameManager.ActiveGameControl != null)
+                {
+                    gameManager.ActiveGameControl.RestartGame(GameDisplayType.FirstPlayer);
+                }
             }
             else if (e.Key == Key.D)
             {
@@ -188,11 +191,11 @@ namespace Sokoban
                 if (messageType == NetworkMessageType.ListOfEvents)
                 {
                     object obj = conn2.GetReceivedMessageFromQueue();
+                    ListOfEventsMessage message = obj as ListOfEventsMessage;                                                                       
 
-                    Queue<NetworkEvent> l = obj as Queue<NetworkEvent>;
-
-                    if (l != null)
+                    if (message != null)
                     {
+                        Queue<NetworkEvent> l = obj as Queue<NetworkEvent>;
                         DebuggerIX.WriteLine(DebuggerTag.Net, "runTest01", "List was received");
                     }
                     else

@@ -23,7 +23,8 @@ namespace Sokoban.Model.GameDesk
         string RoundName { get; }
         int StepsCount { get; }
         IEnumerable<IGamePlugin> GetGameObjects { get; }
-        
+
+        int EventsInCalendar { get; }
         void LoadRoundFromXML(string xml);
         void ProcessAllEvents();
         bool MoveRequest(Key key, double phase);

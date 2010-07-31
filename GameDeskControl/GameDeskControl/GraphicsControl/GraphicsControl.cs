@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Shapes;
+using Sokoban.Lib;
 
 namespace Sokoban.View.GameDocsComponents
 {
@@ -20,8 +21,6 @@ namespace Sokoban.View.GameDocsComponents
             this.gamedesk = gamedesk;
             this.gameDeskControl = gameDeskControl;
         }
-
-        #region IGraphicsControl Members
 
         public Canvas Canvas
         {
@@ -67,9 +66,9 @@ namespace Sokoban.View.GameDocsComponents
             gameDeskControl.PauseTime();
         }
 
-        public void RestartGame()
+        public void RestartGame(GameDisplayType gameDisplayType)
         {
-            gameDeskControl.Reload();
+            gameDeskControl.RestartGame(gameDisplayType);
         }
 
         public void PlayNextRound()
@@ -77,7 +76,9 @@ namespace Sokoban.View.GameDocsComponents
             gameDeskControl.LoadNextRound();
         }
 
-
-        #endregion
+        public void GameChangedHandler(GameDisplayType gameDisplayType, GameChange gameChange)
+        {
+            gameDeskControl.GameChangedHandler(gameDisplayType, gameChange);
+        }
     }
 }

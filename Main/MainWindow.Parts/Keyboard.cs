@@ -1,4 +1,5 @@
 ﻿using System.Windows.Input;
+using Sokoban.Lib;
 
 namespace Sokoban
 {
@@ -8,10 +9,7 @@ namespace Sokoban
         {
             if (e.Key == Key.R)
             {
-                if (gameManager != null && gameManager.ActiveGameControl != null)
-                {
-                    gameManager.ActiveGameControl.Reload();
-                }
+                restartFirstPlayer();
             }
             else if (e.Key == Key.T)
             {
@@ -26,6 +24,14 @@ namespace Sokoban
                 {
                     gameManager.ActiveGameControl.KeyIsDown(sender, e);
                 }
+            }
+        }
+
+        private void restartFirstPlayer()
+        {
+            if (gameManager != null && gameManager.ActiveGameControl != null)
+            {
+                gameManager.ActiveGameControl.RestartGame(GameDisplayType.FirstPlayer);
             }
         }
 

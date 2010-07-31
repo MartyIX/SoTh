@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Sokoban.Lib;
 
 namespace Sokoban.Networking
 {
@@ -19,13 +20,40 @@ namespace Sokoban.Networking
     [Serializable]
     public class SimulationTimeMessage
     {
-        public DateTime SentTime { get; set; }
+        public TimeSpan ElapsedFromStartOfGame { get; set; }
         public Int64 SimulationTime { get; set; }
 
-        public SimulationTimeMessage(Int64 simulationTime, DateTime sentTime)
+        public SimulationTimeMessage(Int64 simulationTime, TimeSpan elapsedFromStartOfGame)
         {
-            SentTime = sentTime;
+            ElapsedFromStartOfGame = elapsedFromStartOfGame;
             SimulationTime = simulationTime;
+        }
+    }
+
+    [Serializable]
+    public class ListOfEventsMessage
+    {
+        public Queue<NetworkEvent> Events { get; set; }
+        public Int64 SimulationTime { get; set; }
+
+        public ListOfEventsMessage(Int64 simulationTime, Queue<NetworkEvent> events)
+        {
+            Events = events;
+            SimulationTime = simulationTime;
+        }
+    }
+
+
+    [Serializable]
+    public class GameChangeMessage
+    {
+        public TimeSpan ElapsedFromStartOfGame { get; set; }
+        public GameChange GameChange { get; set; }
+
+        public GameChangeMessage(GameChange gameChange, TimeSpan elapsedFromStartOfGame)
+        {
+            ElapsedFromStartOfGame = elapsedFromStartOfGame;
+            GameChange = gameChange;
         }
     }
 

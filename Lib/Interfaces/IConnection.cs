@@ -12,7 +12,6 @@ namespace Sokoban.Networking
     {       
         // NetworkEvents in buffer; local actions
         void AddEventToBuffer(Int64 time, int gameObjectID, EventType what, int posX, int posY);
-        NetworkEvent GetIncommingEvent();
         int InBufferCount { get; }
 
         // Network actions

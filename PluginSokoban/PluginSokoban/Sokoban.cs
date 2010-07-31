@@ -28,7 +28,7 @@ namespace PluginSokoban
 
         public Sokoban(IPluginParent host) : base(host)
         {
-            Initialize(this);
+            Initialize(this, false);
         }
 
 
@@ -70,10 +70,14 @@ namespace PluginSokoban
                 case EventType.goUp:
                 case EventType.goDown:
 
+
+                    if (!host.IsSimulationActive) return true;
+                
                     base.SetOrientation(ev.what);
 
-                    DebuggerIX.WriteLine(DebuggerTag.SimulationEventHandling, "[Sokoban] ProcessEvent", ev.what.ToString() + "; Raised from EventID: " + ev.EventID.ToString());
-                    DebuggerIX.WriteLine(DebuggerTag.SimulationEventHandling, "", "[Sokoban]" + ev.ToString());
+                    DebuggerIX.WriteLine(DebuggerTag.SimulationNotableEvents, "[Sokoban] ProcessEvent", ev.what.ToString() + "; Raised from EventID: " + ev.EventID.ToString());
+                    DebuggerIX.WriteLine(DebuggerTag.SimulationNotableEvents, "", "[Sokoban]" + ev.ToString());
+                    
                     
                     IGamePlugin obstruction = base.ProcessGoEvent(time, ev);
 
@@ -92,15 +96,16 @@ namespace PluginSokoban
                 case EventType.wentDown:
 
                     #region wentXXX
-                   
-                    movementEventsInBuffer--;
-                    DebuggerIX.WriteLine(DebuggerTag.SimulationEventHandling, "[Sokoban]", "Key buffer: " + movementEventsInBuffer.ToString() +
+
+                    base.ProcessEvent(time, ev);
+                    
+                    DebuggerIX.WriteLine(DebuggerTag.SimulationNotableEvents, "[Sokoban]", "Key buffer: " + movementEventsInBuffer.ToString() +
                         " / " + MAX_EVENTS_IN_KB.ToString());
 
                     if (heldKeyEvent != EventType.none && movementEventsInBuffer == 0 && timeWholeMovementEnds <= time)
                     {
                         EventType newEvent = heldKeyEvent;
-                        DebuggerIX.WriteLine(DebuggerTag.SimulationEventHandling, "[Sokoban]", "Raised from EventID = " + ev.EventID.ToString());
+                        DebuggerIX.WriteLine(DebuggerTag.SimulationNotableEvents, "[Sokoban]", "Raised from EventID = " + ev.EventID.ToString());
                         base.MakePlan("SokRepMvmt", ev.when, ev.who, newEvent);
                     }
 
@@ -129,15 +134,15 @@ namespace PluginSokoban
                 if (DateTime.Now.Subtract(lastTimeHitWallPlayed).TotalMilliseconds > sounds.NaturalDuration.TimeSpan.TotalMilliseconds)
                 {
                     double length = sounds.NaturalDuration.TimeSpan.TotalMilliseconds;
-                    sounds.Play();
                     sounds.Position = TimeSpan.Zero;
+                    sounds.Play();                    
                     lastTimeHitWallPlayed = DateTime.Now;
                 }
             }
             else
             {
-                sounds.Play();
                 sounds.Position = TimeSpan.Zero;
+                sounds.Play();                
             }
 
 
@@ -216,7 +221,7 @@ namespace PluginSokoban
                     {
                         if (this.TimeWholeMovementEnds <= time)
                         {
-                            DebuggerIX.WriteLine(DebuggerTag.SimulationEventHandling, "[GR-MoveRequest]", 
+                            DebuggerIX.WriteLine(DebuggerTag.SimulationNotableEvents, "[GR-MoveRequest]", 
                                 "Movement is not in progress. Movement starts at time: " + time.ToString());
 
                             // In this moment; events for @time are processed, therefore time + 1
@@ -229,13 +234,13 @@ namespace PluginSokoban
                         else 
                         {                        
                             base.MakePlan("SokKeyBuf", timeWholeMovementEnds, (IGamePlugin)this, heldKeyEvent);
-                            DebuggerIX.WriteLine(DebuggerTag.SimulationEventHandling, "[GR-MoveRequest]", 
+                            DebuggerIX.WriteLine(DebuggerTag.SimulationNotableEvents, "[GR-MoveRequest]", 
                                 "Request is buffered. Movement start at time: " + (this.TimeWholeMovementEnds).ToString());
                         }
                     }
                     else
                     {
-                        DebuggerIX.WriteLine(DebuggerTag.SimulationEventHandling, "[GR-MoveRequest]", 
+                        DebuggerIX.WriteLine(DebuggerTag.SimulationNotableEvents, "[GR-MoveRequest]", 
                             "Ignored; Buffer is full: " + this.MovementEventsInBuffer.ToString());
                     }
                 }

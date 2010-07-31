@@ -60,6 +60,20 @@ namespace Sokoban.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap SoundsOff {
+            get {
+                object obj = ResourceManager.GetObject("SoundsOff", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap SoundsOn {
+            get {
+                object obj = ResourceManager.GetObject("SoundsOn", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
         ///&lt;SokobanQuest xmlns=&quot;http://www.martinvseticka.eu/SoTh&quot;

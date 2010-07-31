@@ -2,12 +2,18 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Fragment>
     <ComponentGroup Id="Product.Generated">
+      <ComponentGroupRef Id="About.Binaries" />
+      <ComponentGroupRef Id="About.Content" />
+      <ComponentGroupRef Id="About.Satellites" />
       <ComponentGroupRef Id="ChooseConnectionDialog.Binaries" />
       <ComponentGroupRef Id="ChooseConnectionDialog.Content" />
       <ComponentGroupRef Id="ChooseConnectionDialog.Satellites" />
       <ComponentGroupRef Id="Console.Binaries" />
       <ComponentGroupRef Id="Console.Content" />
       <ComponentGroupRef Id="Console.Satellites" />
+      <ComponentGroupRef Id="UserDialog.Binaries" />
+      <ComponentGroupRef Id="UserDialog.Content" />
+      <ComponentGroupRef Id="UserDialog.Satellites" />
       <ComponentGroupRef Id="GameDeskControl.Binaries" />
       <ComponentGroupRef Id="GameDeskControl.Content" />
       <ComponentGroupRef Id="GameDeskControl.Satellites" />

@@ -53,13 +53,7 @@
 					</Component>
 
 					<Directory Id="SOLVERSLOCATION" Name="Solvers">
-						<Component Id="CmpntSolvers" Guid="13C2AB0B-1AC1-4075-AC75-2716FE37F24A">
-							<File Id="BoxSearch5EXE" Name="BoxSearch5.exe"
-									Source="$(var.Main.TargetDir)Solvers\BoxSearch5.exe" DiskId="1">
-							</File>
-							<File Id="BoxSearchPluginDLL" Name="BoxSearchPlugin.dll"
-									Source="$(var.Main.TargetDir)Solvers\BoxSearchPlugin.dll" DiskId="1">
-							</File>
+						<Component Id="CmpntSolvers" Guid="13C2AB0B-1AC1-4075-AC75-2716FE37F24A">							
 							<File Id="PocoSolvDLL" Name="PocoSolv.dll"
 									Source="$(var.Main.TargetDir)Solvers\PocoSolv.dll" DiskId="1">
 							</File>
@@ -82,6 +76,9 @@
 							<File Id="HitToTheWallWAV" Name="HitToTheWall.wav"
 									Source="$(var.Main.TargetDir)Plugins\Sounds\HitToTheWall.wav" DiskId="1">
 							</File>
+								<File Id="MonsterDidItWAV" Name="MonsterDidIt.wav"
+										Source="$(var.Main.TargetDir)Plugins\Sounds\MonsterDidIt.wav" DiskId="1">
+								</File>  
 							</Component>
 						</Directory>            
 					</Directory>

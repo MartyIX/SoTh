@@ -27,11 +27,13 @@ namespace Sokoban
             }
             else // "client" doesn't have GameDeskControl opened by default
             {
-                string questXml = this.getRequestOnServer("/remote/GetLeague/" + leaguesID.ToString());
+                string questXml = this.getRequestOnServer("/remote/GetLeague/" + leaguesID + "/" + roundsID);
 
                 if (questXml != "error" && questXml != "")
                 {
-                    Quest q = new Quest(questXml);
+
+                    OpeningMode openingMode = (roundsID == -1) ? OpeningMode.League : OpeningMode.Round;
+                    Quest q = new Quest(openingMode, questXml);
                     IGameMatch gm = this.QuestSelected(leaguesID, roundsID, q, GameMode.TwoPlayers, connection);
                 }
                 else

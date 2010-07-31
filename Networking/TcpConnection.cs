@@ -58,7 +58,11 @@ namespace Sokoban.Networking
             isSending = false;
             sendingOrder = 0;
             allSentHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
-            sendBuffer.Clear();
+
+            lock (sendAsyncCallbackLock)
+            {
+                sendBuffer.Clear();
+            }
         }
 
         public EventWaitHandle AllSentHandle
@@ -70,8 +74,11 @@ namespace Sokoban.Networking
                 if (succeded == false)
                     throw new Exception("Cannot reset `AllSentHandle'.");
 
-                if (sendBuffer.Count == 0)
-                    allSentHandle.Set();
+                lock (sendAsyncCallbackLock)
+                {
+                    if (sendBuffer.Count == 0)
+                        allSentHandle.Set();
+                }
 
                 return allSentHandle;
             }
@@ -88,10 +95,22 @@ namespace Sokoban.Networking
 
         public void SendAsync(NetworkMessageType nmt, object data)
         {
-
             if (nmt == NetworkMessageType.ListOfEvents)
             {
-                this.SendBufferedEvents();
+                if (outBuffer.Count > 0)
+                {
+                    this.sendRawData(NetworkMessageType.ListOfEvents, new ListOfEventsMessage((long)data, outBuffer));
+                    outBuffer.Clear();
+                }
+            }
+            else if (nmt == NetworkMessageType.GameChange)
+            {
+                if (data == null)
+                {
+                    throw new InvalidStateException("SendAsync: data is null; expected GameWonMessage instance.");
+                }
+
+                this.sendRawData(NetworkMessageType.GameChange, (GameChangeMessage)data);
             }
             else if (nmt == NetworkMessageType.Authentication)
             {
@@ -100,28 +119,31 @@ namespace Sokoban.Networking
                     throw new InvalidStateException("SendAsync: data is null; expected Autentization instance.");
                 }
 
-                this.SendAutentizationInfo((Authentication)data);
+                this.sendRawData(NetworkMessageType.Authentication, (Authentication)data);
             }
             else if (nmt == NetworkMessageType.SimulationTime)
             {
                 if (data == null)
                 {
-                    throw new InvalidStateException("SendAsync: data is null; expected Autentization instance.");
+                    throw new InvalidStateException("SendAsync: data is null; expected SimulationTimeMessage instance.");
                 }
-
-                this.SendSimulationTime((SimulationTimeMessage)data);
+                
+                this.sendRawData(NetworkMessageType.SimulationTime, (ListOfEventsMessage)data);
             }
             else if (nmt == NetworkMessageType.DisconnectRequest)
             {
-                this.SendDisconnectRequest();
+                DisconnectRequest disconnectRequest = new DisconnectRequest(DateTime.Now);
+                this.sendRawData(NetworkMessageType.DisconnectRequest, disconnectRequest);
             }
             else if (nmt == NetworkMessageType.DisconnectRequestConfirmation)
             {
-                this.SendDisconnectRequestConfirmation();
+                DisconnectRequestConfirmation disconnectRequest = new DisconnectRequestConfirmation(DateTime.Now);
+                this.sendRawData(NetworkMessageType.DisconnectRequestConfirmation, disconnectRequest);
             }
             else if (nmt == NetworkMessageType.StartGame)
             {
-                this.SendStartGame();
+                StartGame startGame = new StartGame(DateTime.Now);
+                this.sendRawData(NetworkMessageType.StartGame, startGame);
             }
         }
 
@@ -150,41 +172,6 @@ namespace Sokoban.Networking
         }
 
 
-        private void SendBufferedEvents()
-        {
-            this.sendRawData(NetworkMessageType.ListOfEvents, outBuffer);
-            outBuffer.Clear();
-        }
-
-        private void SendStartGame()
-        {
-            StartGame startGame = new StartGame(DateTime.Now);
-            this.sendRawData(NetworkMessageType.StartGame, startGame);
-        }
-
-        private void SendDisconnectRequest()
-        {
-            DisconnectRequest disconnectRequest = new DisconnectRequest(DateTime.Now);
-            this.sendRawData(NetworkMessageType.DisconnectRequest, disconnectRequest);
-        }
-
-        private void SendDisconnectRequestConfirmation()
-        {
-            DisconnectRequestConfirmation disconnectRequest = new DisconnectRequestConfirmation(DateTime.Now);
-            this.sendRawData(NetworkMessageType.DisconnectRequestConfirmation, disconnectRequest);
-        }
-
-
-        private void SendAutentizationInfo(Authentication auth)
-        {
-            this.sendRawData(NetworkMessageType.Authentication, auth);
-        }
-
-        private void SendSimulationTime(SimulationTimeMessage simulationTimeMessage)
-        {
-            this.sendRawData(NetworkMessageType.SimulationTime, simulationTimeMessage);
-        }
-
 
         //
         // END OF Handlers for sending network messages
@@ -197,9 +184,12 @@ namespace Sokoban.Networking
 
         private void SendAsync(byte[] data, int length)
         {
-            sendingOrder++;
-            sendBuffer.Enqueue(new Triple<int, int, byte[]>(sendingOrder, length, data));
-            ProcessSendingQueue();
+            lock (sendAsyncCallbackLock)
+            {
+                sendingOrder++;            
+                sendBuffer.Enqueue(new Triple<int, int, byte[]>(sendingOrder, length, data));
+                ProcessSendingQueue();
+            }
         }
 
 
@@ -262,14 +252,23 @@ namespace Sokoban.Networking
 
                 ProcessSendingQueue();
             }
-        }        
+        }
 
+        /// <summary>
+        /// called in locked area: sendAsyncCallbackLock
+        /// </summary>
         private void ProcessSendingQueue()
         {
+            Triple<int, int, byte[]> t = null;
+
             if (sendBuffer.Count > 0)
             {
+                t = sendBuffer.Dequeue();
+            }
+        
+            if (t != null)
+            {
                 isSending = true;
-                Triple<int, int, byte[]> t = sendBuffer.Dequeue();
                 AsyncState asyncState = new AsyncState(t.First, t.Second);
                 try
                 {
@@ -285,7 +284,7 @@ namespace Sokoban.Networking
             {
                 isSending = false;
                 allSentHandle.Set();
-            }
+            }                     
         }
 
         //
@@ -301,6 +300,7 @@ namespace Sokoban.Networking
             messageReceived
         }
 
+        private object lockRcvdBuffer = new object();
         private Queue<Pair<NetworkMessageType, byte[]>> rcvdBuffer = new Queue<Pair<NetworkMessageType, byte[]>>();
 
         public Queue<Pair<NetworkMessageType, byte[]>> RcvdBuffer
@@ -319,7 +319,11 @@ namespace Sokoban.Networking
 
         protected void receivingInit()
         {
-            rcvdBuffer.Clear();
+            lock (readCallbackLock)
+            {
+                rcvdBuffer.Clear();
+            }
+
             rcvdMode = receivingMode.none;
             isReceiving = false;
             receivingOrder = 0;
@@ -339,17 +343,20 @@ namespace Sokoban.Networking
         /// <param name="forceReceiving">Will run asynchronous process of receiving even though there may be a message in buffer</param>
         public void ReceiveAsync(bool forceReceiving)
         {
-            if (forceReceiving == true || rcvdBuffer.Count == 0)
+            lock (readCallbackLock)
             {
-                bool succeded = receivedMessageHandle.Reset();
-                if (succeded == false)
-                    throw new Exception("Cannot reset `ReceivedMessageHandle'.");
+                if (forceReceiving == true || rcvdBuffer.Count == 0)
+                {
+                    bool succeded = receivedMessageHandle.Reset();
+                    if (succeded == false)
+                        throw new Exception("Cannot reset `ReceivedMessageHandle'.");
 
-                receiveAsyncProcessing();
-            }
-            else
-            {
-                receivedMessageHandle.Set();
+                    receiveAsyncProcessing();
+                }
+                else
+                {
+                    receivedMessageHandle.Set();
+                }
             }
         }
 
@@ -449,17 +456,26 @@ namespace Sokoban.Networking
             receivingOrder++;
 
             // Reallocating if needed
-            if (length > rcvdByteBuffer.Length) rcvdByteBuffer = new byte[length];
 
-            AsyncState asyncState = new AsyncState(receivingOrder, length);
-            try
+            if (length < 1000000)
             {
-                clientSocket.BeginReceive(rcvdByteBuffer, 0, length, 0, new AsyncCallback(ReadCallback), asyncState);
+
+                if (length > rcvdByteBuffer.Length) rcvdByteBuffer = new byte[length];
+
+                AsyncState asyncState = new AsyncState(receivingOrder, length);
+                try
+                {
+                    clientSocket.BeginReceive(rcvdByteBuffer, 0, length, 0, new AsyncCallback(ReadCallback), asyncState);
+                }
+                catch (SocketException se)
+                {
+                    DebuggerIX.WriteLine(DebuggerTag.Net, role, "SocketException: " + se.Message);
+                    throw;
+                }
             }
-            catch (SocketException se)
+            else
             {
-                DebuggerIX.WriteLine(DebuggerTag.Net, role, "SocketException: " + se.Message);
-                throw;
+                throw new SocketException();
             }
         }
 
@@ -577,39 +593,46 @@ namespace Sokoban.Networking
 
         public virtual void CloseConnection(Socket clientSocket)
         {
-            if (clientSocket != null)
+            lock (sendAsyncCallbackLock)
             {
-                isClosed = true;
-                if (clientSocket.Connected)
+                lock (readCallbackLock)
                 {
-                    DebuggerIX.WriteLine(DebuggerTag.Net, role, "Connection Shutdown");
-                    clientSocket.Shutdown(SocketShutdown.Both);
-                    DebuggerIX.WriteLine(DebuggerTag.Net, role, "Beginning disconnect");
-                    clientSocket.Disconnect(true);  // 10 second timeout
-
-                    if (clientSocket.Connected)
+                    if (clientSocket != null)
                     {
-                        DebuggerIX.WriteLine(DebuggerTag.Net, role, "We're still connnected");
-                        isInitialized = true;
+                        isClosed = true;
+                        if (clientSocket.Connected)
+                        {
+                            DebuggerIX.WriteLine(DebuggerTag.Net, role, "Connection Shutdown");
+                            clientSocket.Shutdown(SocketShutdown.Both);
+                            DebuggerIX.WriteLine(DebuggerTag.Net, role, "Beginning disconnect");
+                            //clientSocket.Disconnect(true);  // 10 second timeout
+                            clientSocket.Close(); // http://stackoverflow.com/questions/583637/c-net-socket-shutdown
+
+                            if (clientSocket.Connected)
+                            {
+                                DebuggerIX.WriteLine(DebuggerTag.Net, role, "We're still connnected");
+                                isInitialized = true;
+                            }
+                            else
+                            {
+                                DebuggerIX.WriteLine(DebuggerTag.Net, role, "We're disconnected");
+                                isInitialized = false;
+                            }
+
+                            clientSocket = null;
+                        }
+                        else
+                        {
+                            isInitialized = false;
+                            DebuggerIX.WriteLine(DebuggerTag.Net, role, "Already closed.");
+                        }
                     }
                     else
                     {
-                        DebuggerIX.WriteLine(DebuggerTag.Net, role, "We're disconnected");
                         isInitialized = false;
+                        DebuggerIX.WriteLine(DebuggerTag.Net, role, "Already closed.");
                     }
-
-                    clientSocket = null;
                 }
-                else
-                {
-                    isInitialized = false;
-                    DebuggerIX.WriteLine(DebuggerTag.Net, role, "Already closed.");
-                }
-            }
-            else
-            {
-                isInitialized = false;
-                DebuggerIX.WriteLine(DebuggerTag.Net, role, "Already closed.");
             }
         }
 

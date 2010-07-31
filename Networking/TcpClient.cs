@@ -51,7 +51,10 @@ namespace Sokoban.Networking
                 clientSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                 clientSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
                 clientSocket.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.NoDelay, true);
-
+                
+                // http://msdn.microsoft.com/en-us/library/system.net.sockets.lingeroption(VS.71).aspx                
+                LingerOption myOpts = new LingerOption(true, 2);
+                clientSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Linger, myOpts);
 
                 if (clientSocket.Connected)
                 {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Controls;
 using System.Windows;
+using Sokoban.Lib;
 
 namespace Sokoban.View.GameDocsComponents
 {
@@ -15,7 +16,8 @@ namespace Sokoban.View.GameDocsComponents
         void ClearVisuals();
         void SetGameDeskSize(int fieldsX, int fieldsY);
         void StopTime();
-        void RestartGame();
+        void RestartGame(GameDisplayType gameDisplayType); // which player
+        void GameChangedHandler(GameDisplayType gameDisplayType, GameChange gameChange);
         void PauseTime();
         void PlayNextRound();
     }

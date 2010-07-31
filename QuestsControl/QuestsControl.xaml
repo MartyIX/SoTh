@@ -16,10 +16,10 @@
 	<ad:DockableContent.Resources>	
 		<ResourceDictionary>
 
-            <local:FontWeightToBoolConverter x:Key="fontWeightToBoolConverter" />
-            <!-- http://leecampbell.blogspot.com/2009/01/horizontal-stretch-on-treeviewitems.html - for focus of items -->
+			<local:FontWeightToBoolConverter x:Key="fontWeightToBoolConverter" />
+			<!-- http://leecampbell.blogspot.com/2009/01/horizontal-stretch-on-treeviewitems.html - for focus of items -->
 			<Style TargetType="TreeViewItem"
-	               BasedOn="{StaticResource {x:Type TreeViewItem}}">
+				   BasedOn="{StaticResource {x:Type TreeViewItem}}">
 			<EventSetter Event="TreeViewItem.Selected" Handler="trv_Selected" />
 			<Setter Property="HorizontalContentAlignment" Value="Left" />
 		  <Setter Property="Template">
@@ -200,6 +200,7 @@
 			<TreeView.ItemContainerStyle>
 				<Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
 					<EventSetter Event="TreeViewItem.MouseDoubleClick" Handler="trv_CategoryMouseDoubleClick" />
+					<EventSetter Event="TreeViewItem.PreviewMouseRightButtonDown" Handler="trv_PreviewMouseRightButtonDown" />
 				</Style>
 			</TreeView.ItemContainerStyle>
 			
@@ -207,13 +208,14 @@
 				
 				<!-- categories -->
 				<HierarchicalDataTemplate DataType="{x:Type sokXml:Category}" ItemsSource="{Binding Path=Leagues}">
-                    <TextBlock Text="{Binding Path=Name}" FontSize="16" FontWeight="{Binding Path=Loaded, Converter={StaticResource fontWeightToBoolConverter}}" />
+					<TextBlock Text="{Binding Path=Name}" FontSize="16" FontWeight="{Binding Path=Loaded, Converter={StaticResource fontWeightToBoolConverter}}" />
 						
 					<!-- leagues -->
 					
 					<HierarchicalDataTemplate.ItemContainerStyle>						
 						<Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
 							<EventSetter Event="TreeViewItem.MouseDoubleClick" Handler="trv_LeaguesMouseDoubleClick" />
+							<EventSetter Event="TreeViewItem.PreviewMouseRightButtonDown" Handler="trv_PreviewMouseRightButtonDown" />
 						</Style>
 					</HierarchicalDataTemplate.ItemContainerStyle>
 					
@@ -235,6 +237,7 @@
 						<Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
 							<Setter Property="Padding" Value="0,0" />
 							<EventSetter Event="TreeViewItem.MouseDoubleClick" Handler="trv_RoundMouseDoubleClick" />
+							<EventSetter Event="TreeViewItem.PreviewMouseRightButtonDown" Handler="trv_PreviewMouseRightButtonDown" />
 							<!--<EventSetter Event="TreeViewItem.PreviewMouseRightButtonDown" Handler="trv_PreviewMouseRightButtonDown"/>-->
 						</Style>
 					</HierarchicalDataTemplate.ItemContainerStyle>

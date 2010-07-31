@@ -7,6 +7,7 @@ using System.Xml;
 using System.IO;
 using Sokoban;
 using Sokoban.Lib.Xml;
+using Sokoban.Lib;
 
 namespace Sokoban.Model.GameDesk
 {
@@ -16,13 +17,21 @@ namespace Sokoban.Model.GameDesk
         private XmlNodeList rounds;
         private string name;
         private string wholeQuestXml;
+        private OpeningMode openingMode;
 
+        
+        public Quest(string questXml) : this(OpeningMode.League, questXml)
+        {
+
+        }
+        
         /// <summary>
         /// The most common Quest
         /// </summary>
         /// <param name="questXML">XML that follows schema QuestSchema</param>
-        public Quest(string questXml)
+        public Quest(OpeningMode openingMode, string questXml)
         {
+            this.openingMode = openingMode;
             wholeQuestXml = questXml;
             XmlDocument xmlDoc = new XmlDocument(); //* create an xml document object.
             XmlTextReader xmlTextReader = new XmlTextReader(new StringReader(questXml));
@@ -35,7 +44,17 @@ namespace Sokoban.Model.GameDesk
 
         public string Name
         {
-            get { return name; }
+            get {
+
+                if (rounds.Count == 1 && openingMode == OpeningMode.Round)
+                {
+                    return rounds[0]["Name"].InnerText;
+                }
+                else 
+                {
+                    return name;
+                }
+            }
         }
 
         public int RoundsNo

@@ -1,4 +1,4 @@
-﻿//#define DebugDraw
+﻿#define DebugDraw
 
 using System;
 using System.Collections.Generic;
@@ -18,11 +18,15 @@ namespace Sokoban.Model.PluginInterface
     public class MovableEssentials : IMovableElement, INotifyPropertyChanged
     {
         public event GameObjectMovedDel ElementMoved;
-        
+
+        private bool immediatelyOccupyNewField = false;
+
         private object syncRoot = new object();
         protected IPluginParent host;
         protected int lastPosX;
         protected int lastPosY;
+        protected int newPosX;
+        protected int newPosY;
         protected int posX;
         protected int posY;
         protected Image image;
@@ -34,11 +38,22 @@ namespace Sokoban.Model.PluginInterface
                                         1,  0, 
                                         0, -1, 
                                         0,  1 };
-        
+
+
+        public virtual bool ImmediatelyOccupyNewField
+        {
+            get { return immediatelyOccupyNewField; }
+        }
+
 
         public virtual int ObstructionLevel(IGamePlugin asker)
         {
             return obstructionLevel;
+        }
+
+        public MovementDirection MovementDirection
+        {
+            get { return direction; }
         }
 
         protected int fieldsX = 0;
@@ -51,8 +66,9 @@ namespace Sokoban.Model.PluginInterface
             
         }
 
-        public void Initialize(IGamePlugin thisGamePlugin)
+        public void Initialize(IGamePlugin thisGamePlugin, bool immediatelyOccupyNewField)
         {
+            this.immediatelyOccupyNewField = immediatelyOccupyNewField;
             this.thisGamePlugin = thisGamePlugin;
         }
 
@@ -68,13 +84,23 @@ namespace Sokoban.Model.PluginInterface
             if (gamePlugin != null)
             {
                 // Change X, Y coordinates
-                gamePlugin.MakeMove((MovementDirection)ev);
+
+                if (((MovableEssentials)gamePlugin).ImmediatelyOccupyNewField == false)
+                {
+                    gamePlugin.InitializeMove((MovementDirection)ev);
+                }
+                else
+                {
+                    gamePlugin.FinishMove((MovementDirection)ev);
+                }
+                
                 gamePlugin.MovementStartTime = goTime;
                 gamePlugin.MovementStartTimePhase = phase;
                 gamePlugin.MovementEndTime = goTime + speed;
                 gamePlugin.LastMovementEvent = ev;
 
-                MakePlan("PrepMovWentXXX", gamePlugin.MovementEndTime, who, (EventType)((int)ev + 10)); // goXXX -> wentXXX
+                // Forced event!
+                MakePlan("PrepMovWentXXX", gamePlugin.MovementEndTime, who, (EventType)((int)ev + 10), true); // goXXX -> wentXXX
             }
         }
 
@@ -129,8 +155,16 @@ namespace Sokoban.Model.PluginInterface
                 double progress = timePassed / (double)(Math.Abs(this.Speed) - movementStartTimePhase);
                 double step = squareSize * progress;
 
-                x = (this.lastPosX - 1) * squareSize + (posX - lastPosX) * step;
-                y = (this.lastPosY - 1) * squareSize + (posY - lastPosY) * step;
+                if (immediatelyOccupyNewField == true)
+                {
+                    x = (this.lastPosX - 1) * squareSize + (posX - lastPosX) * step;
+                    y = (this.lastPosY - 1) * squareSize + (posY - lastPosY) * step;
+                }
+                else
+                {
+                    x = (this.lastPosX - 1) * squareSize + (newPosX - lastPosX) * step;
+                    y = (this.lastPosY - 1) * squareSize + (newPosY - lastPosY) * step;
+                }
 
                 this.Debug(DebuggerTag.PluginDraw, "InProgress",
                         "[x,y] = " + x.ToString("0.00")
@@ -209,6 +243,10 @@ namespace Sokoban.Model.PluginInterface
                     #region wentXXX
 
                     movementEventsInBuffer--;
+                    if (immediatelyOccupyNewField == false)
+                    {
+                        ((IMovableElement)ev.who).FinishMove((MovementDirection)(ev.what - 10));
+                    }
 
                     returnValue = true;
                     break;
@@ -238,6 +276,8 @@ namespace Sokoban.Model.PluginInterface
         /// <returns>What GamePlugin was moved; if none then null</returns>
         public IGamePlugin ProcessGoEvent(Int64 time, Event ev)
         {
+            if (!host.IsSimulationActive) return null;
+
             IGamePlugin result = null;
             // TODO: It's not possible to move object if there's something behind it
 
@@ -329,12 +369,12 @@ namespace Sokoban.Model.PluginInterface
 
             if (diff > 400)
             {
-                DebuggerIX.WriteLine(DebuggerTag.SimulationEventHandling, "[MovableEssentials]", "planHittingWall = True; Diff = " + diff);
+                DebuggerIX.WriteLine(DebuggerTag.SimulationNotableEvents, "[MovableEssentials]", "planHittingWall = True; Diff = " + diff);
                 MakePlan(debugMessage, when, who, EventType.hitToTheWall); // ev.who = this plugin
             }
             else
             {
-                DebuggerIX.WriteLine(DebuggerTag.SimulationEventHandling, "[MovableEssentials]", "planHittingWall = False; Diff = " + diff);
+                DebuggerIX.WriteLine(DebuggerTag.SimulationNotableEvents, "[MovableEssentials]", "planHittingWall = False; Diff = " + diff);
             }
         }
 
@@ -358,7 +398,7 @@ namespace Sokoban.Model.PluginInterface
         /// Moves GameObject on game desk
         /// </summary>
         /// <param name="whereTo">which direction should GameObject move</param>
-        public void MakeMove(MovementDirection whereTo)
+        public void FinishMove(MovementDirection whereTo)
         {
             lastPosX = posX;
             lastPosY = posY;
@@ -385,17 +425,68 @@ namespace Sokoban.Model.PluginInterface
                 direction = 'd';
             }
 
-            StepsCount++;
-            lastPositionChange = DateTime.Now;
-
-            // Fire event
-            if (ElementMoved != null)
+            if (this.immediatelyOccupyNewField == false)
             {
-                ElementMoved(posX, posY, direction);
+                StepsCount++;
+                lastPositionChange = DateTime.Now;
+
+                // Fire event
+                if (ElementMoved != null)
+                {
+                    ElementMoved(posX, posY, direction);
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Moves GameObject on game desk
+        /// </summary>
+        /// <param name="whereTo">which direction should GameObject move</param>
+        public void InitializeMove(MovementDirection whereTo)
+        {
+            lastPosX = posX;
+            lastPosY = posY;
+            newPosX = posX;
+            newPosY = posY;
+            char direction = ' ';
+
+            if (whereTo == MovementDirection.goLeft)
+            {
+                newPosX = posX - 1;
+                direction = 'l';
+            }
+            else if (whereTo == MovementDirection.goRight)
+            {
+                newPosX = posX + 1;
+                direction = 'r';
+            }
+            else if (whereTo == MovementDirection.goUp)
+            {
+                newPosY = posY - 1;
+                direction = 'u';
+            }
+            else if (whereTo == MovementDirection.goDown)
+            {
+                newPosY = posY + 1;
+                direction = 'd';
+            }
+                       
+            if (this.immediatelyOccupyNewField == true)
+            {
+                StepsCount++;
+                lastPositionChange = DateTime.Now;
+
+                // Fire event
+                if (ElementMoved != null)
+                {
+                    ElementMoved(posX, posY, direction);
+                }
             }
         }
 
-        protected MovementDirection direction;
+
+        protected MovementDirection direction = MovementDirection.goRight;
 
         /// <summary>
         /// Direction to which the object is turned to
@@ -561,7 +652,6 @@ namespace Sokoban.Model.PluginInterface
             }
         }
 
-
         protected bool isThereWall(int x, int y)
         {
             if (x > fieldsX || x < 1 || y > fieldsY || y < 1)
@@ -576,6 +666,11 @@ namespace Sokoban.Model.PluginInterface
 
         public void MakePlan(string debug, long time, IGamePlugin iGamePlugin, EventType eventType)
         {
+            MakePlan(debug, time, iGamePlugin, eventType, false);
+        }
+
+        public void MakePlan(string debug, long time, IGamePlugin iGamePlugin, EventType eventType, bool force)
+        {
             if (EventTypeLib.IsEventOfType(eventType, EventCategory.goXXX))
             {
                 if (movementEventsInBuffer == 0)
@@ -589,10 +684,10 @@ namespace Sokoban.Model.PluginInterface
 
                 movementEventsInBuffer++;
 
-                DebuggerIX.WriteLine(DebuggerTag.SimulationEventHandling, "[MovableEssentials]", "[KeyBuf] Buffer is now: " + this.MovementEventsInBuffer.ToString());
+                DebuggerIX.WriteLine(DebuggerTag.SimulationNotableEvents, "[MovableEssentials]", "[KeyBuf] Buffer is now: " + this.MovementEventsInBuffer.ToString());
             }
 
-            host.MakePlan(debug, time, iGamePlugin, eventType);
+            host.MakePlan(debug, time, iGamePlugin, eventType, force);
         }
 
         public int StepsCount

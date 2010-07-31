@@ -9,7 +9,7 @@ namespace Sokoban.View.GameDocsComponents
 {
     public partial class Game : ISolverProvider
     {
-        #region ISolverProvider Members
+        public event GameObjectMovedDel SokobanMoved;
 
         public uint GetMazeWidth()
         {
@@ -30,12 +30,6 @@ namespace Sokoban.View.GameDocsComponents
         {
             //return control;
             throw new NotImplementedException("Not implemented by purpose!");
-        }
-
-        public event GameObjectMovedDel SokobanMoved;
-
-
-        #endregion
-
+        }      
     }
 }

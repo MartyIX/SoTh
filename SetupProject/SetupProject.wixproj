@@ -28,6 +28,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\About\About.csproj">
+      <Name>About</Name>
+      <Project>{46b8f35c-7dba-478d-ab0f-ad46c7160b32}</Project>
+      <Private>True</Private>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLLOCATION</RefTargetDir>
+    </ProjectReference>
     <ProjectReference Include="..\ChooseConnectionDialog\ChooseConnectionDialog.csproj">
       <Name>ChooseConnectionDialog</Name>
       <Project>{99cb949c-39c4-4982-bd3f-6cfa27ee6037}</Project>
@@ -38,6 +45,13 @@
     <ProjectReference Include="..\Console\Console.csproj">
       <Name>Console</Name>
       <Project>{65d0c3fe-c558-44d4-b71b-fa32cdc24443}</Project>
+      <Private>True</Private>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLLOCATION</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\Dialog\UserDialog.csproj">
+      <Name>UserDialog</Name>
+      <Project>{0fc26ab9-f5d5-472f-a1b1-f8e50680d968}</Project>
       <Private>True</Private>
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLLOCATION</RefTargetDir>

@@ -35,6 +35,7 @@ namespace Sokoban.View.GameDocsComponents
         public GameStatus GameStatus
         {
             get { return gameStatus; }
+            set { gameStatus = value; }
         }
 
         // Private fields
@@ -65,9 +66,7 @@ namespace Sokoban.View.GameDocsComponents
         private double phaseProp
         {
             get { return stopwatch.ElapsedMilliseconds / (double)PHASE_CONST; }
-        }
-
-        
+        }        
         
         public IQuest Quest {
             get { return this.quest; }
@@ -91,8 +90,14 @@ namespace Sokoban.View.GameDocsComponents
 
         public void Terminate()
         {
+            gameStatus = Lib.GameStatus.Unstarted;
             this.StopRendering();
+            this.removeOldPainter();
+
+            // nulling events
             PreRoundLoaded = null;
+            SokobanMoved = null;
+            
             gameRepository.Terminate();
         }
 

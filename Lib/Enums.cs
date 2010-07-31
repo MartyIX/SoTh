@@ -8,11 +8,20 @@ namespace Sokoban.Lib
         SecondPlayer
     }
 
+    public enum OpeningMode
+    {
+        League,
+        Round
+    }
+
     public enum GameChange
     {
         Won,
         Lost,
-        StopCountingTime
+        StopCountingTime,
+        Restart,
+        None,
+        Tie
     }
 
     public enum GameMode
@@ -25,6 +34,7 @@ namespace Sokoban.Lib
     {
         Unstarted,
         Running,
+        Finishing,
         Paused,
         Finished
     }   
@@ -148,7 +158,8 @@ namespace Sokoban.Lib
         /// User won the game
         /// </summary>
         gameWon = 20,
-        stopCountingTime = 21,
+        restartGame = 21, 
+        stopCountingTime = 22,
 
         wait,
 

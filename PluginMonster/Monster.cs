@@ -10,6 +10,7 @@ using Sokoban.Lib;
 using Sokoban.Lib.Exceptions;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
+using System.IO;
 
 namespace PluginMonster
 {
@@ -21,6 +22,7 @@ namespace PluginMonster
         private Image stainImage;
         private IPluginParent parent;
         private IGamePlugin sokoban;
+        private MediaElement sounds;
 
         private int[,] wave = null;
         private ArrayList waveQueue = null;
@@ -34,7 +36,7 @@ namespace PluginMonster
         public Monster(IPluginParent host) : base(host)
         {
             parent = host;
-            Initialize(this);
+            Initialize(this, true);
         }
 
 
@@ -98,6 +100,20 @@ namespace PluginMonster
             image.Source = bi;
 
             this.uiElement = image;
+
+
+            if (!File.Exists(appPath + @"\Plugins\Sounds\MonsterDidIt.wav"))
+            {
+                throw new PluginLoadFailedException("File `" + appPath + @"\Plugins\Sounds\MonsterDidIt.wav" + "` could not be found.");
+            }
+            else
+            {
+                sounds = new MediaElement();
+                sounds.LoadedBehavior = MediaState.Manual; // TODO ADD TO THE INSTALLER
+                sounds.Source = new Uri(appPath + @"\Plugins\Sounds\MonsterDidIt.wav");
+                host.RegisterMediaElement(sounds);
+            }
+
 
             foreach (IGamePlugin gp in host.AllPlugins)
             {
@@ -255,30 +271,51 @@ namespace PluginMonster
             {
                 if (pSx - this.posX < 0)
                 {
-                    host.MakePlan("MonsterGoXXX", time + this.Speed, this, EventType.goLeft);
+                    MakePlan("MonsterGoXXX", time, this, EventType.goLeft);
                 }
                 else if (pSx - this.posX > 0)
                 {
-                    host.MakePlan("MonsterGoXXX", time + this.Speed, this, EventType.goRight);
+                    MakePlan("MonsterGoXXX", time, this, EventType.goRight);
                 }
                 else if (pSy - this.posY < 0)
                 {
-                    host.MakePlan("MonsterGoXXX", time + this.Speed, this, EventType.goUp);
+                    MakePlan("MonsterGoXXX", time, this, EventType.goUp);
                 }
                 else if (pSy - this.posY > 0)
                 {
-                    host.MakePlan("MonsterGoXXX", time + this.Speed, this, EventType.goDown);
+                    MakePlan("MonsterGoXXX", time, this, EventType.goDown);
+                }
+                else
+                {
+                    MakePlan("MonsterPursuit", time, this, EventType.pursuit);
                 }
             }
-
-            host.MakePlan("MonsterGoXXX", time + this.Speed, this, EventType.pursuit);
-
+            else
+            {
+                MakePlan("MonsterPursuit", time + this.Speed, this, EventType.pursuit);
+            }
         }
 
         public override void Crash(Canvas canvas, Int64 time, double monLeft, double monTop, double squareSize)
         {
+
             double sokLeft = Canvas.GetLeft(sokoban.UIElement);
-            double sokTop = Canvas.GetTop(sokoban.UIElement);            
+            double sokTop = Canvas.GetTop(sokoban.UIElement);
+
+            double sokLeftCrash = sokLeft;
+            double monLeftCrash = monLeft;
+
+            if (((IMovableElement)sokoban).MovementDirection == MovementDirection.goLeft)
+            {
+                sokLeftCrash -= squareSize;
+            }
+
+            if (direction == MovementDirection.goLeft)
+            {
+                monLeftCrash -= squareSize;
+            }
+
+
             
             if (wasSokobanCatched == false)
             {
@@ -286,17 +323,17 @@ namespace PluginMonster
                 double addition = squareSize * 0.35;
                 double size = squareSize * (1 - 0.35 * 2);
 
-                double realSokLeft = sokLeft + addition;
+                double realSokLeft = sokLeftCrash + addition;
                 double realSokTop = sokTop + addition;
 
-                double realMonLeft = monLeft + addition;
+                double realMonLeft = monLeftCrash + addition;
                 double realMonTop = monTop + addition;
 
 
                 Rect r1 = new Rect(realSokLeft, realSokTop, size, size);
                 Rect r2 = new Rect(realMonLeft, realMonTop, size, size);
-
-                if (r1.IntersectsWith(r2))
+                
+                if (host.IsSimulationActive && r1.IntersectsWith(r2))
                 {
                     timeOfDeath = time;
 
@@ -324,7 +361,7 @@ namespace PluginMonster
 
                     // hide Sokoban && monster
                     DoubleAnimation doubleHideSokobanAnimation = new DoubleAnimation(1.0, 0.0, new Duration(TimeSpan.FromSeconds(1.5)));
-                    DoubleAnimation doubleHideMonsterAnimation = new DoubleAnimation(1.0, 0.0, new Duration(TimeSpan.FromSeconds(0.5)));
+                    DoubleAnimation doubleHideMonsterAnimation = new DoubleAnimation(1.0, 0.0, new Duration(TimeSpan.FromSeconds(0.25)));
                     DoubleAnimation doubleShowAnimation = new DoubleAnimation(0.0, 1.0, new Duration(TimeSpan.FromSeconds(1.5)));
                     //doubleHideAnimation.BeginTime = new TimeSpan(0, 0, 0, 0);
                     //doubleShowAnimation.BeginTime = new TimeSpan(0, 0, 0, 500);
@@ -347,7 +384,9 @@ namespace PluginMonster
                     sb.Children.Add(doubleShowAnimation);
 
                     sb.Begin();
-                    
+
+                    sounds.Position = TimeSpan.Zero;
+                    sounds.Play();                    
                 }
             }
             else
@@ -376,17 +415,14 @@ namespace PluginMonster
                 case EventType.goUp:
                 case EventType.goDown:
 
+                    if (!host.IsSimulationActive) return true;
+
                     base.SetOrientation(ev.what);
 
-                    DebuggerIX.WriteLine(DebuggerTag.SimulationEventHandling, "[Sokoban] ProcessEvent", ev.what.ToString() + "; Raised from EventID: " + ev.EventID.ToString());
-                    DebuggerIX.WriteLine(DebuggerTag.SimulationEventHandling, "", "[Sokoban]" + ev.ToString());
+                    DebuggerIX.WriteLine(DebuggerTag.SimulationNotableEvents, "[Sokoban] ProcessEvent", ev.what.ToString() + "; Raised from EventID: " + ev.EventID.ToString());
+                    DebuggerIX.WriteLine(DebuggerTag.SimulationNotableEvents, "", "[Sokoban]" + ev.ToString());
 
                     IGamePlugin obstruction = base.ProcessGoEvent(time, ev);
-
-                    /*if (obstruction != null && obstruction.Name == "Sokoban")
-                    {
-                        this.host.GameVariant.CheckRound(time, "SokobanKilled", this.Speed);
-                    }*/
 
                     returnValue = true;
 
@@ -395,7 +431,19 @@ namespace PluginMonster
 
                 case EventType.pursuit:
 
+                    if (!host.IsSimulationActive) return true;
+
                     ProcessPursuitEvent(time, ev);
+
+                    return true;
+
+                case EventType.wentRight:
+                case EventType.wentLeft:
+                case EventType.wentUp:
+                case EventType.wentDown:
+
+                    base.ProcessEvent(time, ev);
+                    MakePlan("MonsterPursuit", time, this, EventType.pursuit);
 
                     return true;
 
@@ -407,7 +455,17 @@ namespace PluginMonster
             return returnValue;
         }
 
-
+        public override int ObstructionLevel(IGamePlugin asker)
+        {
+            if (asker.Name == "Sokoban")
+            {
+                return -1;
+            }
+            else
+            {
+                return 10;
+            }
+        }
     }
 
     /// <summary>

@@ -36,7 +36,7 @@ namespace SolversTest
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             dsp = new DummySolverProvider(DummySolverProviderEnum.TestTwo);
-            solversPane.Initialize(@"D:\Bakalarka\Sokoban\Main\Solvers\Solvers", (ISolverProvider)dsp, this);            
+            solversPane.Initialize(@"D:\Bakalarka\Sokoban\Main\Solvers\Solvers", this, (ISolverProvider)dsp, this);
         }
 
         private void Window_Closed(object sender, EventArgs e)

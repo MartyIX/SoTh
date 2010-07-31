@@ -9,6 +9,7 @@ using Sokoban.Interfaces;
 using Sokoban.Networking;
 using Sokoban.View.Settings;
 using Sokoban.View.SetupNetwork;
+using System.ComponentModel;
 
 
 namespace Sokoban
@@ -17,10 +18,10 @@ namespace Sokoban
     /// Interaction logic for MainWindow.xaml
     /// </summary>
 
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         public ReadOnlyObservableCollection<string> MyProperty { get; set; }
-        private IUserInquirer userInquirer;
+        private IUserInquirer userInquirer;        
 
         public MainWindow()
         {
@@ -76,7 +77,7 @@ namespace Sokoban
         private void loadQuest()
         {
             string result = Sokoban.Properties.Resources.TestQuest;
-            gameManager.Add(result);
+            gameManager.Add(OpeningMode.Round, result);
         }
 
         private void dockingManager_Loaded(object sender, RoutedEventArgs e)
@@ -102,6 +103,9 @@ namespace Sokoban
             ApplicationRepository.Instance.OnStartUp_PhaseTwo(); // initialize QuestsControl
             solversPane.Initialize(this.gameManager, this, consolePane, this.userInquirer);
             gameManager.Initialize(this.userInquirer); // has to be called before a GameDeskControl is opened
+            gameManager.SetSoundsSettings(UserSettingsManagement.IsSoundEnabled);
+            gameManager.AddIntroduction();
+            gameManager.RestartAvaibilityChanged += new VoidBoolDelegate(gameManager_RestartAvaibilityChanged);                
 
             // Load testing quest
             //this.loadQuest();
@@ -122,10 +126,18 @@ namespace Sokoban
             MessageBox.Show(s);
         }
 
+        #region INotifyPropertyChanged Members
 
+        public event PropertyChangedEventHandler PropertyChanged;
 
-        
+        void Notify(string prop)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(prop));
+            }
+        }
 
-
+        #endregion
     }    
 }

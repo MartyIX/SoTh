@@ -1,29 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.ComponentModel;
 using AvalonDock;
-using System.Diagnostics;
 using Sokoban.Lib;
-using Sokoban.Model;
 using Sokoban.Model.GameDesk;
-using Sokoban.Lib.Exceptions;
-using Sokoban.Solvers;
 using Sokoban.WPF;
 using Sokoban.Interfaces;
-using Sokoban.Networking;
-using System.Threading;
-using System.Net.Sockets;
 
 namespace Sokoban.View.GameDocsComponents
 {
@@ -105,10 +89,14 @@ namespace Sokoban.View.GameDocsComponents
             // Game model for first player
             this.networkModule = new NetworkModule(this.userInquirer);
             game = new Game(quest, gameMode, GameDisplayType.FirstPlayer, this.networkModule, this.userInquirer);
+            this.networkModule.GameChanged += new GameChangeDelegate(this.GameChangedHandler);
+            this.networkModule.DisconnectRequest += new VoidObjectDelegate(networkModule_DisconnectRequest);            
+
             this.loadCurrentRound(game);
 
             if (gameMode == GameMode.TwoPlayers)
             {
+                this.applyBlurEffect();  // removeBlurEffect is called in GameMatch.cs (SetNetworkConnection)           
                 this.DisplayBothDesks = true;
                 gameOpponent = new Game(quest, gameMode, GameDisplayType.SecondPlayer, this.networkModule, this.userInquirer);
                 this.loadCurrentRound(gameOpponent);
@@ -116,6 +104,7 @@ namespace Sokoban.View.GameDocsComponents
 
             this.networkModule.SetGameOpponent(gameOpponent);            
         }
+
 
         /// <summary>
         /// 
@@ -175,14 +164,6 @@ namespace Sokoban.View.GameDocsComponents
             Resize(this.availableWidth, this.availableHeight - 25); // the 25 is just workaroud! TODO FIX
         }
 
-
-
-        public void Terminate()
-        {
-            this.StopTime();
-            game.Terminate();            
-            if (gameOpponent != null) gameOpponent.Terminate();
-        }
 
         public string RoundName
         {
@@ -255,7 +236,7 @@ namespace Sokoban.View.GameDocsComponents
         private void timeStart()
         {
             BindableTimeCounter timeCounter = this.Resources["timeCounter"] as BindableTimeCounter;            
-            if (timeCounter == null) throw new Exception("Cannot found resource `timeCounte'.");
+            if (timeCounter == null) throw new Exception("Cannot found resource `timeCounter'.");
             timeCounter.Initialize(DateTime.Now);
             timeCounter.Start();
         }

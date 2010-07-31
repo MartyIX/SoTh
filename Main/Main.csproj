@@ -81,7 +81,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\AvalonDock\AvalonDock.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Expression.Interactions" />
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -89,9 +88,7 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Web.DynamicData.Design" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Windows.Interactivity" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
@@ -254,6 +251,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\About\About.csproj">
+      <Project>{46B8F35C-7DBA-478D-AB0F-AD46C7160B32}</Project>
+      <Name>About</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ChooseConnectionDialog\ChooseConnectionDialog.csproj">
       <Project>{99CB949C-39C4-4982-BD3F-6CFA27EE6037}</Project>
       <Name>ChooseConnectionDialog</Name>
@@ -343,7 +344,6 @@
       <Name>Solvers</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Resource Include="TestQuest.xml">
       <SubType>Designer</SubType>
@@ -354,6 +354,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="View\Splash\SokobanSplash.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="View\Resources\SoundsOff.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="View\Resources\SoundsOn.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

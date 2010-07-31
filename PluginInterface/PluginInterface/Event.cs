@@ -76,7 +76,7 @@ public struct Event
 
             return "EID = " + EventID.ToString().PadRight(4)
                 + "; Time = " + when.ToString().PadRight(5)
-                + "; Obj = " + who.Description
+                + "; Obj = " + (who == null ? "Null" : who.Description)
                 + "; Ev = " + what.ToString().PadRight(15)
                 + (obj != null ?
                         "; Pos = " + obj.PosX.ToString().PadLeft(2) + "x" + obj.PosY.ToString()
