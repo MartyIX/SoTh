@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Sokoban.Solvers;
 using Sokoban.Lib;
+using Sokoban.Lib.Exceptions;
 
 namespace Sokoban.View.GameDocsComponents
 {
@@ -36,10 +37,38 @@ namespace Sokoban.View.GameDocsComponents
             }
         }
 
-        public object GetIdentifier()
+        public object GetIdentifier(SolverProviderIdentifierType spit)
         {
             //return game.GetIdentifier();
-            return this; // has to be GameDeskControl
-        }        
+
+            if (spit == SolverProviderIdentifierType.DocumentPaneInstance)
+            {
+                return this; // has to be GameDeskControl
+            }
+            else if (spit == SolverProviderIdentifierType.RoundsID)
+            {
+                if (game == null || game.GameRepository == null)
+                {
+                    throw new NoRoundIsOpenException();
+                }                
+                else if (game.GameRepository.GameVariantName == "Ordinary")
+                {
+                    return game.Quest.CurrentRoundID;
+                }
+                else
+                {
+                    throw new NotStandardSokobanVariantException();
+                }
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string MovementsSoFar
+        {
+            get { return game.MovementsSoFar; }
+        }
     }
 }

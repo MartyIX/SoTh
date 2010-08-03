@@ -23,6 +23,8 @@ namespace Sokoban.Model.PluginInterface
         // In case that you use some unmanaged code and you need to correctly destruct an object, ...
         void Unload();
 
+        string GetSolution();
+
         void CheckRound(Int64 time);
         void CheckRound(Int64 time, string messageType, object data);
     }

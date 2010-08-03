@@ -26,6 +26,7 @@ namespace Sokoban.View
         private bool isKeyDown = false;
         private IUserInquirer userInquirer = null;
         private bool isSoundOn = true;
+        private IGameServerCommunication gameServerCommunication = null;
         public event VoidBoolDelegate RestartAvaibilityChanged;
 
         public GameDocs()
@@ -60,9 +61,10 @@ namespace Sokoban.View
             GameViews.Clear();
         }
 
-        public void Initialize(IUserInquirer userInquirer)
+        public void Initialize(IUserInquirer userInquirer, IGameServerCommunication gameServerCommunication)
         {
             this.userInquirer = userInquirer;
+            this.gameServerCommunication = gameServerCommunication;
         }
 
         public void AddIntroduction()
@@ -168,15 +170,6 @@ namespace Sokoban.View
                     ((GameDeskControl)gdc).SetSounds(isEnabled);
                 }
             }
-        }
-
-        /// <summary>
-        /// For testing purposes
-        /// </summary>
-        public GameDeskControl Add(OpeningMode openingMode, string questXml)
-        {
-            Quest q = new Quest(openingMode, questXml);
-            return this.Add(q, GameMode.SinglePlayer);
         }
 
         public GameDeskControl Add(IQuest quest, GameMode gameMode)
@@ -341,7 +334,7 @@ namespace Sokoban.View
         /// </summary>
         public event GameObjectMovedDel SokobanMoved;
 
-        public object GetIdentifier()
+        public object GetIdentifier(SolverProviderIdentifierType spit)
         {
             if (ActiveGameControl == null)
             {
@@ -349,9 +342,25 @@ namespace Sokoban.View
             }
             else
             {
-                return ActiveGameControl.GetIdentifier();
+                return ActiveGameControl.GetIdentifier(spit);
             }
         }
+
+        public string MovementsSoFar
+        {
+            get
+            {
+                if (ActiveGameControl == null)
+                {
+                    throw new NoRoundIsOpenException();
+                }
+                else
+                {
+                    return ActiveGameControl.MovementsSoFar;
+                }
+            }
+        }
+
 
         #endregion
 
@@ -396,6 +405,6 @@ namespace Sokoban.View
             {
                 userInquirer.ShowMessage(message);
             }
-        }
+        }        
     }
 }

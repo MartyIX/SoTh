@@ -27,7 +27,7 @@ namespace Sokoban.Solvers
         /// Param contains result
         /// </summary>
         /// <param name="param"></param>
-        public delegate void SolverWorkCompletedDel(object mazeID, uint width, uint height, string maze, string solution);
+        public delegate void SolverWorkCompletedDel(string solver, object mazeID, uint width, uint height, string maze, string solution);
 
         // Private Fields
         private Dictionary<string, SolverLibrary> solversDictionary;
@@ -93,7 +93,7 @@ namespace Sokoban.Solvers
                 {
                     string solverName = System.IO.Path.GetFileNameWithoutExtension(file.FullName);
 
-                    SolverLibrary lib = new SolverLibrary(file.FullName, this.parentWindow);
+                    SolverLibrary lib = new SolverLibrary(solverName, file.FullName, this.parentWindow);
 
                     lib.Load();
 
@@ -152,7 +152,7 @@ namespace Sokoban.Solvers
             uint width = solverProvider.GetMazeWidth();
             uint height = solverProvider.GetMazeHeight();
             string maze = solverProvider.SerializeMaze();
-            object mazeID = solverProvider.GetIdentifier();
+            object mazeID = solverProvider.GetIdentifier(SolverProviderIdentifierType.DocumentPaneInstance);
             uint boxesNo = 0;
             
             // Count boxes
@@ -249,7 +249,7 @@ namespace Sokoban.Solvers
         private void solvingThread_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {            
             SolvingThreadResultObject result = e.Result as SolvingThreadResultObject;
-            result.SolverWorkCompleteDel(result.MazeID, result.Width, result.Height, result.Maze, result.Solution);
+            result.SolverWorkCompleteDel(result.SolverName, result.MazeID, result.Width, result.Height, result.Maze, result.Solution);
         }
 
 

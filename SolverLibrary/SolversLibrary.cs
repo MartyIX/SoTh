@@ -103,7 +103,7 @@ namespace Sokoban.Solvers
         /// </summary>
         /// <param name="message"></param>
         /// <param name="parameter">Mostly null but may be useful in future</param>
-        public delegate void StatusCallbackDel(StatusPriority priority, AlertCodes alertCode, string message, object parameter);
+        public delegate void StatusCallbackDel(StatusPriority priority, AlertCodes alertCode, string solver, string message, object parameter);
 
         public event StatusCallbackDel StatusCallback;
 
@@ -160,14 +160,16 @@ namespace Sokoban.Solvers
         private bool isSolverRunning = false;        
         private StringBuilder solution;
         private PluginStatus psStatus;
+        private string solverName;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="path">Path to the dll file (absolute path is preffered)</param>
         /// <param name="parentWindow">A window instance</param>
-        public SolverLibrary(string path, Window parentWindow)
+        public SolverLibrary(string solverName, string path, Window parentWindow)
         {
+            this.solverName = solverName;
             this.path = path;
             this.libraryLoaded = false;
             this.parentWindow = parentWindow;
@@ -606,14 +608,14 @@ namespace Sokoban.Solvers
                 else
                 {
                     Debug.WriteLine("- Resolving function '" + methodName + "' error: " + Marshal.GetLastWin32Error().ToString());
-                    throw new Exception(methodName + ": Cannot resolve function address.");
+                    throw new NotImplementedException(methodName + ": Cannot resolve function address.");
                 }
 
                 return wasTerminated;
             }
             else
             {
-                throw new Exception(methodName + ": Solver library is not loaded.");
+                throw new NotImplementedException(methodName + ": Solver library is not loaded.");
             }
         }
 
@@ -690,7 +692,7 @@ namespace Sokoban.Solvers
         {
             if (StatusCallback != null)
             {
-                StatusCallback(priority, alertCode, message, parameter);
+                StatusCallback(priority, alertCode, solverName, message, parameter);
             }
         }
 

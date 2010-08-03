@@ -3,5 +3,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:ad="clr-namespace:AvalonDock;assembly=AvalonDock"
     xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
-    Name="GamesDocumentPane" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    Name="GamesDocumentPane" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+    >
 </ad:DocumentPane>

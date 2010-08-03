@@ -138,9 +138,14 @@ namespace Sokoban.Model
         /// </summary>
         public event GameObjectMovedDel SokobanMoved;
 
-        public object GetIdentifier()
+        public object GetIdentifier(SolverProviderIdentifierType spit)
         {
             throw new NotImplementedException("This method is not implemented by purpose.");
+        }
+
+        public string MovementsSoFar
+        {
+            get { return GameVariant.GetSolution(); }
         }
 
         #endregion

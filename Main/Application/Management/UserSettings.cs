@@ -5,11 +5,90 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Collections.Specialized;
 using System.Reflection;
+using System.Windows;
 
 namespace Sokoban.Configuration
 {
     public class UserSettingsManagement
     {
+        public static WindowState WindowState
+        {
+            get
+            {
+                return Properties.Settings.Default.WindowState;
+            }
+
+            set
+            {
+                Properties.Settings.Default.WindowState = value;
+            }            
+        }
+
+        public static bool AreWindowsPropertiesSaved
+        {
+            get
+            {
+                return Properties.Settings.Default.AreWindowsPropertiesSaved;
+            }
+
+            set
+            {
+                Properties.Settings.Default.AreWindowsPropertiesSaved = value;
+            }            
+        }
+
+        public static double WindowTop
+        {
+            get
+            {
+                return Properties.Settings.Default.WindowTop;
+            }
+
+            set
+            {
+                Properties.Settings.Default.WindowTop = value;
+            }
+        }
+
+        public static double WindowHeight
+        {
+            get
+            {
+                return Properties.Settings.Default.WindowHeight;
+            }
+
+            set
+            {
+                Properties.Settings.Default.WindowHeight = value;
+            }
+        }
+
+        public static double WindowWidth
+        {
+            get
+            {
+                return Properties.Settings.Default.WindowWidth;
+            }
+
+            set
+            {
+                Properties.Settings.Default.WindowWidth = value;
+            }
+        }
+
+        public static double WindowLeft
+        {
+            get
+            {
+                return Properties.Settings.Default.WindowLeft;
+            }
+
+            set
+            {
+                Properties.Settings.Default.WindowLeft = value;
+            }
+        }
+
         public static bool IsSplashEnabled
         {
             get 

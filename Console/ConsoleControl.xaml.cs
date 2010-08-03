@@ -22,7 +22,7 @@ namespace Sokoban.View
     /// </summary>
     public partial class ConsoleControl : DockableContent, INotifyPropertyChanged, IErrorMessagesPresenter
     {
-        private static string consoleCommandPrefix = "> ";
+        private static string consoleCommandPrefix = "Command: ";
         private static string consoleInitialText = "";
         
         public ConsoleControl()
@@ -39,6 +39,7 @@ namespace Sokoban.View
                     delegate()
                     {
                         tbConsoleOut.AppendText(text);
+                        tbConsoleOut.ScrollToEnd();
                     }
             ));
         }

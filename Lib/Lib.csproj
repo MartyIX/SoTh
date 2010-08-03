@@ -102,6 +102,7 @@
     <Compile Include="Interfaces\IConnectionProvider.cs" />
     <Compile Include="Interfaces\IErrorMessagesPresenter.cs" />
     <Compile Include="Interfaces\IGameMatch.cs" />
+    <Compile Include="Interfaces\IGameServerCommunication.cs" />
     <Compile Include="Interfaces\INetworkService.cs" />
     <Compile Include="Interfaces\IProfileRepository.cs" />
     <Compile Include="Interfaces\IQuest.cs" />
@@ -130,6 +131,7 @@
     </Compile>
     <Compile Include="Timer.cs" />
     <Compile Include="WPF\BindableTimeCounter.cs" />
+    <Compile Include="Xml\XmlRoundSolved.cs" />
     <Compile Include="Xml\XmlLib.cs" />
     <Compile Include="Xml\XmlLeagues.cs" />
     <Compile Include="Xml\XmlRoundReader.cs" />

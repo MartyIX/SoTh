@@ -8,6 +8,9 @@ using System.IO;
 using Sokoban;
 using Sokoban.Lib.Xml;
 using Sokoban.Lib;
+using Sokoban.Interfaces;
+using Sokoban.Model.Xml;
+using Sokoban.Lib.Exceptions;
 
 namespace Sokoban.Model.GameDesk
 {
@@ -18,9 +21,10 @@ namespace Sokoban.Model.GameDesk
         private string name;
         private string wholeQuestXml;
         private OpeningMode openingMode;
+        private IGameServerCommunication gameServerCommunication;
 
         
-        public Quest(string questXml) : this(OpeningMode.League, questXml)
+        public Quest(string questXml) : this(OpeningMode.League, questXml, null)
         {
 
         }
@@ -29,8 +33,9 @@ namespace Sokoban.Model.GameDesk
         /// The most common Quest
         /// </summary>
         /// <param name="questXML">XML that follows schema QuestSchema</param>
-        public Quest(OpeningMode openingMode, string questXml)
+        public Quest(OpeningMode openingMode, string questXml, IGameServerCommunication gameServerCommunication)
         {
+            this.gameServerCommunication = gameServerCommunication;
             this.openingMode = openingMode;
             wholeQuestXml = questXml;
             XmlDocument xmlDoc = new XmlDocument(); //* create an xml document object.
@@ -62,7 +67,17 @@ namespace Sokoban.Model.GameDesk
             get { return rounds.Count; }
         }
 
-        public string ActualRoundXML
+        public int CurrentRoundID
+        {
+            get { return int.Parse(rounds[actRound]["Id"].InnerText); }
+        }
+
+        public bool IsLeague
+        {
+            get { return openingMode == OpeningMode.League; }
+        }
+
+        public string CurrentRoundXML
         {
             get { return rounds[actRound].OuterXml; }
         }
@@ -108,6 +123,59 @@ namespace Sokoban.Model.GameDesk
         public string WholeQuestXml
         {
             get { return wholeQuestXml; }
+        }
+
+        public bool StoreResult(TimeSpan time, string solution, out string message)
+        {
+            bool result = true;
+            message = "";
+
+            if (gameServerCommunication != null)
+            {
+                string s_time = time.Hours + ":" + time.Minutes + ":" + time.Seconds;
+                string request = "/remote/RoundSolved/?rounds_id=" + CurrentRoundID +
+                    "&time=" + s_time +
+                    "&session_id=@session_id&hash=@hash&solution=" + solution;
+
+                string xml = gameServerCommunication.GetRequestOnServer("ClassQuest",request, CurrentRoundID.ToString());
+
+                if (xml != "error" && xml != "")
+                {
+                    XmlRoundSolved xmlRoundSolved = new XmlRoundSolved();
+
+                    try
+                    {
+                        xmlRoundSolved.Parse(xml);
+                    }
+                    catch (InvalidStateException)
+                    {
+                        result = false;
+                    }
+
+                    if (result == true)
+                    {
+                        if (xmlRoundSolved.Success == false)
+                        {
+                            result = false;
+                        }
+                        else
+                        {
+                            message = xmlRoundSolved.Message;
+                        }
+                    }
+                    
+                }
+                else
+                {
+                    result = false;
+                }                
+            }
+            else
+            {
+                result = false;
+            }
+
+            return result;
         }
 
         #endregion

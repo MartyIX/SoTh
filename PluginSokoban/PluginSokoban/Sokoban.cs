@@ -19,7 +19,7 @@ namespace PluginSokoban
 {
     public partial class Sokoban : MovableEssentials, IGamePlugin, IMovableElement, IControllableByUserInput, INotifyPropertyChanged
     {
-        const int MAX_EVENTS_IN_KB = 2; 
+        const int MAX_EVENTS_IN_KB = 1; 
 
         private EventType heldKeyEvent;
         private object syncRoot = new object();
@@ -77,14 +77,15 @@ namespace PluginSokoban
 
                     DebuggerIX.WriteLine(DebuggerTag.SimulationNotableEvents, "[Sokoban] ProcessEvent", ev.what.ToString() + "; Raised from EventID: " + ev.EventID.ToString());
                     DebuggerIX.WriteLine(DebuggerTag.SimulationNotableEvents, "", "[Sokoban]" + ev.ToString());
-                    
-                    
+                                        
                     IGamePlugin obstruction = base.ProcessGoEvent(time, ev);
 
                     if (obstruction != null && obstruction.Name == "Box")
                     {
                         this.host.GameVariant.CheckRound(time, "BoxMoved", null);
                     }
+                    
+                    this.host.GameVariant.CheckRound(time, "SokobanMoved", null);
 
                     returnValue = true;
 

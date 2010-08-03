@@ -76,15 +76,14 @@ namespace Sokoban.View.GameDocsComponents
         }
 
         public GameDeskControl(IQuest quest, GameMode gameMode, IUserInquirer userInquirer)
-        {
-            constructorInitialization();
-
+        {           
             this.playingMode = PlayingMode.League;
-            this.gameMode = gameMode;
-            this.SizeChanged += new SizeChangedEventHandler(Resize);
+            this.gameMode = gameMode;            
             this.quest = quest;
             this.userInquirer = userInquirer;
+            constructorInitialization();
 
+            this.SizeChanged += new SizeChangedEventHandler(Resize);
 
             // Game model for first player
             this.networkModule = new NetworkModule(this.userInquirer);
@@ -113,10 +112,12 @@ namespace Sokoban.View.GameDocsComponents
         /// <param name="roundID">One-based</param>
         public GameDeskControl(IQuest quest, GameMode gameMode, int roundID, IUserInquirer userInquirer)
         {
-            constructorInitialization();
             playingMode = PlayingMode.Round;
             this.userInquirer = userInquirer;
+            this.quest = quest;
 
+            constructorInitialization();
+         
             // Game model for first player
 
             quest.SetCurrentRound(roundID);
@@ -132,6 +133,16 @@ namespace Sokoban.View.GameDocsComponents
 
             graphicsControl = new GraphicsControl(this, gamedeskCanvas, gamedeskRect);
             graphicsControlOpponent = new GraphicsControl(this, gamedeskOpponentCanvas, gamedeskOpponentRect);
+
+            if (!this.quest.IsLeague)
+            {
+                tbStaticLeagueName.Visibility = System.Windows.Visibility.Hidden;
+                tbLeagueName.Visibility = System.Windows.Visibility.Hidden;
+            }
+            else
+            {
+                tbLeagueName.Text = this.quest.Name;
+            }
         }
 
         //
@@ -232,6 +243,12 @@ namespace Sokoban.View.GameDocsComponents
             timeCounter.Pause();
         }
 
+        private TimeSpan getTime()
+        {
+            BindableTimeCounter timeCounter = this.Resources["timeCounter"] as BindableTimeCounter;
+            if (timeCounter == null) throw new Exception("Cannot found resource `timeCounter'.");
+            return timeCounter.Time;
+        }
 
         private void timeStart()
         {

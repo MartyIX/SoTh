@@ -27,8 +27,6 @@ namespace Sokoban.Model
             // Initialization of fields
             gameObjects = new List<IGamePlugin>();
             movableElements = new List<IMovableElement>();
-            fixedElements = new IGamePlugin[fieldsX, fieldsY];
-            fixedTiles = new IGamePlugin[fieldsX, fieldsY];
             controllableByUserObjects = new List<IControllableByUserInput>();
 
 
@@ -40,7 +38,7 @@ namespace Sokoban.Model
 
             // Fire events
             if (DeskSizeChanged != null)
-            {
+            {                                
                 DeskSizeChanged(fieldsX, fieldsY);
             }
 
@@ -88,6 +86,9 @@ namespace Sokoban.Model
             this.GameVariantName = gameVariant;
             this.fieldsX = fieldsX;
             this.fieldsY = fieldsY;
+
+            fixedElements = new IGamePlugin[fieldsX, fieldsY];
+            fixedTiles = new IGamePlugin[fieldsX, fieldsY];            
 
             this.gameVariant = pluginService.RunVariant(gameVariant);
         }

@@ -29,6 +29,11 @@ namespace Sokoban.Model
             get { return calendar.CountOfEvents; }
         }
 
+        public string GetSolution()
+        {
+            return GameVariant.GetSolution();
+        }
+
         public IEnumerable<IGamePlugin> GetGameObjects
         {
             get { return gameObjects; }

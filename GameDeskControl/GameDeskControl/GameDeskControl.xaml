@@ -8,7 +8,8 @@
 	mc:Ignorable="d" 
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-	Height="336" Width="800">
+	Height="336"
+    >
 	<ad:DocumentContent.Resources>
 
 		<wpf:BindableTimeCounter x:Key="timeCounter" />
@@ -26,7 +27,11 @@
 									</GeometryDrawing.Geometry>
 								</GeometryDrawing>
 								<!--<GeometryDrawing Brush="Red">-->
-								<GeometryDrawing Brush="Azure">
+								<GeometryDrawing>                                    
+									<GeometryDrawing.Brush>
+										<SolidColorBrush Color="sc#69,102,160">                                            
+										</SolidColorBrush>
+									</GeometryDrawing.Brush>
 									<GeometryDrawing.Geometry>
 										<GeometryGroup>
 											<RectangleGeometry Rect="0,0,50,50" />
@@ -43,67 +48,73 @@
 	</ad:DocumentContent.Resources>
 	<!-- view -->
 
-    <AdornerDecorator>
-        <DockPanel x:Name="gameDeskControlParent" LastChildFill="True" Background="white">
-            <!-- TODO Remove background -->
-            <DockPanel DockPanel.Dock="Left" x:Name="leftGameDesk" Background="Red" VerticalAlignment="Center">
-                <Canvas Background="Green" Name="gamedeskCanvas" Width="{Binding ElementName=gamedeskRect, Path=Width}" 
+	<AdornerDecorator>
+		<DockPanel x:Name="gameDeskControlParent" LastChildFill="True" Background="white">
+			<!-- TODO Remove background -->
+			<DockPanel DockPanel.Dock="Left" x:Name="leftGameDesk" Background="Red" VerticalAlignment="Center">
+				<Canvas Background="Green" Name="gamedeskCanvas" Width="{Binding ElementName=gamedeskRect, Path=Width}" 
 				Height="{Binding ElementName=gamedeskRect, Path=Height}" 
 				VerticalAlignment="Stretch">
-                    <Rectangle HorizontalAlignment="Left" Width="229" Height="300" 
+					<Rectangle HorizontalAlignment="Left" Width="229" Height="300" 
 			  x:Name="gamedeskRect" Style="{DynamicResource GameDesk}" />
-                </Canvas>
-            </DockPanel>
+				</Canvas>
+			</DockPanel>
 
-            <StackPanel DockPanel.Dock="Right" x:Name="rightGameDesk" VerticalAlignment="Center">
-                <Canvas x:Name="gamedeskOpponentCanvas" VerticalAlignment="Stretch"
+			<StackPanel DockPanel.Dock="Right" x:Name="rightGameDesk" VerticalAlignment="Center">
+				<Canvas x:Name="gamedeskOpponentCanvas" VerticalAlignment="Stretch"
 				 Visibility="Collapsed" Width="{Binding ElementName=gamedeskOpponentRect, Path=Width}"
 				 Height="{Binding ElementName=gamedeskRect, Path=Height}">
-                    <Rectangle HorizontalAlignment="Left" Width="229" Height="300" 
+					<Rectangle HorizontalAlignment="Left" Width="229" Height="300" 
 			  x:Name="gamedeskOpponentRect" Style="{DynamicResource GameDesk}" />
-                </Canvas>
-            </StackPanel>
+				</Canvas>
+			</StackPanel>
 
-            <Viewbox DockPanel.Dock="Right"
+			<Viewbox DockPanel.Dock="Right"
 			  Margin="4"
 			  VerticalAlignment="Stretch"  Width="{Binding ElementName=infoPanel, Path=Width}"
 			  Height="Auto" MinWidth="150" MaxWidth="250">
 
-                <StackPanel x:Name="infoPanel"  MinWidth="150" MaxWidth="250"
+				<StackPanel x:Name="infoPanel"  MinWidth="150" MaxWidth="250"
 				VerticalAlignment="Center" Margin="10,0,0,0"
 				Orientation="Horizontal">
-                    <Grid HorizontalAlignment="Left" >
-                        <Grid.Resources>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="Margin" Value="5,3" />
-                            </Style>
-                            <Style x:Key="LeftColumnTitles" TargetType="TextBlock">
-                                <Setter Property="FontWeight" Value="Bold" />
-                                <Setter Property="Margin" Value="5,3" />
-                            </Style>
-                        </Grid.Resources>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Style="{StaticResource LeftColumnTitles}" Grid.Row="0" Grid.Column="0" Text="Round:" />
-                        <TextBlock Grid.Row="0" Grid.Column="1" x:Name="tbRoundName" Text="{Binding RoundName}" />
-                        <TextBlock Style="{StaticResource LeftColumnTitles}" Grid.Row="1" Grid.Column="0" Text="Time:"></TextBlock>
-                        <TextBlock x:Name="tbTime" Grid.Row="1" Grid.Column="1" 
+					<Grid HorizontalAlignment="Left" >
+						<Grid.Resources>
+							<Style TargetType="TextBlock">
+								<Setter Property="Margin" Value="5,3" />
+							</Style>
+							<Style x:Key="LeftColumnTitles" TargetType="TextBlock">
+								<Setter Property="FontWeight" Value="Bold" />
+								<Setter Property="Margin" Value="5,3" />
+							</Style>
+						</Grid.Resources>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto" />
+							<ColumnDefinition />
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition/>
+							<RowDefinition/>
+							<RowDefinition/>
+							<RowDefinition/>
+						</Grid.RowDefinitions>
+						<TextBlock x:Name="tbStaticLeagueName" Style="{StaticResource LeftColumnTitles}" Grid.Row="0" Grid.Column="0" Text="League:" />
+						<TextBlock Grid.Row="0" Grid.Column="1" x:Name="tbLeagueName" TextTrimming="CharacterEllipsis" Text="{Binding LeagueName}" />
+						
+						<TextBlock Style="{StaticResource LeftColumnTitles}" Grid.Row="1" Grid.Column="0" Text="Round:" />
+						<TextBlock Grid.Row="1" Grid.Column="1" x:Name="tbRoundName" TextTrimming="CharacterEllipsis" Text="{Binding RoundName}" />
+						
+						<TextBlock Style="{StaticResource LeftColumnTitles}" Grid.Row="2" Grid.Column="0" Text="Time:"></TextBlock>
+						<TextBlock x:Name="tbTime" Grid.Row="2" Grid.Column="1"  TextTrimming="CharacterEllipsis"
 									Text="{Binding Source={StaticResource timeCounter}, Path=FormattedTime}" />
-                        <TextBlock Style="{StaticResource LeftColumnTitles}" Grid.Row="2" Grid.Column="0" Text="Steps:" />
-                        <TextBlock x:Name="tbSteps" Grid.Row="2" Grid.Column="1" Text="{Binding Path=StepsCount, FallbackValue='NA'}" />
-                    </Grid>
-                </StackPanel>
-            </Viewbox>
-            <DockPanel x:Name="visualSoundsContainer" local:Silencer.Silence="True">
+						
+						<TextBlock Style="{StaticResource LeftColumnTitles}" Grid.Row="3" Grid.Column="0" Text="Steps:" />
+						<TextBlock x:Name="tbSteps" TextTrimming="CharacterEllipsis" Grid.Row="3" Grid.Column="1" Text="{Binding Path=StepsCount, FallbackValue='NA'}" />
+					</Grid>
+				</StackPanel>
+			</Viewbox>
+			<DockPanel x:Name="visualSoundsContainer" local:Silencer.Silence="True">
 
-            </DockPanel>
-        </DockPanel>
-    </AdornerDecorator>
+			</DockPanel>
+		</DockPanel>
+	</AdornerDecorator>
 </ad:DocumentContent>

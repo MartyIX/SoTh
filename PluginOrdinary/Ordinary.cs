@@ -13,6 +13,7 @@ namespace PluginOrdinary
 		private List<IGamePlugin> boxes = null;
 		private IGamePlugin[,] aims = null;
 		private IGamePlugin sokoban = null;
+        private StringBuilder solution = new StringBuilder(50);
 
 		public OrdinaryController(IPluginParent host)
 		{
@@ -59,11 +60,22 @@ namespace PluginOrdinary
 				if (gp.Name == "Sokoban")
 				{
 					sokoban = gp;
+                    ((IMovableElement)sokoban).ElementMoved += new GameObjectMovedDel(OrdinaryController_ElementMoved);
 				}
 			}
 
 			aims = parent.GetFixedTiles();
 		}
+
+        void OrdinaryController_ElementMoved(int newX, int newY, char direction)
+        {
+            solution.Append(direction);
+        }
+
+        public string GetSolution()
+        {
+            return solution.ToString();
+        }
 
 		public void Unload()
 		{
@@ -95,6 +107,7 @@ namespace PluginOrdinary
 				if (isFinished)
 				{
 					parent.MakePlan("Ordinary", time + ((IMovableElement)sokoban).Speed, null, EventType.gameWon, true);
+                    parent.StopSimulation();
 				}
 			}
 		}

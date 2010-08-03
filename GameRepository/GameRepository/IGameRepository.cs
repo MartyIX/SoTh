@@ -21,6 +21,8 @@ namespace Sokoban.Model.GameDesk
         int FieldsY { get; }
         Int64 Time { get; set; }
         string RoundName { get; }
+        string GameVariantName { get; set; }
+
         int StepsCount { get; }
         IEnumerable<IGamePlugin> GetGameObjects { get; }
 
@@ -33,6 +35,12 @@ namespace Sokoban.Model.GameDesk
         PluginService PluginService { get; }
         void MakePlan(int ID, Int64 when, EventType what);
 
+        bool IsSimulationActive { get; }
+        void ResumeSimulation();
+        void StopSimulation();
+
+
+        string GetSolution();
 
         event SetSizeDelegate DeskSizeChanged;
         event GameObjectsLoadedDelegate GameObjectsLoaded;

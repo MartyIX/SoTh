@@ -65,7 +65,7 @@ namespace Sokoban
         {
             //string result = Sokoban.Properties.Resources.TestQuest;
             string result = Sokoban.Properties.Resources.SimpleQuest;
-            gameManager.Add(result);
+            //gameManager.Add(result);
         }
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)

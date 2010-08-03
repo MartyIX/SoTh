@@ -6,6 +6,7 @@ using Sokoban.Configuration;
 using System.Windows;
 using Sokoban.Lib;
 using System.IO;
+using System.ComponentModel;
 
 namespace Sokoban
 {
@@ -28,6 +29,7 @@ namespace Sokoban
                 UserSettingsManagement.Save();
             }
 
+                       
             // 
             // End of: Save layout if enabled
             //
@@ -42,6 +44,17 @@ namespace Sokoban
             {
                 solversPane.Terminate(); // unload dynamic libraries
             }
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            UserSettingsManagement.WindowWidth = this.Width;
+            UserSettingsManagement.WindowHeight = this.Height;
+            UserSettingsManagement.WindowTop = this.Top;
+            UserSettingsManagement.WindowLeft = this.Left;
+            UserSettingsManagement.WindowState = this.WindowState;
+            UserSettingsManagement.AreWindowsPropertiesSaved = true;
+            UserSettingsManagement.Save();
         }
 
 

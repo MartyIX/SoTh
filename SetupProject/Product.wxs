@@ -48,6 +48,7 @@
 					</Component>
 
 					<Component Id="CmpntDesktopShortcuts" Guid="45b2e3de-768b-4234-8b4c-2d7d300c56f5">
+						<Condition>INSTALLDESKTOPSHORTCUT</Condition>
 						<Shortcut Id="desktopSokoban20" Directory="DesktopFolder" Name="SoTh" Target="[#MyApplicationFile]" WorkingDirectory='INSTALLLOCATION' Icon="MainAppIcon.ico" IconIndex="0" Advertise="no" />
 						<RegistryValue Root="HKCU" Key="Software\[Manufacturer]\[ProductName]" Name="cmpntDesktopShortcuts" Type="integer" Value="1" KeyPath="yes" />
 					</Component>
@@ -113,6 +114,7 @@
 				<Feature Title='Start menu items' Id="FeatureStartMenu" Description='Shortcuts in Start menu' Level="1">
 					<ComponentRef Id='CmpntMainExecutableShortcuts' />
 				</Feature>
+								
 				<Feature Title='Desktop shortcut' Id="FeatureDesktopShortcut" Description='Shortcut on desktop' Level="1">
 					<ComponentRef Id='CmpntDesktopShortcuts' />
 				</Feature>
@@ -124,9 +126,20 @@
 			</Feature>      
 		</Feature>
 
-		<UIRef Id="WixUI_Mondo" />
-		<UIRef Id="WixUI_ErrorProgressText" />
+		<!--<UIRef Id="WixUI_Mondo" />
+		<UIRef Id="WixUI_ErrorProgressText" />		-->
+		<WixVariable Id="WixUICostingPopupOptOut" Value="1" Overridable="yes" />
 
-		<Icon Id="MainAppIcon.ico" SourceFile="$(var.Main.ProjectDir)View\Resources\favicon.ico" />
+    <CustomAction Id="LaunchApplication" FileKey="MyApplicationFile" ExeCommand="" Execute="immediate" Impersonate="yes" Return="asyncNoWait" />
+    <UI>
+      <Publish Dialog="MyExitDialog" Control="Finish" Order="999" Event="DoAction" Value="LaunchApplication">LAUNCHAPPONEXIT</Publish>
+    </UI>
+
+    <Property Id="INSTALLDESKTOPSHORTCUT" Value="1" />
+		<Property Id="WIXUI_INSTALLDIR" Value="INSTALLLOCATION"/>
+		<UIRef Id="MyWixUI_InstallDir" />
+
+
+    <Icon Id="MainAppIcon.ico" SourceFile="$(var.Main.ProjectDir)View\Resources\favicon.ico" />
 	</Product>
 </Wix>

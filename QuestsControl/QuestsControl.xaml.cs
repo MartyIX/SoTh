@@ -45,7 +45,7 @@ namespace Sokoban.View
         private string _status;
         private IQuestHandler questHandler = null;
         private IErrorMessagesPresenter errorPresenter = null;
-        private IProfileRepository profile = null;
+        private IGameServerCommunication gameServerCommunication = null;
         private TreeViewItem selected = null;
 
         /// <summary>
@@ -64,9 +64,9 @@ namespace Sokoban.View
         /// <summary>
         /// 
         /// </summary>
-        public void Initialize(IQuestHandler questHandler, IErrorMessagesPresenter errorPresenter, IProfileRepository profile)
+        public void Initialize(IQuestHandler questHandler, IErrorMessagesPresenter errorPresenter, IGameServerCommunication gameServerCommunication)
         {
-            this.profile = profile;
+            this.gameServerCommunication = gameServerCommunication;
             this.questHandler = questHandler;
             this.errorPresenter = errorPresenter;
             this.Refresh();
@@ -120,11 +120,11 @@ namespace Sokoban.View
         /// <returns>Response of the server</returns>
         private string getRequestOnServer(string request)
         {
-            string output = ApplicationHttpReq.GetRequestOnServer(request, profile, "Quests", errorPresenter);
-
-            if (ApplicationHttpReq.LastError != String.Empty)
+            string output = gameServerCommunication.GetRequestOnServer("Quests", request, null);
+            
+            if (gameServerCommunication.LastCommunicationError != String.Empty)
             {
-                this.Status = ApplicationHttpReq.LastError;
+                this.Status = gameServerCommunication.LastCommunicationError;
             }
 
             return output;
@@ -344,7 +344,7 @@ namespace Sokoban.View
                 {
                     OpeningMode openingMode = (roundID == -1) ? OpeningMode.League : OpeningMode.Round;
 
-                    Quest q = new Quest(openingMode, questXml);
+                    Quest q = new Quest(openingMode, questXml, gameServerCommunication);
                     questHandler.QuestSelected(leagueID, roundID, q, gameMode);
                 }
                 else

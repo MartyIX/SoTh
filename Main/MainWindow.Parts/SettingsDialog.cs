@@ -34,11 +34,14 @@ namespace Sokoban
 
         void settingsPresenter_Closed()
         {
+            Notify("ViewSoundState");
+            Notify("ViewSoundStateFile");
+
             isSettingsDialogDisplayed = false;
             if (isSoundEnabled != UserSettingsManagement.IsSoundEnabled)
             {
                 gameManager.SetSoundsSettings(UserSettingsManagement.IsSoundEnabled);
-            }
+            }           
         }
 
     }

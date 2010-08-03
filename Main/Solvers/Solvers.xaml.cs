@@ -74,16 +74,18 @@ namespace Sokoban.View
         /// </summary>
         /// <param name="path">Absolute path to the directory with solvers</param>
         /// <param name="parentWindow">We need to display dialogs and the dialogs need to be bound to a window; main window reference is expected</param>
-        public void Initialize(ISolverProvider solverProvider, Window parentWindow, IErrorMessagesPresenter errorPresenter, IUserInquirer userInquirer)
+        public void Initialize(ISolverProvider solverProvider, Window parentWindow, 
+            IErrorMessagesPresenter errorPresenter, IUserInquirer userInquirer, IGameServerCommunication gameServerCommunication)
         {
             this.errorPresenter = errorPresenter;
+            this.gameServerCommunication = gameServerCommunication;
             this.userInquirer = userInquirer;
+            this.solverProvider = solverProvider;
             solversManager = new SolversManager(solverProvider, parentWindow);
             // Register callback
             solversManager.RegisterStatusChangeCallback(solverStatusChange);
             SolversList = new ObservableCollection<string>(solversManager.Solvers); // we want to notify
             CurrentSolver = solversManager.CurrentSolver;
-
                         
             solverPainter = solverProvider as ISolverPainter;
 
@@ -103,53 +105,15 @@ namespace Sokoban.View
         private SolversManager solversManager;
         private ObservableCollection<string> solversList = new ObservableCollection<string>();
         private IErrorMessagesPresenter errorPresenter;
+        private IGameServerCommunication gameServerCommunication = null;
         private IUserInquirer userInquirer;
+        private ISolverProvider solverProvider = null;
 
         // Initialized in method Initialize from ISolverProvider -- it's a hack actually because we expect that the object implements
         // ISolverPainter and ISolverProvider at the same time. But we save a parameter..
         private ISolverPainter solverPainter;
 
-        private void Start_Click(object sender, RoutedEventArgs e)
-        {
-            dataGridItemsSource.Clear();
-
-            if (cbCurrentSolver.Items.Count == 0)
-            {
-                SolverStatus = "No solver is available";
-            }
-            else
-            {
-                SolverStatus = "Solver is running";
-
-                disableStartOfSolver();
-
-                try
-                {
-                    // We specify that we want to get results via method solverWorkCompleted
-                    solversManager.SolveRound(new SolversManager.SolverWorkCompletedDel(solverWorkCompleted));
-                }
-                catch (SolverException ex)
-                {
-                    enableStartOfSolver();
-                    SolverStatus = "Solver cannot finish its work.";
-                    addItemToMessageLog(0, ex.Message);
-                }
-                catch (NotStandardSokobanVariantException ex)
-                {
-                    enableStartOfSolver();
-                    SolverStatus = "Solver cannot solve this game variant.";
-                    addItemToMessageLog(0, ex.Message);
-                    this.showMessage("The opened round is not standard Sokoban variant. Solvers can solve only the variant. We're sorry for the inconvenience.");
-                }
-                catch (NoRoundIsOpenException)
-                {
-                    enableStartOfSolver();
-                    SolverStatus = "No round is opened.";
-                    this.showMessage("No round is opened. For solving rounds open a standard variant round and click \"Start\" button again.");
-                }
-            } 
-        }
-
+        
 
 
         private void disableStartOfSolver()
@@ -169,7 +133,7 @@ namespace Sokoban.View
         /// Param contains solution. If empty then solver was not able to find a solution
         /// </summary>
         /// <param name="param">Gots string in form of object</param>
-        private void solverWorkCompleted(object mazeID, uint width, uint height, string maze, string solution)
+        private void solverWorkCompleted(string solver, object mazeID, uint width, uint height, string maze, string solution)
         {
             enableStartOfSolver();
             SolverStatus = "Solver stopped working.";
@@ -177,7 +141,7 @@ namespace Sokoban.View
             if (solution != "" && solution != null)
             {
                 // Alert
-                addItemToMessageLog(0, "Solution was found and will be presented below:");
+                addItemToMessageLog(0, solver, "Solution was found and will be presented below:");
 
                 // Display the solution
 
@@ -199,7 +163,7 @@ namespace Sokoban.View
                             throw new Exception("Unknown meaning of character '" + solution[i].ToString() + "' in solution.");
                     }
 
-                    addItemToMessageLog(i + 1, message);
+                    addItemToMessageLog(i + 1, solver, message);
                 }
 
                 if (solverPainter != null)
@@ -222,18 +186,13 @@ namespace Sokoban.View
             }
         }
 
-        private void Stop_Click(object sender, RoutedEventArgs e)
-        {
-            solversManager.TerminateSolver();
-        }
-
         /// <summary>
         /// Handler of SolverLibrary.StatusCallback event 
         /// </summary>
         /// <param name="sp"></param>
         /// <param name="message"></param>
         /// <param name="parameter"></param>
-        private void solverStatusChange(SolverLibrary.StatusPriority sp, SolverLibrary.AlertCodes ac, string message, object parameter)
+        private void solverStatusChange(SolverLibrary.StatusPriority sp, SolverLibrary.AlertCodes ac, string solver, string message, object parameter)
         {
             if (sp == SolverLibrary.StatusPriority.FunctionStatusChange)
             {
@@ -242,7 +201,7 @@ namespace Sokoban.View
                     SolverStatus = "Solver is terminating. It may take a while.";
                 }
 
-                addItemToMessageLog(0, message); // 0 means that we don't want to display the moves
+                addItemToMessageLog(0, solver, message); // 0 means that we don't want to display the moves
             }
         }
 
@@ -251,7 +210,7 @@ namespace Sokoban.View
         /// </summary>
         /// <param name="moves"></param>
         /// <param name="message"></param>
-        private void addItemToMessageLog(int moves, string message)
+        private void addItemToMessageLog(int moves, string solver, string message)
         {
             string _moves = null;
 
@@ -267,7 +226,7 @@ namespace Sokoban.View
             var logItem = new MessagesLogItemData
                 {
                     Move = _moves,
-                    Plugin = CurrentSolver,
+                    Plugin = solver,
                     Message = message
                 };
 
@@ -306,16 +265,6 @@ namespace Sokoban.View
 
         #endregion
 
-        private void Configure_Click(object sender, RoutedEventArgs e)
-        {
-            solversManager.ShowConfigure();
-        }
-
-        private void About_Click(object sender, RoutedEventArgs e)
-        {
-            solversManager.ShowAbout();
-        }
-
         private void errorMessage(ErrorMessageSeverity ems, string message)
         {
             if (errorPresenter != null)
@@ -331,7 +280,7 @@ namespace Sokoban.View
                 userInquirer.ShowMessage(message);
             }
         }
-
+        
     }
 
     public class MessagesLogItemData

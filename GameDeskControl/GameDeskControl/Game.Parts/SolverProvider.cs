@@ -26,10 +26,16 @@ namespace Sokoban.View.GameDocsComponents
             return gameRepository.SerializeMaze();
         }
 
-        public object GetIdentifier()
+        public object GetIdentifier(SolverProviderIdentifierType spit)
         {
             //return control;
             throw new NotImplementedException("Not implemented by purpose!");
-        }      
+        }
+
+
+        public string MovementsSoFar
+        {
+            get { return gameRepository.MovementsSoFar; }
+        }
     }
 }

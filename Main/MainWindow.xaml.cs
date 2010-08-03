@@ -51,7 +51,7 @@ namespace Sokoban
             }
             else
             {
-                questsPane.Initialize(this, consolePane, ProfileRepository.Instance);
+                questsPane.Initialize(this, consolePane, this /* gameServerCommunication */);
                 pendingGamesPane.Initialize(consolePane, ProfileRepository.Instance, this, this);
             }
         }
@@ -67,7 +67,17 @@ namespace Sokoban
                 {
                     DebuggerIX.Exclude(ApplicationRepository.Instance.appParams.DebuggerIX_Tags);
                 }
-            }               
+            }
+
+            if (UserSettingsManagement.AreWindowsPropertiesSaved == true)
+            {
+                this.Width = UserSettingsManagement.WindowWidth;
+                this.Height = UserSettingsManagement.WindowHeight;
+                this.Top = UserSettingsManagement.WindowTop;
+                this.Left = UserSettingsManagement.WindowLeft;
+
+                this.WindowState = UserSettingsManagement.WindowState;
+            }
         }        
 
 
@@ -77,7 +87,7 @@ namespace Sokoban
         private void loadQuest()
         {
             string result = Sokoban.Properties.Resources.TestQuest;
-            gameManager.Add(OpeningMode.Round, result);
+            //gameManager.Add(OpeningMode.Round, result);
         }
 
         private void dockingManager_Loaded(object sender, RoutedEventArgs e)
@@ -101,8 +111,10 @@ namespace Sokoban
         private void Window_ContentRendered(object sender, EventArgs e)
         {
             ApplicationRepository.Instance.OnStartUp_PhaseTwo(); // initialize QuestsControl
-            solversPane.Initialize(this.gameManager, this, consolePane, this.userInquirer);
-            gameManager.Initialize(this.userInquirer); // has to be called before a GameDeskControl is opened
+            solversPane.Initialize(this.gameManager, this, consolePane, this.userInquirer, this /* gameServerCommunication */);
+            
+            // has to be called before a GameDeskControl is opened
+            gameManager.Initialize(this.userInquirer, this /* gameServerCommunication */); 
             gameManager.SetSoundsSettings(UserSettingsManagement.IsSoundEnabled);
             gameManager.AddIntroduction();
             gameManager.RestartAvaibilityChanged += new VoidBoolDelegate(gameManager_RestartAvaibilityChanged);                
@@ -139,5 +151,6 @@ namespace Sokoban
         }
 
         #endregion
+
     }    
 }

@@ -21,6 +21,9 @@
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="MyExitDialog.wxs" />
+    <Compile Include="MyInstallDirDlg.wxs" />
+    <Compile Include="MyWixUI_InstallDir.wxs" />
     <Compile Include="Product.wxs" />
     <Compile Include="Product.Generated.wxs">
       <DependentUpon>Product.wxs</DependentUpon>

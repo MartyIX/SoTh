@@ -40,6 +40,14 @@ namespace Sokoban.View.GameDocsComponents
             }
         }
 
+        private void AppendMessage(string message)
+        {
+            if (userInquirer != null)
+            {
+                userInquirer.AppendMessage(message);
+            }
+        }
+
         public void UserInquiryResult(string message, string answer)
         {
             if (message == inquirySinglePlayerRestart)

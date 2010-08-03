@@ -70,6 +70,8 @@
     <Reference Include="WPFToolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Solvers.Parts\ButtonClicks.cs" />
+    <Compile Include="Solvers.Parts\SolutionFromWeb.cs" />
     <Compile Include="Solvers.xaml.cs">
       <DependentUpon>Solvers.xaml</DependentUpon>
     </Compile>
@@ -87,6 +89,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="SolversManager.cs" />
+    <Compile Include="XmlGetRoundSolution\GetRoundSolution.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -113,9 +116,7 @@
       <Name>SolverLibrary</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Solvers\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

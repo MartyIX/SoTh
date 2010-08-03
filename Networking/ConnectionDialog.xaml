@@ -45,7 +45,7 @@
                  Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" x:Name="tbStatus" IsReadOnly="True" AcceptsReturn="True"
                  Text="{Binding Status}" VerticalScrollBarVisibility="Auto" />
         <StackPanel Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2"  Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
-            <Button Name="btnAgain" IsDefault="True" Click="btnAgain_Click">Again</Button>
+            <Button Name="btnAgain" IsDefault="True" Click="btnAgain_Click">Start</Button>
             <Button Name="btnCancel" IsCancel="True" Click="btnCancel_Click" Margin="5,0,0,0">Cancel</Button>
         </StackPanel>
     </Grid>

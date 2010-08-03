@@ -33,7 +33,7 @@ namespace Sokoban
                 {
 
                     OpeningMode openingMode = (roundsID == -1) ? OpeningMode.League : OpeningMode.Round;
-                    Quest q = new Quest(openingMode, questXml);
+                    Quest q = new Quest(openingMode, questXml, this /*gameServerCommunication*/);
                     IGameMatch gm = this.QuestSelected(leaguesID, roundsID, q, GameMode.TwoPlayers, connection);
                 }
                 else

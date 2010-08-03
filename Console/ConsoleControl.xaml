@@ -12,7 +12,14 @@
     >
 
     <DockPanel LastChildFill="True">
-    <TextBox DockPanel.Dock="Bottom" x:Name="tbConsoleIn" PreviewKeyDown="tbConsoleIn_PreviewKeyDown" />
-	<TextBox DockPanel.Dock="Top" x:Name="tbConsoleOut" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" />    
+    <TextBox DockPanel.Dock="Bottom" x:Name="tbConsoleIn" 
+             PreviewKeyDown="tbConsoleIn_PreviewKeyDown" 
+              />
+	<TextBox DockPanel.Dock="Top" x:Name="tbConsoleOut" 
+             IsReadOnly="True" AcceptsReturn="True" 
+             TextWrapping="Wrap" 
+             ScrollViewer.VerticalScrollBarVisibility="Auto" 
+             ScrollViewer.CanContentScroll="True"
+             />    
     </DockPanel>
 </ad:DockableContent>

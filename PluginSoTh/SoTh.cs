@@ -44,6 +44,10 @@ namespace PluginOrdinary
             get { return "2.00"; }
         }
 
+        public string GetSolution()
+        {
+            return "";
+        }
 
         public void Load(string appPath)
         {

@@ -78,7 +78,7 @@ namespace Sokoban.View.GameDocsComponents
 
         public void LoadCurrentRound()
         {
-            loadRound(quest.ActualRoundXML);
+            loadRound(quest.CurrentRoundXML);
         }
 
         private void loadRound(string roundXml)

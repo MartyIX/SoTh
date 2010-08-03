@@ -151,6 +151,7 @@
     <Compile Include="Application\Management\UserSettings.cs" />
     <Compile Include="MainWindow.Parts\AvalonDockVisibilityConverter.cs" />
     <Compile Include="MainWindow.Parts\ConnectionDialogPresenter.cs" />
+    <Compile Include="MainWindow.Parts\GameServerCommunication.cs" />
     <Compile Include="MainWindow.Parts\SettingsDialog.cs" />
     <Compile Include="MainWindow.Parts\MessageBoxShow.cs" />
     <Compile Include="MainWindow.Parts\ConnectionRelayer.cs" />

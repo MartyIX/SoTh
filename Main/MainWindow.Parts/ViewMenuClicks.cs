@@ -6,6 +6,8 @@ using System.Windows;
 using AvalonDock;
 using Sokoban.View.AboutDialog;
 using Sokoban.Configuration;
+using System.Diagnostics;
+using Sokoban.Model;
 
 namespace Sokoban
 {
@@ -37,6 +39,13 @@ namespace Sokoban
         //
         // MENU CLICKS HANDLERS
         //         
+
+        private void miUser_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(ProfileRepository.Instance.Server + "/Profile/"));
+            e.Handled = true;
+        }
+
 
         private void miRestart_Click(object sender, RoutedEventArgs e)
         {

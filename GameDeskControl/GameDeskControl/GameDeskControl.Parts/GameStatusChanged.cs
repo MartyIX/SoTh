@@ -34,9 +34,20 @@ namespace Sokoban.View.GameDocsComponents
                         else
                         {
                             MessageBoxShow("Congratulations! You've won the round!");
-                        }
+                        }                        
 
                         FirstPlayerIsFinishing();
+
+                        // Sending results
+                        try
+                        {
+                            AppendMessage(storeSinglePlayerRoundResult(this.getTime()));
+                        }
+                        catch
+                        {
+                            AppendMessage("Unexpected error: Cannot store results to the server.");
+                        }
+
                     }
                     else if (gameChange == GameChange.StopCountingTime)
                     {
@@ -84,5 +95,22 @@ namespace Sokoban.View.GameDocsComponents
             }
         }
 
+        private string storeSinglePlayerRoundResult(TimeSpan time)
+        {
+            string solution = "";
+
+            try
+            {
+                solution = game.GameRepository.GetSolution();
+            }
+            catch
+            {
+
+            }
+
+            string message = "";
+            quest.StoreResult(time, solution, out message);
+            return message;
+        }
     }
 }

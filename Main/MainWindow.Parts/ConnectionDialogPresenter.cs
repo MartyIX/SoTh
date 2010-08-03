@@ -18,11 +18,11 @@ namespace Sokoban
         /// <returns>Response of the server</returns>
         private string getRequestOnServer(string request)
         {
-            string output = ApplicationHttpReq.GetRequestOnServer(request, ProfileRepository.Instance, "MainProgram", consolePane);
-
-            if (ApplicationHttpReq.LastError != String.Empty)
+            string output = this.GetRequestOnServer("MainProgram", request, null);
+            
+            if (this.LastCommunicationError != String.Empty)
             {
-                MessageBoxShow(ApplicationHttpReq.LastError);
+                MessageBoxShow(this.LastCommunicationError);
                 return String.Empty;
             }
             else
